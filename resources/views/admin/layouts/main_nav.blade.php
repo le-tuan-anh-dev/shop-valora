@@ -999,9 +999,8 @@
 
             <li class="nav-item">
               <a
-                class="nav-link menu-arrow"
-                href="#sidebarAttributes"
-                data-bs-toggle="collapse"
+                class="nav-link"
+                href="{{ route('admin.attributes.list') }}"
                 role="button"
                 aria-expanded="false"
                 aria-controls="sidebarAttributes"
@@ -1011,23 +1010,9 @@
                     icon="solar:confetti-minimalistic-bold-duotone"
                   ></iconify-icon>
                 </span>
-                <span class="nav-text"> Attributes </span>
+                <span class="nav-text"> Thuộc tính </span>
               </a>
-              <div class="collapse" id="sidebarAttributes">
-                <ul class="nav sub-navbar-nav">
-                  <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="attributes-list.html">List</a>
-                  </li>
-                  <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="attributes-edit.html">Edit</a>
-                  </li>
-                  <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="attributes-add.html"
-                      >Create</a
-                    >
-                  </li>
-                </ul>
-              </div>
+
             </li>
 
             <li class="nav-item">
