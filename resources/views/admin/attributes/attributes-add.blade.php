@@ -1,78 +1,85 @@
 @extends('admin.layouts.main_nav')
 
 @section('content')
-               <div class="page-content">
+<div class="page-content">
 
-                    <!-- Start Container Fluid -->
-                    <div class="container-xxl">
+    <!-- Start Container Fluid -->
+    <div class="container-xxl">
 
-                         <div class="row">
-                              <div class="col-lg-12">
-                                   <div class="card">
-                                        <div class="card-header">
-                                             <h4 class="card-title">Add Attribute</h4>
-                                        </div>
-                                        <div class="card-body">
-                                             <div class="row">
-                                                  <div class="col-lg-6">
-                                                       <form>
-                                                            <div class="mb-3">
-                                                                 <label for="variant-name" class="form-label text-dark">Attribute Variant</label>
-                                                                 <input type="text" id="variant-name" class="form-control" placeholder="Enter Name">
-                                                            </div>
-                                                       </form>
-                                                  </div>
-                                                  <div class="col-lg-6">
-                                                       <form>
-                                                            <div class="mb-3">
-                                                                 <label for="value-name" class="form-label text-dark">Attribute Value</label>
-                                                                 <input type="text" id="value-name" class="form-control" placeholder="Enter Value">
-                                                            </div>
-                                                       </form>
-                                                  </div>
-                                                  <div class="col-lg-6">
-                                                       <form>
-                                                            <div class="">
-                                                                 <label for="attribute-id" class="form-label text-dark">Attribute ID</label>
-                                                                 <input type="number" id="attribute-id" class="form-control" placeholder="Enter ID">
-                                                            </div>
-                                                       </form>
-                                                  </div>
-                                                  <div class="col-lg-6">
-                                                       <form>
-                                                            <div class="">
-                                                                 <label for="option" class="form-label">	Option</label>
-                                                                 <select class="form-control" id="option" data-choices data-choices-groups data-placeholder="Select Option">
-                                                                      <option value="Dropdown">Dropdown</option>
-                                                                      <option value="Radio">Radio</option>                                                                     
-                                                                 </select>
-                                                            </div>
-                                                       </form>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                        <div class="card-footer border-top">
-                                             <a href="#!" class="btn btn-primary">Save Change</a>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
-
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Thêm thuộc tính mới</h4>
+                        <a href="{{ route('admin.attributes.list') }}" class="btn btn-secondary btn-sm">← Quay lại</a>
                     </div>
-                    <!-- End Container Fluid -->
 
-                    <!-- ========== Footer Start ========== -->
-                    <footer class="footer">
-                        <div class="container-fluid">
+                    <div class="card-body">
+                        {{-- FORM --}}
+                        <form action="{{ route('admin.attributes.store') }}" method="POST">
+                            @csrf
+
                             <div class="row">
-                                <div class="col-12 text-center">
-                                    <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                        href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
+                                {{-- Tên thuộc tính --}}
+                                <div class="col-lg-12  mb-3">
+                                    <label for="variant-name" class="form-label text-dark">Tên thuộc tính</label>
+                                    <input 
+                                        type="text" 
+                                        id="variant-name" 
+                                        name="name" 
+                                        value="{{ old('name') }}"
+                                        class="form-control @error('name') is-invalid @enderror" 
+                                        placeholder="Nhập tên thuộc tính (VD: Màu sắc, Kích cỡ)">
+                                    @error('name')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
+                                {{-- Giá trị thuộc tính --}}
+                              <div class="col-lg-12 mb-3">
+                                <label class="form-label text-dark">Giá trị </label>
+                                <div id="value-container">
+                                    <div class="input-group mb-2">
+                                        <input type="text" name="values[]" class="form-control" placeholder="Nhập giá trị thuộc tính(VD: Đen, trăng , L, M)">
+                                        <button type="button" class="btn btn-danger remove-value">−</button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-success" id="add-value">+ Thêm giá trị</button>
                             </div>
-                        </div>
-                    </footer>
-                    <!-- ========== Footer End ========== -->
+                            </div>
 
-               </div>
+                            <div class="text-end mt-3">
+                                <button type="submit" class="btn btn-primary"> Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{{-- JavaScript --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('value-container');
+    const addBtn = document.getElementById('add-value');
+
+    addBtn.addEventListener('click', function() {
+        const div = document.createElement('div');
+        div.classList.add('input-group', 'mb-2');
+        div.innerHTML = `
+            <input type="text" name="values[]" class="form-control" placeholder="Enter value">
+            <button type="button" class="btn btn-danger remove-value">−</button>
+        `;
+        container.appendChild(div);
+    });
+
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-value')) {
+            e.target.parentElement.remove();
+        }
+    });
+});
+</script>
 @endsection
