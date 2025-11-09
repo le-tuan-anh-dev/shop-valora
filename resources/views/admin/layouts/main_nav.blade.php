@@ -12,6 +12,7 @@
     />
     <meta name="author" content="Techzaa" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('admin/assets/images/favicon.ico')}}" />
@@ -885,13 +886,11 @@
               <div class="collapse" id="sidebarProducts">
                 <ul class="nav sub-navbar-nav">
                   <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="product-list.html">List</a>
+                    <a class="sub-nav-link" href="{{ route('admin.products.list') }}">List</a>
                   </li>
+               
                   <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="product-edit.html">Edit</a>
-                  </li>
-                  <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="product-add.html">Create</a>
+                    <a class="sub-nav-link" href="{{ route('admin.products.create') }}">Create</a>
                   </li>
                 </ul>
               </div>
@@ -916,13 +915,13 @@
               <div class="collapse" id="sidebarCategory">
                 <ul class="nav sub-navbar-nav">
                   <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="category-list.html">List</a>
+                    <a class="sub-nav-link" href="{{ route('admin.categories.list') }}">List</a>
                   </li>
                   <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="category-edit.html">Edit</a>
+                    <a class="sub-nav-link" href="">Edit</a>
                   </li>
                   <li class="sub-nav-item">
-                    <a class="sub-nav-link" href="category-add.html">Create</a>
+                    <a class="sub-nav-link" href="{{ route('admin.categories.create') }}">Create</a>
                   </li>
                 </ul>
               </div>
