@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\CommentController;
 
 Route::get('/', function () {
     return redirect()->route('admin.products.list');
@@ -44,4 +45,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/product-variants/{id}/edit', [ProductVariantController::class, 'edit'])->name('admin.product_variants.edit');
     Route::put('/product-variants/{id}', [ProductVariantController::class, 'update'])->name('admin.product_variants.update');
     Route::delete('/product-variants/{id}', [ProductVariantController::class, 'destroy'])->name('admin.product_variants.destroy');
+
+    //Comments
+     Route::get('/comments', [CommentController::class, 'index'])->name('admin.comments.list');
 });

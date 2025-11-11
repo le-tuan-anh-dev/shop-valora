@@ -1015,6 +1015,21 @@
             </li>
 
             <li class="nav-item">
+  <a
+    class="nav-link"
+    href="{{ route('admin.comments.list') }}"
+    role="button"
+    aria-expanded="false"
+    aria-controls="sidebarComments"
+  >
+    <span class="nav-icon">
+      <iconify-icon icon="solar:chat-dots-bold-duotone"></iconify-icon>
+    </span>
+    <span class="nav-text"> Bình luận </span>
+  </a>
+</li>
+
+            <li class="nav-item">
               <a
                 class="nav-link menu-arrow"
                 href="#sidebarInvoice"
