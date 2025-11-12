@@ -7,11 +7,13 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 
 Route::get('/', function () {
-    return redirect()->route('admin.products.list');
-});
+    return view('client.home');
+})->name('home');
+
+
 
 Route::prefix('admin')->group(function () {
-    // ⚙️ Attributes
+    //  Attributes
     Route::get('attributes', [AttributeController::class, 'index'])->name('admin.attributes.list');
     Route::get('attributes/add', [AttributeController::class, 'create'])->name('admin.attributes.add');
     Route::post('attributes/add', [AttributeController::class, 'store'])->name('admin.attributes.store');
@@ -19,7 +21,7 @@ Route::prefix('admin')->group(function () {
     Route::put('attributes/edit/{id}', [AttributeController::class, 'update'])->name('admin.attributes.update');
     Route::delete('attributes/delete/{id}', [AttributeController::class, 'destroy'])->name('admin.attributes.delete');
 
-    // 📂 Categories
+    //  Categories
     Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories.list');
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
     Route::post('/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
@@ -27,7 +29,7 @@ Route::prefix('admin')->group(function () {
     Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
 
-    // 🛒 Products
+    // Products
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.list');
     Route::get('/products/create', [ProductController::class, 'create'])->name('admin.products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('admin.products.store');
@@ -36,12 +38,4 @@ Route::prefix('admin')->group(function () {
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
     Route::get('/products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
 
-
-    // 🧩 Product Variants
-    Route::get('/product-variants', [ProductVariantController::class, 'index'])->name('admin.product_variants.list');
-    Route::get('/product-variants/create', [ProductVariantController::class, 'create'])->name('admin.product_variants.create');
-    Route::post('/product-variants', [ProductVariantController::class, 'store'])->name('admin.product_variants.store');
-    Route::get('/product-variants/{id}/edit', [ProductVariantController::class, 'edit'])->name('admin.product_variants.edit');
-    Route::put('/product-variants/{id}', [ProductVariantController::class, 'update'])->name('admin.product_variants.update');
-    Route::delete('/product-variants/{id}', [ProductVariantController::class, 'destroy'])->name('admin.product_variants.destroy');
 });
