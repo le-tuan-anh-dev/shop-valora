@@ -3,6 +3,7 @@
 namespace App\Models\Admin;
 
 use App\Models\Admin\Brand;
+use App\Models\Admin\ProductVariant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,7 +13,7 @@ class Product extends Model
 
     protected $fillable = [
         'category_id', 'brand_id', 'name', 'description', 'cost_price', 'base_price', 'discount_price',
-        'stock', 'sold_count', 'image_main', 'is_active', 'status'
+        'stock', 'image_main', 'is_active'
     ];
 
     public function category()
