@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
     return view('client.home');
@@ -13,6 +14,11 @@ Route::get('/', function () {
 
 
 Route::prefix('admin')->group(function () {
+
+    // Dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
+
     //  Attributes
     Route::get('attributes', [AttributeController::class, 'index'])->name('admin.attributes.list');
     Route::get('attributes/add', [AttributeController::class, 'create'])->name('admin.attributes.add');
