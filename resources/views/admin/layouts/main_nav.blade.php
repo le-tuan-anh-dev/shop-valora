@@ -47,7 +47,7 @@
                         <!-- Menu Toggle Button -->
                         <div class="topbar-item">
                             <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">
-                                Welcome!
+                                Xin chào!
                             </h4>
                         </div>
                     </div>
@@ -410,7 +410,7 @@
                             <span class="nav-icon">
                                 <iconify-icon icon="solar:bag-smile-bold-duotone"></iconify-icon>
                             </span>
-                            <span class="nav-text"> Orders </span>
+                            <span class="nav-text"> Đơn hàng </span>
                         </a>
                         <div class="collapse" id="sidebarOrders">
                             <ul class="nav sub-navbar-nav">
