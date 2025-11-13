@@ -35,6 +35,7 @@ class Order extends Model
         'note',
         'admin_note',
         'confirmed_at',
+        'delivered_at',
         'completed_at',
         'cancelled_at',
     ];
@@ -46,6 +47,7 @@ class Order extends Model
         'promotion_amount' => 'decimal:2',
         'shipping_fee' => 'decimal:2',
         'confirmed_at' => 'datetime',
+        'delivered_at' => 'datetime',
         'completed_at' => 'datetime',
         'cancelled_at' => 'datetime',
     ];

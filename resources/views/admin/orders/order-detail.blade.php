@@ -211,7 +211,6 @@
                                                                'confirmed' => ['status' => 'awaiting_pickup', 'label' => 'Chuyển sang chờ lấy hàng'],
                                                                'awaiting_pickup' => ['status' => 'shipping', 'label' => 'Chuyển sang đang giao'],
                                                                'shipping' => ['status' => 'delivered', 'label' => 'Chuyển sang đã giao hàng'],
-                                                               'delivered' => ['status' => 'completed', 'label' => 'Chuyển sang đã hoàn thành'],
                                                            ];
                                                            $nextStatus = $nextStatusMap[$order->status] ?? null;
                                                        @endphp

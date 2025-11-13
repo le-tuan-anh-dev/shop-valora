@@ -14,7 +14,6 @@ class OrderController extends Controller
     {
         $query = Order::with('user')->orderBy('created_at', 'desc');
 
-        // Tìm kiếm
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -25,24 +24,20 @@ class OrderController extends Controller
             });
         }
 
-        // Lọc theo trạng thái
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);
         }
 
-        // Lọc theo trạng thái thanh toán
         if ($request->has('payment_status') && $request->payment_status) {
             $query->where('payment_status', $request->payment_status);
         }
 
         $orders = $query->paginate(15);
 
-        // Lấy danh sách trạng thái được phép cho mỗi đơn hàng
         foreach ($orders as $order) {
             $order->allowedStatuses = $this->getAllowedStatuses($order->status);
         }
 
-        // Thống kê
         $stats = [
             'total_orders' => Order::count(),
             'pending_orders' => Order::where('status', 'pending')->count(),
@@ -63,7 +58,6 @@ class OrderController extends Controller
     {
         $order = Order::with(['user', 'orderItems'])->findOrFail($id);
         
-        // Lấy danh sách trạng thái có thể chuyển đến
         $allowedStatuses = $this->getAllowedStatuses($order->status);
         
         return view('admin.orders.order-detail', compact('order', 'allowedStatuses'));
@@ -79,11 +73,11 @@ class OrderController extends Controller
             'confirmed' => ['awaiting_pickup', 'cancelled_by_customer', 'cancelled_by_admin'],
             'awaiting_pickup' => ['shipping', 'cancelled_by_customer', 'cancelled_by_admin'],
             'shipping' => ['delivered', 'delivery_failed', 'cancelled_by_admin'],
-            'delivered' => [], // Không thể chuyển thủ công, chỉ tự động sau 7 ngày
-            'completed' => [], // Không thể chuyển từ completed
-            'cancelled_by_customer' => [], // Không thể chuyển từ cancelled
-            'cancelled_by_admin' => [], // Không thể chuyển từ cancelled
-            'delivery_failed' => ['shipping', 'cancelled_by_admin'], // Có thể thử giao lại hoặc hủy
+            'delivered' => [],
+            'completed' => [],
+            'cancelled_by_customer' => [],
+            'cancelled_by_admin' => [],
+            'delivery_failed' => ['shipping', 'cancelled_by_admin'],
         ];
 
         return $allowedTransitions[$currentStatus] ?? [];
@@ -92,14 +86,13 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,awaiting_pickup,shipping,delivered,completed,cancelled_by_customer,cancelled_by_admin,delivery_failed'
+            'status' => 'required|in:pending,confirmed,awaiting_pickup,shipping,delivered,cancelled_by_customer,cancelled_by_admin,delivery_failed'
         ]);
 
         $order = Order::findOrFail($id);
         $oldStatus = $order->status;
         $newStatus = $request->status;
 
-        // Kiểm tra xem có thể chuyển từ trạng thái hiện tại sang trạng thái mới không
         $allowedStatuses = $this->getAllowedStatuses($oldStatus);
         
         if (!in_array($newStatus, $allowedStatuses)) {
@@ -107,7 +100,6 @@ class OrderController extends Controller
                 ->with('error', 'Không thể chuyển từ trạng thái "' . $this->getStatusLabel($oldStatus) . '" sang "' . $this->getStatusLabel($newStatus) . '". Vui lòng chọn trạng thái hợp lệ.');
         }
 
-        // Không cho phép chuyển sang cùng trạng thái
         if ($oldStatus === $newStatus) {
             return redirect()->back()
                 ->with('error', 'Đơn hàng đã ở trạng thái này.');
@@ -115,13 +107,12 @@ class OrderController extends Controller
 
         $order->status = $newStatus;
 
-        // Cập nhật timestamps dựa trên status
-        if (in_array($newStatus, ['confirmed', 'awaiting_pickup', 'shipping', 'delivered', 'completed']) && !$order->confirmed_at) {
+        if (in_array($newStatus, ['confirmed', 'awaiting_pickup', 'shipping', 'delivered']) && !$order->confirmed_at) {
             $order->confirmed_at = Carbon::now();
         }
 
-        if (in_array($newStatus, ['delivered', 'completed']) && !$order->completed_at) {
-            $order->completed_at = Carbon::now();
+        if ($newStatus === 'delivered' && !$order->delivered_at) {
+            $order->delivered_at = Carbon::now();
         }
 
         if (in_array($newStatus, ['cancelled_by_customer', 'cancelled_by_admin']) && !$order->cancelled_at) {

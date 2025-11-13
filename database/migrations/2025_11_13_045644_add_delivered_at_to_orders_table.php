@@ -6,22 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            if (!Schema::hasColumn('orders', 'status')) {
-                $table->string('status')->default('Chờ xử lý')->after('total_amount');
-            }
+            $table->timestamp('delivered_at')->nullable()->after('confirmed_at')->comment('Thời điểm đơn hàng được giao');
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            if (Schema::hasColumn('orders', 'status')) {
-                $table->dropColumn('status');
-            }
+            $table->dropColumn('delivered_at');
         });
     }
 };
-
