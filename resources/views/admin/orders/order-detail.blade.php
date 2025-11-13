@@ -16,6 +16,32 @@
                <!-- Start Container -->
                <div class="container-xxl">
 
+                    {{-- Success Message --}}
+                    @if (session('success'))
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <iconify-icon icon="solar:check-circle-bold-duotone" class="me-2"></iconify-icon>
+                                    {{ session('success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Error Message --}}
+                    @if (session('error'))
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <iconify-icon icon="solar:close-circle-bold-duotone" class="me-2"></iconify-icon>
+                                    {{ session('error') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="row">
                          <div class="col-xl-9 col-lg-8">
                               <div class="row">
@@ -62,79 +88,53 @@
                                                                     Cập nhật trạng thái
                                                                 </button>
                                                                 <ul class="dropdown-menu">
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="pending">
-                                                                            <button type="submit" class="dropdown-item {{ $order->status == 'pending' ? 'active' : '' }}">Chờ xác nhận</button>
-                                                                        </form>
-                                                                    </li>
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="confirmed">
-                                                                            <button type="submit" class="dropdown-item {{ $order->status == 'confirmed' ? 'active' : '' }}">Đã xác nhận</button>
-                                                                        </form>
-                                                                    </li>
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="awaiting_pickup">
-                                                                            <button type="submit" class="dropdown-item {{ $order->status == 'awaiting_pickup' ? 'active' : '' }}">Chờ lấy hàng</button>
-                                                                        </form>
-                                                                    </li>
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="shipping">
-                                                                            <button type="submit" class="dropdown-item {{ $order->status == 'shipping' ? 'active' : '' }}">Đang giao</button>
-                                                                        </form>
-                                                                    </li>
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="delivered">
-                                                                            <button type="submit" class="dropdown-item {{ $order->status == 'delivered' ? 'active' : '' }}">Đã giao hàng</button>
-                                                                        </form>
-                                                                    </li>
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="completed">
-                                                                            <button type="submit" class="dropdown-item {{ $order->status == 'completed' ? 'active' : '' }}">Đã hoàn thành</button>
-                                                                        </form>
-                                                                    </li>
-                                                                    <li><hr class="dropdown-divider"></li>
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="cancelled_by_customer">
-                                                                            <button type="submit" class="dropdown-item text-danger {{ $order->status == 'cancelled_by_customer' ? 'active' : '' }}">Khách hủy</button>
-                                                                        </form>
-                                                                    </li>
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="cancelled_by_admin">
-                                                                            <button type="submit" class="dropdown-item text-danger {{ $order->status == 'cancelled_by_admin' ? 'active' : '' }}">Admin hủy</button>
-                                                                        </form>
-                                                                    </li>
-                                                                    <li>
-                                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden" name="status" value="delivery_failed">
-                                                                            <button type="submit" class="dropdown-item text-danger {{ $order->status == 'delivery_failed' ? 'active' : '' }}">Giao thất bại</button>
-                                                                        </form>
-                                                                    </li>
+                                                                    @php
+                                                                        $statusOptions = [
+                                                                            'pending' => 'Chờ xác nhận',
+                                                                            'confirmed' => 'Đã xác nhận',
+                                                                            'awaiting_pickup' => 'Chờ lấy hàng',
+                                                                            'shipping' => 'Đang giao',
+                                                                            'delivered' => 'Đã giao hàng',
+                                                                            'completed' => 'Đã hoàn thành',
+                                                                            'cancelled_by_customer' => 'Khách hủy',
+                                                                            'cancelled_by_admin' => 'Admin hủy',
+                                                                            'delivery_failed' => 'Giao thất bại',
+                                                                        ];
+                                                                        $allowedStatuses = $allowedStatuses ?? [];
+                                                                        $isCancelled = in_array($order->status, ['cancelled_by_customer', 'cancelled_by_admin', 'completed']);
+                                                                    @endphp
+                                                                    
+                                                                    @foreach($statusOptions as $statusKey => $statusLabel)
+                                                                        @php
+                                                                            $isAllowed = in_array($statusKey, $allowedStatuses);
+                                                                            $isCurrent = $order->status == $statusKey;
+                                                                            $isCancelStatus = in_array($statusKey, ['cancelled_by_customer', 'cancelled_by_admin', 'delivery_failed']);
+                                                                        @endphp
+                                                                        @if($isAllowed || $isCurrent)
+                                                                            @if($isCancelStatus && !$isCurrent && $loop->first)
+                                                                                <li><hr class="dropdown-divider"></li>
+                                                                            @endif
+                                                                            <li>
+                                                                                <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    @method('PUT')
+                                                                                    <input type="hidden" name="status" value="{{ $statusKey }}">
+                                                                                    <button type="submit" 
+                                                                                            class="dropdown-item {{ $isCurrent ? 'active' : '' }} {{ $isCancelStatus ? 'text-danger' : '' }}"
+                                                                                            {{ $isCurrent ? 'disabled' : '' }}>
+                                                                                        {{ $statusLabel }}
+                                                                                        @if($isCurrent)
+                                                                                            <span class="float-end">✓</span>
+                                                                                        @endif
+                                                                                    </button>
+                                                                                </form>
+                                                                            </li>
+                                                                        @endif
+                                                                    @endforeach
+                                                                    
+                                                                    @if(empty($allowedStatuses) && !$isCancelled)
+                                                                        <li class="dropdown-item-text text-muted small">Không có trạng thái nào có thể chuyển</li>
+                                                                    @endif
                                                                 </ul>
                                                             </div>
                                                        </div>
@@ -197,7 +197,7 @@
                                                        @endforeach
                                                   </div>
                                              </div>
-                                             @if(in_array($order->status, ['confirmed', 'awaiting_pickup']))
+                                             @if(!empty($allowedStatuses) && !in_array($order->status, ['completed', 'cancelled_by_customer', 'cancelled_by_admin']))
                                              <div class="card-footer d-flex flex-wrap align-items-center justify-content-between bg-light-subtle gap-2">
                                                   @if($order->confirmed_at)
                                                   <p class="border rounded mb-0 px-2 py-1 bg-body">
@@ -206,19 +206,21 @@
                                                   </p>
                                                   @endif
                                                   <div>
-                                                       @if($order->status == 'confirmed')
+                                                       @php
+                                                           $nextStatusMap = [
+                                                               'confirmed' => ['status' => 'awaiting_pickup', 'label' => 'Chuyển sang chờ lấy hàng'],
+                                                               'awaiting_pickup' => ['status' => 'shipping', 'label' => 'Chuyển sang đang giao'],
+                                                               'shipping' => ['status' => 'delivered', 'label' => 'Chuyển sang đã giao hàng'],
+                                                               'delivered' => ['status' => 'completed', 'label' => 'Chuyển sang đã hoàn thành'],
+                                                           ];
+                                                           $nextStatus = $nextStatusMap[$order->status] ?? null;
+                                                       @endphp
+                                                       @if($nextStatus && in_array($nextStatus['status'], $allowedStatuses))
                                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             @method('PUT')
-                                                            <input type="hidden" name="status" value="awaiting_pickup">
-                                                            <button type="submit" class="btn btn-primary">Chuyển sang chờ lấy hàng</button>
-                                                       </form>
-                                                       @elseif($order->status == 'awaiting_pickup')
-                                                       <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <input type="hidden" name="status" value="shipping">
-                                                            <button type="submit" class="btn btn-primary">Chuyển sang đang giao</button>
+                                                            <input type="hidden" name="status" value="{{ $nextStatus['status'] }}">
+                                                            <button type="submit" class="btn btn-primary">{{ $nextStatus['label'] }}</button>
                                                        </form>
                                                        @endif
                                                   </div>
