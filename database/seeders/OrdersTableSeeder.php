@@ -35,9 +35,18 @@ class OrdersTableSeeder extends Seeder
             return;
         }
 
-        $paymentMethods = ['cod', 'bank_transfer', 'credit_card', 'momo', 'paypal'];
-        $paymentStatuses = ['unpaid', 'paid', 'refunded'];
-        $orderStatuses = ['pending', 'processing', 'shipped', 'completed', 'cancelled'];
+        $paymentStatuses = ['unpaid', 'paid', 'failed'];
+        $orderStatuses = [
+            'pending',
+            'confirmed',
+            'awaiting_pickup',
+            'shipping',
+            'delivered',
+            'completed',
+            'cancelled_by_customer',
+            'cancelled_by_admin',
+            'delivery_failed'
+        ];
 
         $orderItems = [];
         $orderNumber = 1000;
@@ -49,7 +58,6 @@ class OrdersTableSeeder extends Seeder
             
             $status = $orderStatuses[array_rand($orderStatuses)];
             $paymentStatus = $paymentStatuses[array_rand($paymentStatuses)];
-            $paymentMethod = $paymentMethods[array_rand($paymentMethods)];
 
             // Tính toán giá trị
             $subtotal = 0;
@@ -122,15 +130,15 @@ class OrdersTableSeeder extends Seeder
             $completedAt = null;
             $cancelledAt = null;
 
-            if (in_array($status, ['processing', 'shipped', 'completed'])) {
+            if (in_array($status, ['confirmed', 'awaiting_pickup', 'shipping', 'delivered', 'completed'])) {
                 $confirmedAt = $createdAt->copy()->addHours(rand(1, 24));
             }
 
-            if ($status === 'completed') {
+            if (in_array($status, ['delivered', 'completed'])) {
                 $completedAt = $confirmedAt ? $confirmedAt->copy()->addDays(rand(1, 5)) : $createdAt->copy()->addDays(rand(2, 7));
             }
 
-            if ($status === 'cancelled') {
+            if (in_array($status, ['cancelled_by_customer', 'cancelled_by_admin'])) {
                 $cancelledAt = $createdAt->copy()->addHours(rand(1, 48));
             }
 
@@ -138,8 +146,8 @@ class OrdersTableSeeder extends Seeder
             $orderId = DB::table('orders')->insertGetId([
                 'order_number' => 'ORD-' . $orderNumber++,
                 'user_id' => $user->id,
-                'address_id' => null, // Có thể thêm sau
-                'voucher_id' => null, // Có thể thêm sau
+                'promotion_id' => null,
+                'shipping_provider_id' => null,
                 'customer_name' => $user->name,
                 'customer_phone' => $user->phone ?? '0' . rand(100000000, 999999999),
                 'customer_email' => $user->email,
@@ -152,14 +160,13 @@ class OrdersTableSeeder extends Seeder
                 'subtotal' => $subtotal,
                 'promotion_amount' => $promotionAmount,
                 'shipping_fee' => $shippingFee,
-                'payment_method' => $paymentMethod,
+                'payment_method_id' => null,
                 'payment_details' => json_encode([
-                    'method' => $paymentMethod,
                     'transaction_id' => 'TXN-' . strtoupper(uniqid()),
                 ]),
-                'payment_reference' => 'REF-' . strtoupper(uniqid()),
                 'payment_status' => $paymentStatus,
                 'status' => $status,
+                'cancellation_reason_id' => null,
                 'note' => rand(0, 10) > 7 ? $faker->sentence() : null,
                 'admin_note' => rand(0, 10) > 8 ? 'Đơn hàng đặc biệt' : null,
                 'confirmed_at' => $confirmedAt,

@@ -4,16 +4,17 @@ namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
         'order_number',
-        'address_id',
-        'voucher_id',
+        'promotion_id',
+        'shipping_provider_id',
         'customer_name',
         'customer_phone',
         'customer_email',
@@ -26,11 +27,11 @@ class Order extends Model
         'subtotal',
         'promotion_amount',
         'shipping_fee',
-        'payment_method',
+        'payment_method_id',
         'payment_details',
-        'payment_reference',
         'payment_status',
         'status',
+        'cancellation_reason_id',
         'note',
         'admin_note',
         'confirmed_at',
