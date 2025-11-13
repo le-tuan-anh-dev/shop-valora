@@ -17,8 +17,7 @@ Route::get('/', function () {
 Route::prefix('admin')->group(function () {
 
     // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     //  Attributes
     Route::get('attributes', [AttributeController::class, 'index'])->name('admin.attributes.list');
@@ -49,5 +48,4 @@ Route::prefix('admin')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.list');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
-
 });
