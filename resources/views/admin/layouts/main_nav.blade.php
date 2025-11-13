@@ -513,7 +513,7 @@
             <li class="menu-title">General</li>
 
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('admin.dashboard') }}">
+              <a class="nav-link" href="{{ route('admin.dashboard.index') }}">
                 <span class="nav-icon">
                   <iconify-icon
                     icon="solar:widget-5-bold-duotone"
