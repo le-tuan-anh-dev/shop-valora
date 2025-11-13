@@ -72,12 +72,12 @@ class OrderController extends Controller
             'pending' => ['confirmed', 'cancelled_by_customer', 'cancelled_by_admin'],
             'confirmed' => ['awaiting_pickup', 'cancelled_by_customer', 'cancelled_by_admin'],
             'awaiting_pickup' => ['shipping', 'cancelled_by_customer', 'cancelled_by_admin'],
-            'shipping' => ['delivered', 'delivery_failed', 'cancelled_by_admin'],
+            'shipping' => ['delivered', 'delivery_failed'],
             'delivered' => [],
             'completed' => [],
             'cancelled_by_customer' => [],
             'cancelled_by_admin' => [],
-            'delivery_failed' => ['shipping', 'cancelled_by_admin'],
+            'delivery_failed' => [],
         ];
 
         return $allowedTransitions[$currentStatus] ?? [];
