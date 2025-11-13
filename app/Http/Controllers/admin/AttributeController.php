@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\admin\Attributes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AttributeController extends Controller
 {
@@ -103,9 +104,50 @@ class AttributeController extends Controller
 
     public function destroy($id)
     {
-        $attribute = Attributes::findOrFail($id);
-        $attribute->delete();
+        try {
+            $attribute = Attributes::findOrFail($id);
 
-        return redirect()->route('admin.attributes.list')->with('success', 'Xóa thuộc tính thành công!');
+            // Lấy tất cả các giá trị thuộc tính (attribute_values) của attribute này
+            $attributeValueIds = DB::table('attribute_values')
+                ->where('attribute_id', $id)
+                ->pluck('id')
+                ->toArray();
+
+            // Nếu attribute có các giá trị
+            if (!empty($attributeValueIds)) {
+                // Kiểm tra xem có giá trị nào đang được sử dụng trong biến thể sản phẩm không
+                $isUsedInVariants = DB::table('variant_attribute_values')
+                    ->whereIn('attribute_value_id', $attributeValueIds)
+                    ->exists();
+
+                if ($isUsedInVariants) {
+                    // Lấy thông tin chi tiết để hiển thị cho user
+                    $variantCount = DB::table('variant_attribute_values')
+                        ->whereIn('attribute_value_id', $attributeValueIds)
+                        ->distinct('variant_id')
+                        ->count('variant_id');
+
+                    return redirect()
+                        ->route('admin.attributes.list')
+                        ->withErrors([
+                            'error' => "Không thể xóa thuộc tính '{$attribute->name}' vì có {$variantCount} biến thể sản phẩm đang sử dụng giá trị của thuộc tính này."
+                        ]);
+                }
+            }
+
+            // Nếu không có biến thể nào sử dụng, cho phép xóa
+            $attribute->delete();
+
+            return redirect()
+                ->route('admin.attributes.list')
+                ->with('success', "Xóa thuộc tính '{$attribute->name}' thành công!");
+
+        } catch (\Exception $e) {
+            \Log::error('Error deleting attribute: ' . $e->getMessage());
+            
+            return redirect()
+                ->route('admin.attributes.list')
+                ->withErrors(['error' => 'Đã xảy ra lỗi: ' . $e->getMessage()]);
+        }
     }
 }

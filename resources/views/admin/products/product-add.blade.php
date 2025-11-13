@@ -45,7 +45,7 @@
                     {{-- Biến thể sản phẩm --}}
                     <div class="card mb-3 p-3">
                         <h5 class="fw-semibold">Biến thể sản phẩm</h5>
-                        <button type="button" class="btn btn-sm btn-warning mb-2" id="add-variant-group">Thêm biến thể</button>
+                        <button type="button" class="btn btn-sm btn-warning mb-2" id="add-variant-group">+ Thêm biến thể</button>
 
                         {{-- Nơi hiển thị nhóm thuộc tính --}}
                         <div class="variant-group-list mb-3"></div>
@@ -82,7 +82,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Giá gốc (đ) *</label>
+                            <label class="form-label">Giá bán (đ) *</label>
                             <input type="number" step="0.01" name="base_price" class="form-control @error('base_price') is-invalid @enderror" value="{{ old('base_price') }}">
                             @error('base_price')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -96,10 +96,17 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                         <div class="mb-3">
+                            <label class="form-label">Tồn kho *</label>
+                            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock') }}">
+                            @error('stock')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="card mb-3 p-3">
-                        <h5 class="fw-semibold">Danh mục & Kho</h5>
+                        <h5 class="fw-semibold">Danh mục & Thương hiệu </h5>
                         <div class="mb-3">
                             <label class="form-label">Danh mục *</label>
                             <select name="category_id" class="form-select @error('category_id') is-invalid @enderror">
@@ -112,14 +119,21 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
                         <div class="mb-3">
-                            <label class="form-label">Tồn kho *</label>
-                            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock') }}">
-                            @error('stock')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+    <label class="form-label">Thương hiệu</label>
+    <select name="brand_id" class="form-select @error('brand_id') is-invalid @enderror">
+        <option value="">-- Chọn thương hiệu --</option>
+        @foreach ($brands as $b)
+            <option value="{{ $b->id }}" {{ old('brand_id') == $b->id ? 'selected' : '' }}>{{ $b->name }}</option>
+        @endforeach
+    </select>
+    @error('brand_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+
+                       
 
                         <div class="form-check form-switch">
                             <input type="checkbox" class="form-check-input" name="is_active" id="is_active" {{ old('is_active', 1) ? 'checked' : '' }}>
@@ -278,7 +292,26 @@ document.addEventListener('DOMContentLoaded', function () {
             productStockInput.removeAttribute('readonly');
         }
     }
+    // Render lại biến thể cũ
+const oldVariants = @json(old('variants', []));
+oldVariants.forEach((variant, idx) => {
+    variantTableBody.innerHTML += `
+    <tr>
+        <td>
+            ${variant.title}
+            <input type="hidden" name="variants[${idx}][value_ids]" value="${variant.value_ids}">
+            <input type="hidden" name="variants[${idx}][title]" value="${variant.title}">
+        </td>
+        <td><input type="text" name="variants[${idx}][sku]" class="form-control" value="${variant.sku ?? ''}"></td>
+        <td><input type="number" step="0.01" name="variants[${idx}][price]" class="form-control" value="${variant.price ?? 0}"></td>
+        <td><input type="number" name="variants[${idx}][stock]" class="form-control variant-stock" value="${variant.stock ?? 0}"></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-variant">X</button></td>
+    </tr>`;
+});
+updateProductStock();
+
 
 });
+
 </script>
 @endpush
