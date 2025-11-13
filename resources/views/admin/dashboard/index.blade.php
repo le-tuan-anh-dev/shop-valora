@@ -341,17 +341,25 @@
                                             @php
                                                 $statusColors = [
                                                     'pending' => 'warning',
-                                                    'processing' => 'info',
-                                                    'shipped' => 'primary',
+                                                    'confirmed' => 'info',
+                                                    'awaiting_pickup' => 'info',
+                                                    'shipping' => 'primary',
+                                                    'delivered' => 'success',
                                                     'completed' => 'success',
-                                                    'cancelled' => 'danger'
+                                                    'cancelled_by_customer' => 'danger',
+                                                    'cancelled_by_admin' => 'danger',
+                                                    'delivery_failed' => 'danger'
                                                 ];
                                                 $statusLabels = [
-                                                    'pending' => 'Chờ xử lý',
-                                                    'processing' => 'Đang xử lý',
-                                                    'shipped' => 'Đang giao',
-                                                    'completed' => 'Hoàn thành',
-                                                    'cancelled' => 'Đã hủy'
+                                                    'pending' => 'Chờ xác nhận',
+                                                    'confirmed' => 'Đã xác nhận',
+                                                    'awaiting_pickup' => 'Chờ lấy hàng',
+                                                    'shipping' => 'Đang giao',
+                                                    'delivered' => 'Đã giao hàng',
+                                                    'completed' => 'Đã hoàn thành',
+                                                    'cancelled_by_customer' => 'Khách hủy',
+                                                    'cancelled_by_admin' => 'Admin hủy',
+                                                    'delivery_failed' => 'Giao thất bại'
                                                 ];
                                                 $color = $statusColors[$order->status] ?? 'secondary';
                                                 $label = $statusLabels[$order->status] ?? ucfirst($order->status);

@@ -25,9 +25,9 @@ class DashboardController extends Controller
                 ->whereMonth('created_at', Carbon::now()->month)
                 ->whereYear('created_at', Carbon::now()->year)
                 ->count(),
-            'total_revenue' => Order::where('status', 'completed')
+            'total_revenue' => Order::whereIn('status', ['delivered', 'completed'])
                 ->sum('total_amount'),
-            'revenue_this_month' => Order::where('status', 'completed')
+            'revenue_this_month' => Order::whereIn('status', ['delivered', 'completed'])
                 ->whereMonth('created_at', Carbon::now()->month)
                 ->whereYear('created_at', Carbon::now()->year)
                 ->sum('total_amount'),
@@ -53,7 +53,7 @@ class DashboardController extends Controller
         }
 
         // Doanh thu theo tháng (12 tháng gần nhất)
-        $revenue_data = Order::where('status', 'completed')
+        $revenue_data = Order::whereIn('status', ['delivered', 'completed'])
             ->select(
                 DB::raw('YEAR(created_at) as year'),
                 DB::raw('MONTH(created_at) as month'),
