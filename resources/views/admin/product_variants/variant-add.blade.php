@@ -5,7 +5,7 @@
 
     {{-- Tiêu đề --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold">Thêm Biến Thể Sản Phẩm</h2>
+        <h2 class="fw-bold">Thêm Biến Thể Sản Phẩmm</h2>
         <a href="{{ route('admin.product_variants.list') }}" class="btn btn-secondary btn-sm">Quay lại</a>
     </div>
 
