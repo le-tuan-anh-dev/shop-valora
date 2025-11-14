@@ -1,220 +1,159 @@
 @extends('admin.layouts.main_nav')
-@section('title', 'Chi tiết sản phẩm')
+
+@section('title', 'Chi tiết sản phẩm - ' . $product->name)
 
 @section('content')
 <div class="page-content">
-    <div class="container-fluid">
-
-        {{-- Header Section --}}
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <div class="page-title-right">
-                        <a href="{{ route('admin.products.list') }}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
-                        </a>
-                    </div>
-                    <h4 class="page-title">Chi tiết sản phẩm</h4>
-                </div>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-semibold">Chi tiết sản phẩm</h4>
+            <div>
+                <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil"></i> Sửa
+                </a>
+                <a href="{{ route('admin.products.list') }}" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Quay lại
+                </a>
             </div>
         </div>
 
-        {{-- Main Content --}}
         <div class="row">
-            <div class="col-12">
-                <div class="card">
+            {{-- Bên trái: Thông tin cơ bản --}}
+            <div class="col-lg-7">
+                {{-- Card Thông tin cơ bản --}}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Thông tin cơ bản</h5>
+                    </div>
                     <div class="card-body">
-                        <div class="row g-4">
-                            {{-- Product Image Section --}}
-                            <div class="col-lg-4 col-md-5">
-                                <div class="bg-light rounded-2 p-3 text-center" style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
-                                    @if($product->image_main)
-                                        <img src="{{ asset('storage/' . $product->image_main) }}" 
-                                             class="img-fluid rounded-2" 
-                                             alt="{{ $product->name }}"
-                                             style="max-height: 320px; object-fit: cover;">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="fw-semibold">Tên sản phẩm:</label>
+                                <p class="text-dark">{{ $product->name }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-semibold">Danh mục:</label>
+                                <p class="text-dark">
+                                    {{ $product->category?->name ?? 'Không có' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="fw-semibold">Thương hiệu:</label>
+                                <p class="text-dark">
+                                    {{ $product->brand?->name ?? 'Không có' }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-semibold">Trạng thái:</label>
+                                <p>
+                                    @if($product->is_active)
+                                        <span class="badge bg-success">Hiển thị</span>
                                     @else
-                                        <div class="text-center">
-                                            <i class="bi bi-image display-4 text-muted"></i>
-                                            <p class="text-muted mt-2">Chưa có ảnh</p>
-                                        </div>
+                                        <span class="badge bg-danger">Ẩn</span>
                                     @endif
-                                </div>
+                                </p>
                             </div>
+                        </div>
 
-                            {{-- Product Info Section --}}
-                            <div class="col-lg-8 col-md-7">
-                                {{-- Product Name --}}
-                                <h3 class="fw-bold mb-3">{{ $product->name }}</h3>
-
-                                {{-- Product Details --}}
-                                <div class="row g-3 mb-4">
-                                    <div class="col-md-6">
-                                        <div>
-                                            <p class="text-muted mb-1">
-                                                <i class="bi bi-tag me-2"></i><strong>Danh mục</strong>
-                                            </p>
-                                            <p class="ps-4">{{ $product->category->name ?? 'Chưa phân loại' }}</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div>
-                                            <p class="text-muted mb-1">
-                                                <i class="bi bi-info-circle me-2"></i><strong>Trạng thái</strong>
-                                            </p>
-                                            <p class="ps-4">
-                                                @if($product->is_active)
-                                                    <span class="badge bg-success">
-                                                        <i class="bi bi-check-circle me-1"></i> Hiển thị
-                                                    </span>
-                                                @else
-                                                    <span class="badge bg-secondary">
-                                                        <i class="bi bi-eye-slash me-1"></i> Ẩn
-                                                    </span>
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div>
-                                            <p class="text-muted mb-1">
-                                                <i class="bi bi-tag-fill me-2"></i><strong>Giá gốc</strong>
-                                            </p>
-                                            <p class="ps-4 fw-semibold">{{ number_format($product->base_price, 0, ',', '.') }}₫</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div>
-                                            <p class="text-muted mb-1">
-                                                <i class="bi bi-percent me-2"></i><strong>Giá khuyến mãi</strong>
-                                            </p>
-                                            <p class="ps-4">
-                                                @if($product->discount_price)
-                                                    <span class="text-danger fw-semibold">
-                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
-                                                    </span>
-                                                    <span class="badge bg-danger-subtle text-danger ms-2">
-                                                        -{{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}%
-                                                    </span>
-                                                @else
-                                                    <span class="text-muted">—</span>
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div>
-                                            <p class="text-muted mb-1">
-                                                <i class="bi bi-box me-2"></i><strong>Tồn kho</strong>
-                                            </p>
-                                            <p class="ps-4 fw-semibold">
-                                                @if($product->stock > 0)
-                                                    <span class="text-success">{{ $product->stock }}</span>
-                                                @else
-                                                    <span class="text-danger">{{ $product->stock }} (Hết hàng)</span>
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div>
-                                            <p class="text-muted mb-1">
-                                                <i class="bi bi-calendar me-2"></i><strong>Cập nhật</strong>
-                                            </p>
-                                            <p class="ps-4">{{ $product->updated_at->format('d/m/Y H:i') }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- Description --}}
-                                @if($product->description)
-                                    <div class="mb-4">
-                                        <p class="text-muted mb-2">
-                                            <i class="bi bi-file-text me-2"></i><strong>Mô tả</strong>
-                                        </p>
-                                        <div class="ps-4 bg-light p-3 rounded-2">
-                                            {{ $product->description }}
-                                        </div>
-                                    </div>
-                                @endif
-
-                                {{-- Action Buttons --}}
-                                <div class="d-flex flex-wrap gap-2 mt-4">
-                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-warning">
-                                        <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
-                                    </a>
-                                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">
-                                        <i class="bi bi-trash me-1"></i> Xóa
-                                    </button>
-                                    <a href="{{ route('admin.products.list') }}" class="btn btn-outline-secondary">
-                                        <i class="bi bi-x me-1"></i> Đóng
-                                    </a>
-                                </div>
-
-                                {{-- Hidden Delete Form --}}
-                                <form id="deleteForm" action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display: none;">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
-                            </div>
+                        <div class="mb-3">
+                            <label class="fw-semibold">Mô tả:</label>
+                            <p class="text-dark">{{ $product->description ?: 'Không có mô tả' }}</p>
                         </div>
                     </div>
                 </div>
 
-                {{-- Product Variants Section --}}
+                {{-- Card Hình ảnh --}}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Hình ảnh sản phẩm</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        @if($product->image_main)
+                            <img src="{{ asset('storage/' . $product->image_main) }}" alt="{{ $product->name }}" class="img-fluid" style="max-width: 400px; max-height: 400px;">
+                        @else
+                            <p class="text-muted">Không có hình ảnh</p>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Card Biến thể sản phẩm --}}
                 <div class="card">
-                    <div class="card-header bg-light border-bottom">
-                        <h5 class="mb-0 fw-bold">
-                            <i class="bi bi-list-check me-2"></i>Biến thể sản phẩm
-                        </h5>
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Biến thể sản phẩm ({{ $product->variants->count() }})</h5>
+                        </div>
                     </div>
                     <div class="card-body">
                         @if($product->variants->count() > 0)
                             <div class="table-responsive">
-                                <table class="table table-hover table-bordered mb-0">
+                                <table class="table table-hover table-sm">
                                     <thead class="table-light">
                                         <tr>
-                                            <th class="text-center" style="width: 50px;">#</th>
+                                            <th>#</th>
                                             <th>SKU</th>
-                                            <th>Tiêu đề</th>
-                                            <th class="text-end">Giá</th>
-                                            <th class="text-center">Tồn kho</th>
-                                            <th class="text-center">Trạng thái</th>
+                                            <th>Thuộc tính</th>
+                                            <th>Giá (đ)</th>
+                                            <th>Tồn kho</th>
+                                            <th>Trạng thái</th>
+                                            <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($product->variants as $v)
+                                        @foreach($product->variants as $idx => $variant)
                                             <tr>
-                                                <td class="text-center fw-bold text-muted">{{ $loop->iteration }}</td>
+                                                <td><strong>{{ $idx + 1 }}</strong></td>
                                                 <td>
-                                                    <code class="bg-light px-2 py-1 rounded">{{ $v->sku ?? '—' }}</code>
+                                                    <span class="badge bg-secondary">{{ $variant->sku ?? 'N/A' }}</span>
                                                 </td>
-                                                <td>{{ $v->title }}</td>
-                                                <td class="text-end fw-semibold">
-                                                    {{ number_format($v->price, 0, ',', '.') }}₫
-                                                </td>
-                                                <td class="text-center">
-                                                    @if($v->stock > 0)
-                                                        <span class="badge badge-soft-success">{{ $v->stock }}</span>
+                                                <td>
+                                                    {{--  Hiển thị thuộc tính của variant --}}
+                                                    @php
+                                                        $variantAttrs = \App\Models\Admin\VariantAttributeValue::where('variant_id', $variant->id)
+                                                            ->with(['attributeValue' => function($q) {
+                                                                $q->with('attribute');
+                                                            }])
+                                                            ->get();
+                                                    @endphp
+
+                                                    @if($variantAttrs->count() > 0)
+                                                        <div class="d-flex flex-wrap gap-1">
+                                                            @foreach($variantAttrs as $vav)
+                                                                <span class="badge bg-info">
+                                                                    {{ $vav->attributeValue->attribute->name }}: 
+                                                                    <strong>{{ $vav->attributeValue->value }}</strong>
+                                                                </span>
+                                                            @endforeach
+                                                        </div>
                                                     @else
-                                                        <span class="badge badge-soft-danger">{{ $v->stock }}</span>
+                                                        <span class="text-muted">Không có thuộc tính</span>
                                                     @endif
                                                 </td>
-                                                <td class="text-center">
-                                                    @if($v->is_active)
-                                                        <span class="badge bg-success">
-                                                            <i class="bi bi-check-circle"></i>
-                                                        </span>
+                                                <td>
+                                                    <strong>{{ number_format($variant->price, 0, ',', '.') }}</strong>
+                                                </td>
+                                                <td>
+                                                    @if($variant->stock > 0)
+                                                        <span class="badge bg-success">{{ $variant->stock }}</span>
                                                     @else
-                                                        <span class="badge bg-secondary">
-                                                            <i class="bi bi-x-circle"></i>
-                                                        </span>
+                                                        <span class="badge bg-danger">Hết (0)</span>
                                                     @endif
+                                                </td>
+                                                <td>
+                                                    @if($variant->is_active)
+                                                        <span class="badge bg-success">Hiển thị</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">Ẩn</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#variantDetailModal{{ $variant->id }}" title="Xem chi tiết">
+                                                            <i class="bi bi-eye"></i>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -222,105 +161,197 @@
                                 </table>
                             </div>
                         @else
-                            <div class="text-center py-5">
-                                <i class="bi bi-inbox display-4 text-muted"></i>
-                                <p class="text-muted mt-2">Sản phẩm chưa có biến thể nào</p>
+                            <div class="alert alert-info" role="alert">
+                                <i class="bi bi-info-circle"></i> Sản phẩm này chưa có biến thể nào.
                             </div>
                         @endif
                     </div>
                 </div>
+            </div>
 
+            {{-- Bên phải: Giá & Tồn kho --}}
+            <div class="col-lg-5">
+                {{-- Card Giá --}}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Thông tin giá</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="fw-semibold">Giá nhập:</label>
+                                <p class="text-danger h5">{{ number_format($product->cost_price, 0, ',', '.') }} đ</p>
+                            </div>
+                            <div class="col-6">
+                                <label class="fw-semibold">Giá bán:</label>
+                                <p class="text-success h5">{{ number_format($product->base_price, 0, ',', '.') }} đ</p>
+                            </div>
+                        </div>
+
+                        @if($product->discount_price)
+                            <div class="mb-3">
+                                <label class="fw-semibold">Giá khuyến mãi:</label>
+                                <p class="text-warning h5">{{ number_format($product->discount_price, 0, ',', '.') }} đ</p>
+                            </div>
+                        @endif
+
+                        <div class="mb-3">
+                            <label class="fw-semibold">Lợi nhuận (%):</label>
+                            @php
+                                $profit = (($product->base_price - $product->cost_price) / $product->cost_price) * 100;
+                            @endphp
+                            <p class="text-info h5">{{ number_format($profit, 2, ',', '.') }}%</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card Tồn kho --}}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Thông tin tồn kho</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="fw-semibold">Tồn kho sản phẩm:</label>
+                            <p class="h5">
+                                @if($product->stock > 0)
+                                    <span class="badge bg-success fs-6">{{ $product->stock }}</span>
+                                @else
+                                    <span class="badge bg-danger fs-6">Hết hàng (0)</span>
+                                @endif
+                            </p>
+                        </div>
+
+                        @if($product->variants->count() > 0)
+                            <div class="mb-3">
+                                <label class="fw-semibold">Tồn kho từ biến thể:</label>
+                                <p class="h5">
+                                    @if($totalVariantStock > 0)
+                                        <span class="badge bg-info fs-6">{{ $totalVariantStock }}</span>
+                                    @else
+                                        <span class="badge bg-danger fs-6">Hết hàng (0)</span>
+                                    @endif
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="fw-semibold">Số biến thể:</label>
+                                <p class="h5"><span class="badge bg-secondary fs-6">{{ $product->variants->count() }}</span></p>
+                            </div>
+                        @endif
+
+                        <div class="alert alert-info" role="alert">
+                            <small>
+                                <strong>Lưu ý:</strong> Khi sản phẩm có biến thể, tồn kho sản phẩm = tổng tồn kho các biến thể
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card Thống kê --}}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Thống kê</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="fw-semibold">Đã bán:</label>
+                            <p class="h5"><span class="badge bg-primary fs-6">{{ $product->sold_count ?? 0 }}</span></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="fw-semibold">Ngày tạo:</label>
+                            <p class="text-muted">{{ $product->created_at->format('d/m/Y H:i') }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="fw-semibold">Ngày cập nhật:</label>
+                            <p class="text-muted">{{ $product->updated_at->format('d/m/Y H:i') }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
 </div>
 
-{{-- Styles --}}
-@push('styles')
-<style>
-    .page-content {
-        padding: 20px 0;
-    }
+{{--  Modals chi tiết variant --}}
+@foreach($product->variants as $variant)
+    <div class="modal fade" id="variantDetailModal{{ $variant->id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết Biến thể #{{ $variant->id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    @php
+                        $variantAttrs = \App\Models\Admin\VariantAttributeValue::where('variant_id', $variant->id)
+                            ->with(['attributeValue' => function($q) {
+                                $q->with('attribute');
+                            }])
+                            ->get();
+                    @endphp
 
-    .page-title-box {
-        padding-bottom: 20px;
-    }
+                    <div class="mb-3">
+                        <label class="fw-semibold">SKU:</label>
+                        <p>{{ $variant->sku ?? 'N/A' }}</p>
+                    </div>
 
-    .card {
-        border: none;
-        box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
-        margin-bottom: 24px;
-    }
+                    <div class="mb-3">
+                        <label class="fw-semibold">Giá:</label>
+                        <p class="text-success h5">{{ number_format($variant->price, 0, ',', '.') }} đ</p>
+                    </div>
 
-    .table > :not(caption) > * > * {
-        padding: 0.85rem 0.75rem;
-    }
+                    <div class="mb-3">
+                        <label class="fw-semibold">Tồn kho:</label>
+                        <p class="h5">
+                            @if($variant->stock > 0)
+                                <span class="badge bg-success">{{ $variant->stock }}</span>
+                            @else
+                                <span class="badge bg-danger">Hết (0)</span>
+                            @endif
+                        </p>
+                    </div>
 
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
+                    <div class="mb-3">
+                        <label class="fw-semibold">Thuộc tính:</label>
+                        @if($variantAttrs->count() > 0)
+                            <div class="d-flex flex-column gap-2">
+                                @foreach($variantAttrs as $vav)
+                                    <div class="p-2 bg-light rounded">
+                                        <strong>{{ $vav->attributeValue->attribute->name }}:</strong>
+                                        {{ $vav->attributeValue->value }}
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-muted">Không có thuộc tính</p>
+                        @endif
+                    </div>
 
-    .badge-soft-success {
-        color: #0ab39c;
-        background-color: rgba(10, 179, 156, 0.1);
-    }
+                    <div class="mb-3">
+                        <label class="fw-semibold">Trạng thái:</label>
+                        <p>
+                            @if($variant->is_active)
+                                <span class="badge bg-success">Hiển thị</span>
+                            @else
+                                <span class="badge bg-secondary">Ẩn</span>
+                            @endif
+                        </p>
+                    </div>
 
-    .badge-soft-danger {
-        color: #f06548;
-        background-color: rgba(240, 101, 72, 0.1);
-    }
-
-    .bg-danger-subtle {
-        background-color: rgba(240, 101, 72, 0.1);
-    }
-
-    @media (max-width: 768px) {
-        .row.g-4 {
-            gap: 1.5rem !important;
-        }
-
-        .d-flex.flex-wrap.gap-2 {
-            flex-direction: column;
-        }
-
-        .d-flex.flex-wrap.gap-2 > .btn {
-            width: 100%;
-        }
-
-        .table {
-            font-size: 0.875rem;
-        }
-    }
-</style>
-@endpush
-
-{{-- Scripts --}}
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-function confirmDelete() {
-    Swal.fire({
-        title: 'Xác nhận xóa?',
-        text: "Sản phẩm sẽ bị xóa vĩnh viễn và không thể khôi phục!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '<i class="bi bi-trash me-1"></i> Xóa',
-        cancelButtonText: '<i class="bi bi-x-circle me-1"></i> Hủy',
-        confirmButtonColor: '#f06548',
-        cancelButtonColor: '#6c757d',
-        reverseButtons: true,
-        customClass: {
-            confirmButton: 'btn btn-danger',
-            cancelButton: 'btn btn-secondary'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('deleteForm').submit();
-        }
-    });
-}
-</script>
-@endpush
+                    <div class="mb-3">
+                        <label class="fw-semibold">Ngày tạo:</label>
+                        <p class="text-muted">{{ $variant->created_at->format('d/m/Y H:i') }}</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
 
 @endsection

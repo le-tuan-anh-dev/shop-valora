@@ -1,37 +1,33 @@
 <?php
 
-namespace App\Models\admin;
+namespace App\Models\Admin;
 
 use App\Models\admin\AttributeValue;
-use App\Models\Admin\ProductVariant;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class VariantAttributeValue extends Model
+class VariantAttributeValue extends Pivot
 {
-    use HasFactory;
-
     protected $table = 'variant_attribute_values';
     public $timestamps = false;
 
+    protected $primaryKey = ['variant_id', 'attribute_value_id'];
+    public $incrementing = false;
+
     protected $fillable = [
         'variant_id',
-        'attribute_value_id',
+        'attribute_value_id',  
     ];
 
-    /**
-     * Biến thể sản phẩm mà giá trị này thuộc về
-     */
+    // Quan hệ tới ProductVariant
     public function variant()
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 
-    /**
-     * Giá trị thuộc tính (ví dụ: Đỏ, XL...)
-     */
+    //  Quan hệ tới AttributeValue 
     public function attributeValue()
     {
         return $this->belongsTo(AttributeValue::class, 'attribute_value_id');
     }
 }
+?>

@@ -1,5 +1,5 @@
 <?php 
-namespace App\Models\admin;
+namespace App\Models\Admin;
 
 use App\Models\admin\AttributeValue;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +9,7 @@ class Attributes extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug','created_at','updated_at'];
+    protected $fillable = ['name', 'slug'];
 
     public function values()
     {
