@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrderController;
 
 Route::get('/', function () {
     return view('home.shop');
@@ -15,6 +17,10 @@ Route::get('/', function () {
 
 
 Route::prefix('admin')->group(function () {
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
     //  Attributes
     Route::get('attributes', [AttributeController::class, 'index'])->name('admin.attributes.list');
     Route::get('attributes/add', [AttributeController::class, 'create'])->name('admin.attributes.add');
@@ -40,5 +46,13 @@ Route::prefix('admin')->group(function () {
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
     Route::get('/products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
 
+
+    // Orders
+    Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.list');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 });
+
+});
+
 
