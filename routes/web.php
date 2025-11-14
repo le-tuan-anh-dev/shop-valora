@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
@@ -39,3 +41,4 @@ Route::prefix('admin')->group(function () {
     Route::get('/products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
 
 });
+
