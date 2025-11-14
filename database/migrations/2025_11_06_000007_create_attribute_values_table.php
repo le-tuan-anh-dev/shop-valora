@@ -10,9 +10,10 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('attribute_id')->constrained('attributes')->cascadeOnDelete();
             $table->string('value', 100);
-            $table->json('meta')->nullable();
+            $table->timestamps();
         });
     }
+
     public function down(): void {
         Schema::dropIfExists('attribute_values');
     }

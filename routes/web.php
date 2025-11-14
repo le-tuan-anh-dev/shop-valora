@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 
 Route::get('/', function () {
-    return view('client.home');
+    return view('home.shop');
 })->name('home');
 
 

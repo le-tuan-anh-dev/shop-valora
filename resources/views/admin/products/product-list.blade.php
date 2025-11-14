@@ -74,6 +74,7 @@
                                     <th style="width: 60px;">Ảnh</th>
                                     <th>Tên sản phẩm</th>
                                     <th style="width: 140px;">Danh mục</th>
+                                    <th style="width: 140px;">Thương hiệu</th>
                                     <th class="text-end" style="width: 110px;">Giá nhập</th>
                                     <th class="text-end" style="width: 110px;">Giá bán </th>
                                     <th class="text-end" style="width: 110px;">Giá KM</th>
@@ -123,9 +124,20 @@
                                                 <span class="text-muted">—</span>
                                             @endif
                                         </td>
+                                        {{-- Brand --}}
+                                            <td>
+                                                @if($item->brand)
+                                                    <span class="badge bg-light-primary text-primary">
+                                                        {{ $item->brand->name }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
                                         <td class="text-end fw-semibold">
                                             {{ number_format($item->cost_price, 0, ',', '.') }}₫
                                         </td>
+
 
 
                                         {{-- Base Price --}}
@@ -200,18 +212,7 @@
                                                    data-bs-title="Chỉnh sửa">
                                                     <iconify-icon icon="solar:pen-bold-duotone"></iconify-icon>
                                                 </a>
-                                                <form action="{{ route('admin.products.destroy', $item->id) }}" 
-                                                      method="POST" 
-                                                      class="d-inline delete-form">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="btn btn-sm btn-icon btn-light" 
-                                                            data-bs-toggle="tooltip" 
-                                                            data-bs-title="Xóa">
-                                                        <iconify-icon icon="solar:trash-bin-trash-bold-duotone" class="text-danger"></iconify-icon>
-                                                    </button>
-                                                </form>
+                                               
                                             </div>
                                         </td>
                                     </tr>
@@ -542,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+        
     });
 });
 </script>
