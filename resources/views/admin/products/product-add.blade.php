@@ -1,311 +1,360 @@
 @extends('admin.layouts.main_nav')
 
+@section('title', 'Thêm sản phẩm mới')
+
 @section('content')
-          <div class="page-content">
+<div class="page-content">
+    <div class="container py-4">
+        <h4 class="fw-semibold mb-4">Thêm sản phẩm mới</h4>
 
-               <!-- Start Container Fluid -->
-               <div class="container-xxl">
+        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="row">
+                {{-- Bên trái: thông tin cơ bản --}}
+                <div class="col-lg-7">
+                    <div class="card mb-3 p-3">
+                        <h5 class="fw-semibold">Thông tin cơ bản</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Tên sản phẩm *</label>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}">
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    <div class="row">
-                         <div class="col-xl-3 col-lg-4">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <img src="assets/images/product/p-1.png" alt="" class="img-fluid rounded bg-light">
-                                        <div class="mt-3">
-                                             <h4>Men Black Slim Fit T-shirt <span class="fs-14 text-muted ms-1">(Fashion)</span></h4>
-                                             <h5 class="text-dark fw-medium mt-3">Price :</h5>
-                                             <h4 class="fw-semibold text-dark mt-2 d-flex align-items-center gap-2">
-                                                  <span class="text-muted text-decoration-line-through">$100</span> $80 <small class="text-muted"> (30% Off)</small>
-                                             </h4>
-                                             <div class="mt-3">
-                                                  <h5 class="text-dark fw-medium">Size :</h5>
-                                                  <div class="d-flex flex-wrap gap-2" role="group" aria-label="Basic checkbox toggle button group">
-                                                       <input type="checkbox" class="btn-check" id="size-s">
-                                                       <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-s">S</label>
-
-                                                       <input type="checkbox" class="btn-check" id="size-m" checked>
-                                                       <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-m">M</label>
-
-                                                       <input type="checkbox" class="btn-check" id="size-xl">
-                                                       <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-xl">Xl</label>
-
-                                                       <input type="checkbox" class="btn-check" id="size-xxl">
-                                                       <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-xxl">XXL</label>
-
-                                                  </div>
-                                             </div>
-                                             <div class="mt-3">
-                                                  <h5 class="text-dark fw-medium">Colors :</h5>
-                                                  <div class="d-flex flex-wrap gap-2" role="group" aria-label="Basic checkbox toggle button group">
-                                                       <input type="checkbox" class="btn-check" id="color-dark">
-                                                       <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-dark"> <i class="bx bxs-circle fs-18 text-dark"></i></label>
-
-                                                       <input type="checkbox" class="btn-check" id="color-yellow">
-                                                       <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-yellow"> <i class="bx bxs-circle fs-18 text-warning"></i></label>
-
-                                                       <input type="checkbox" class="btn-check" id="color-white">
-                                                       <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-white"> <i class="bx bxs-circle fs-18 text-white"></i></label>
-
-                                                       <input type="checkbox" class="btn-check" id="color-red">
-                                                       <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-red"> <i class="bx bxs-circle fs-18 text-danger"></i></label>
-
-                                                  </div>
-                                             </div>
-                                        </div>
-                                   </div>
-                                   <div class="card-footer bg-light-subtle">
-                                        <div class="row g-2">
-                                             <div class="col-lg-6">
-                                                  <a href="#!" class="btn btn-outline-secondary w-100">Create Product</a>
-                                             </div>
-                                             <div class="col-lg-6">
-                                                  <a href="#!" class="btn btn-primary w-100">Cancel</a>
-                                             </div>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
-
-                         <div class="col-xl-9 col-lg-8 ">
-                              <div class="card">
-                                   <div class="card-header">
-                                        <h4 class="card-title">Add Product Photo</h4>
-                                   </div>
-                                   <div class="card-body">
-                                        <!-- File Upload -->
-                                        <form action="https://techzaa.in/" method="post" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
-                                             <div class="fallback">
-                                                  <input name="file" type="file" multiple />
-                                             </div>
-                                             <div class="dz-message needsclick">
-                                                  <i class="bx bx-cloud-upload fs-48 text-primary"></i>
-                                                  <h3 class="mt-4">Drop your images here, or <span class="text-primary">click to browse</span></h3>
-                                                  <span class="text-muted fs-13">
-                                                       1600 x 1200 (4:3) recommended. PNG, JPG and GIF files are allowed
-                                                  </span>
-                                             </div>
-                                        </form>
-                                   </div>
-                              </div>
-                              <div class="card">
-                                   <div class="card-header">
-                                        <h4 class="card-title">Product Information</h4>
-                                   </div>
-                                   <div class="card-body">
-                                        <div class="row">
-                                             <div class="col-lg-6">
-                                                  <form>
-                                                       <div class="mb-3">
-                                                            <label for="product-name" class="form-label">Product Name</label>
-                                                            <input type="text" id="product-name" class="form-control" placeholder="Items Name">
-                                                       </div>
-                                                  </form>
-                                             </div>
-                                             <div class="col-lg-6">
-                                                  <form>
-                                                       <label for="product-categories" class="form-label">Product Categories</label>
-                                                       <select class="form-control" id="product-categories" data-choices data-choices-groups data-placeholder="Select Categories" name="choices-single-groups">
-                                                            <option value="">Choose a categories</option>
-                                                            <option value="Fashion">Fashion</option>
-                                                            <option value="Electronics">Electronics</option>
-                                                            <option value="Footwear">Footwear</option>
-                                                            <option value="Sportswear">Sportswear</option>
-                                                            <option value="Watches">Watches</option>
-                                                            <option value="Furniture">Furniture</option>
-                                                            <option value="Appliances">Appliances</option>
-                                                            <option value="Headphones">Headphones</option>
-                                                            <option value="Other Accessories">Other Accessories</option>
-                                                       </select>
-                                                  </form>
-                                             </div>
-                                        </div>
-                                        <div class="row">
-                                             <div class="col-lg-4">
-                                                  <form>
-                                                       <div class="mb-3">
-                                                            <label for="product-brand" class="form-label">Brand</label>
-                                                            <input type="text" id="product-brand" class="form-control" placeholder="Brand Name">
-                                                       </div>
-                                                  </form>
-                                             </div>
-                                             <div class="col-lg-4">
-                                                  <form>
-                                                       <div class="mb-3">
-                                                            <label for="product-weight" class="form-label">Weight</label>
-                                                            <input type="text" id="product-weight" class="form-control" placeholder="In gm & kg">
-                                                       </div>
-                                                  </form>
-                                             </div>
-                                             <div class="col-lg-4">
-                                                  <form>
-                                                       <label for="gender" class="form-label">Gender</label>
-                                                       <select class="form-control" id="gender" data-choices data-choices-groups data-placeholder="Select Gender">
-                                                            <option value="">Select Gender</option>
-                                                            <option value="Men">Men</option>
-                                                            <option value="Women">Women</option>
-                                                            <option value="Other">Other</option>
-                                                       </select>
-                                                  </form>
-                                             </div>
-                                        </div>
-                                        <div class="row mb-4">
-                                             <div class="col-lg-4">
-                                                  <div class="mt-3">
-                                                       <h5 class="text-dark fw-medium">Size :</h5>
-                                                       <div class="d-flex flex-wrap gap-2" role="group" aria-label="Basic checkbox toggle button group">
-                                                            <input type="checkbox" class="btn-check" id="size-xs1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-xs1">XS</label>
-
-                                                            <input type="checkbox" class="btn-check" id="size-s1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-s1">S</label>
-
-                                                            <input type="checkbox" class="btn-check" id="size-m1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-m1">M</label>
-
-                                                            <input type="checkbox" class="btn-check" id="size-xl1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-xl1">Xl</label>
-
-                                                            <input type="checkbox" class="btn-check" id="size-xxl1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-xxl1">XXL</label>
-                                                            <input type="checkbox" class="btn-check" id="size-3xl1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="size-3xl1">3XL</label>
-
-                                                       </div>
-                                                  </div>
-                                             </div>
-                                             <div class="col-lg-5">
-                                                  <div class="mt-3">
-                                                       <h5 class="text-dark fw-medium">Colors :</h5>
-                                                       <div class="d-flex flex-wrap gap-2" role="group" aria-label="Basic checkbox toggle button group">
-                                                            <input type="checkbox" class="btn-check" id="color-dark1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-dark1"> <i class="bx bxs-circle fs-18 text-dark"></i></label>
-
-                                                            <input type="checkbox" class="btn-check" id="color-yellow1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-yellow1"> <i class="bx bxs-circle fs-18 text-warning"></i></label>
-
-                                                            <input type="checkbox" class="btn-check" id="color-white1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-white1"> <i class="bx bxs-circle fs-18 text-white"></i></label>
-
-                                                            <input type="checkbox" class="btn-check" id="color-red1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-red1"> <i class="bx bxs-circle fs-18 text-primary"></i></label>
-
-                                                            <input type="checkbox" class="btn-check" id="color-green1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-green1"> <i class="bx bxs-circle fs-18 text-success"></i></label>
-
-                                                            <input type="checkbox" class="btn-check" id="color-blue1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-blue1"> <i class="bx bxs-circle fs-18 text-danger"></i></label>
-
-                                                            <input type="checkbox" class="btn-check" id="color-sky1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-sky1"> <i class="bx bxs-circle fs-18 text-info"></i></label>
-
-                                                            <input type="checkbox" class="btn-check" id="color-gray1">
-                                                            <label class="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" for="color-gray1"> <i class="bx bxs-circle fs-18 text-secondary"></i></label>
-
-                                                       </div>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                        <div class="row">
-                                             <div class="col-lg-12">
-                                                  <div class="mb-3">
-                                                       <label for="description" class="form-label">Description</label>
-                                                       <textarea class="form-control bg-light-subtle" id="description" rows="7" placeholder="Short description about the product"></textarea>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                        <div class="row">
-                                             <div class="col-lg-4">
-                                                  <form>
-                                                       <div class="mb-3">
-                                                            <label for="product-id" class="form-label">Tag Number</label>
-                                                            <input type="number" id="product-id" class="form-control" placeholder="#******">
-                                                       </div>
-
-                                                  </form>
-                                             </div>
-                                             <div class="col-lg-4">
-                                                  <form>
-                                                       <div class="mb-3">
-                                                            <label for="product-stock" class="form-label">Stock</label>
-                                                            <input type="number" id="product-stock" class="form-control" placeholder="Quantity">
-                                                       </div>
-
-                                                  </form>
-                                             </div>
-                                             <div class="col-lg-4">
-                                                  <label for="product-stock" class="form-label">Tag</label>
-                                                  <select class="form-control" id="choices-multiple-remove-button" data-choices data-choices-removeItem name="choices-multiple-remove-button" multiple>
-                                                       <option value="Fashion" selected>Fashion</option>
-                                                       <option value="Electronics">Electronics</option>
-                                                       <option value="Watches">Watches</option>
-                                                       <option value="Headphones">Headphones</option>
-                                                  </select>
-                                             </div>
-                                        </div>
-                                   </div>
-                              </div>
-                              <div class="card">
-                                   <div class="card-header">
-                                        <h4 class="card-title">Pricing Details</h4>
-                                   </div>
-                                   <div class="card-body">
-                                        <div class="row">
-                                             <div class="col-lg-4">
-                                                  <form>
-                                                       <label for="product-price" class="form-label">Price</label>
-                                                       <div class="input-group mb-3">
-                                                            <span class="input-group-text fs-20"><i class='bx bx-dollar'></i></span>
-                                                            <input type="number" id="product-price" class="form-control" placeholder="000">
-                                                       </div>
-                                                  </form>
-                                             </div>
-                                             <div class="col-lg-4">
-                                                  <form>
-                                                       <label for="product-discount" class="form-label">Discount</label>
-                                                       <div class="input-group mb-3">
-                                                            <span class="input-group-text fs-20"><i class='bx bxs-discount'></i></span>
-                                                            <input type="number" id="product-discount" class="form-control" placeholder="000">
-                                                       </div>
-                                                  </form>
-                                             </div>
-                                             <div class="col-lg-4">
-                                                  <form>
-                                                       <label for="product-tex" class="form-label">Tex</label>
-                                                       <div class="input-group mb-3">
-                                                            <span class="input-group-text fs-20"><i class='bx bxs-file-txt'></i></span>
-                                                            <input type="number" id="product-tex" class="form-control" placeholder="000">
-                                                       </div>
-                                                  </form>
-                                             </div>
-                                        </div>
-                                   </div>
-                              </div>
-                              <div class="p-3 bg-light mb-3 rounded">
-                                   <div class="row justify-content-end g-2">
-                                        <div class="col-lg-2">
-                                             <a href="#!" class="btn btn-outline-secondary w-100">Create Product</a>
-                                        </div>
-                                        <div class="col-lg-2">
-                                             <a href="#!" class="btn btn-primary w-100">Cancel</a>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả sản phẩm</label>
+                            <textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="4">{{ old('description') }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-               </div>
-               <!-- End Container Fluid -->
 
-               <!-- ========== Footer Start ========== -->
-               <footer class="footer">
-                    <div class="container-fluid">
-                         <div class="row">
-                              <div class="col-12 text-center">
-                                   <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                              </div>
-                         </div>
+                    <div class="card mb-3 p-3">
+                        <h5 class="fw-semibold">Hình ảnh sản phẩm</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Ảnh đại diện</label>
+                            <input type="file" name="image_main" class="form-control @error('image_main') is-invalid @enderror">
+                            @error('image_main')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-               </footer>
-               <!-- ========== Footer End ========== -->
 
-          </div>
+                    {{-- Biến thể sản phẩm --}}
+                    <div class="card mb-3 p-3">
+                        <h5 class="fw-semibold">Biến thể sản phẩm</h5>
+                        <button type="button" class="btn btn-sm btn-warning mb-2" id="add-variant-group">+ Thêm nhóm thuộc tính</button>
+
+                        {{-- Nơi hiển thị nhóm thuộc tính --}}
+                        <div class="variant-group-list mb-3"></div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="variant-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên biến thể</th>
+                                        <th>SKU</th>
+                                        <th>Giá bán (đ)</th>
+                                        <th>Tồn kho</th>
+                                        <th>Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{-- Dữ liệu biến thể sẽ được sinh ở đây --}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Bên phải: giá & danh mục --}}
+                <div class="col-lg-5">
+                    <div class="card mb-3 p-3">
+                        <h5 class="fw-semibold">Giá sản phẩm</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Giá nhập (đ) *</label>
+                            <input type="number" step="0.01" name="cost_price" class="form-control @error('cost_price') is-invalid @enderror" value="{{ old('cost_price') }}">
+                            @error('cost_price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Giá bán (đ) *</label>
+                            <input type="number" step="0.01" name="base_price" class="form-control @error('base_price') is-invalid @enderror" value="{{ old('base_price') }}" id="base-price-input">
+                            @error('base_price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Giá khuyến mãi (đ)</label>
+                            <input type="number" step="0.01" name="discount_price" class="form-control @error('discount_price') is-invalid @enderror" value="{{ old('discount_price') }}">
+                            @error('discount_price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tồn kho *</label>
+                            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock') }}" id="product-stock-input">
+                            @error('stock')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 p-3">
+                        <h5 class="fw-semibold">Danh mục & Thương hiệu</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Danh mục *</label>
+                            <select name="category_id" class="form-select @error('category_id') is-invalid @enderror">
+                                <option value="">-- Chọn danh mục --</option>
+                                @foreach ($categories as $c)
+                                    <option value="{{ $c->id }}" {{ old('category_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('category_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Thương hiệu</label>
+                            <select name="brand_id" class="form-select @error('brand_id') is-invalid @enderror">
+                                <option value="">-- Chọn thương hiệu --</option>
+                                @foreach ($brands as $b)
+                                    <option value="{{ $b->id }}" {{ old('brand_id') == $b->id ? 'selected' : '' }}>{{ $b->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('brand_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-check form-switch">
+                            <input type="checkbox" class="form-check-input" name="is_active" id="is_active" {{ old('is_active', 1) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_active">Hiển thị sản phẩm</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-success px-4">Lưu sản phẩm</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const attributes = @json($attributes);
+    const variantGroupList = document.querySelector('.variant-group-list');
+    const variantTableBody = document.querySelector('#variant-table tbody');
+    const addVariantGroupBtn = document.querySelector('#add-variant-group');
+    const productStockInput = document.querySelector('#product-stock-input');
+    const basePriceInput = document.querySelector('#base-price-input');
+
+    // ========== Thêm nhóm thuộc tính ==========
+    addVariantGroupBtn.addEventListener('click', () => {
+        const groupDiv = document.createElement('div');
+        groupDiv.classList.add('border', 'p-3', 'rounded', 'mb-3', 'bg-light');
+        groupDiv.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <select class="form-select attr-select">
+                    <option value="">-- Chọn phân loại --</option>
+                    ${attributes.map(a => `<option value="${a.id}" data-attr-name="${a.name}">${a.name}</option>`).join('')}
+                </select>
+                <button type="button" class="btn btn-danger btn-sm remove-group ms-2">X</button>
+            </div>
+            <div class="value-container"></div>
+        `;
+        variantGroupList.appendChild(groupDiv);
+    });
+
+    // ========== Xử lý chọn thuộc tính và checkbox ==========
+    variantGroupList.addEventListener('change', function(e) {
+        if (e.target.classList.contains('attr-select')) {
+            const selectedAttrId = e.target.value;
+            const selectedAttr = attributes.find(a => a.id == selectedAttrId);
+            const container = e.target.closest('.border').querySelector('.value-container');
+            
+            if (selectedAttr && selectedAttr.values.length > 0) {
+                container.innerHTML = `
+                    <label class="fw-semibold">Tùy chọn ${selectedAttr.name}:</label>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        ${selectedAttr.values.map(v => `
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input value-checkbox" type="checkbox" value="${v.id}" data-name="${v.value}">
+                                <span class="form-check-label">${v.value}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '<p class="text-muted">Không có tùy chọn nào</p>';
+            }
+            generateVariants();
+        }
+
+        if (e.target.classList.contains('value-checkbox')) {
+            generateVariants();
+        }
+    });
+
+    // ========== Xóa nhóm thuộc tính ==========
+    variantGroupList.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-group')) {
+            e.target.closest('.border').remove();
+            generateVariants();
+        }
+    });
+
+    // ========== Xóa biến thể ==========
+    variantTableBody.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-variant')) {
+            e.target.closest('tr').remove();
+            updateProductStock();
+        }
+    });
+
+    // ========== Lắng nghe thay đổi stock biến thể ==========
+    variantTableBody.addEventListener('input', function(e) {
+        if (e.target.classList.contains('variant-stock')) {
+            updateProductStock();
+        }
+    });
+
+    // ========== Cartesian product - Tạo tất cả combinations ==========
+    function cartesian(arr) {
+        if (arr.length === 0) return [];
+        return arr.reduce((a, b) => {
+            const ret = [];
+            a.forEach(aElem => {
+                b.forEach(bElem => {
+                    ret.push(aElem.concat ? aElem.concat([bElem]) : [aElem, bElem]);
+                });
+            });
+            return ret;
+        });
+    }
+
+    // ========== Sinh biến thể từ nhóm thuộc tính ==========
+    function generateVariants() {
+        const selectedGroups = [];
+        
+        variantGroupList.querySelectorAll('.border').forEach(group => {
+            const attrSelect = group.querySelector('.attr-select');
+            const checkboxes = group.querySelectorAll('.value-checkbox:checked');
+            
+            if (attrSelect && attrSelect.value && checkboxes.length > 0) {
+                selectedGroups.push({
+                    attr_id: attrSelect.value,
+                    attr_name: attrSelect.options[attrSelect.selectedIndex].text,
+                    values: Array.from(checkboxes).map(c => ({ 
+                        id: c.value, 
+                        name: c.dataset.name 
+                    }))
+                });
+            }
+        });
+
+        let combos = [];
+        if (selectedGroups.length > 0) {
+            combos = cartesian(selectedGroups.map(g => g.values));
+        }
+
+        // Xóa tất cả dòng cũ
+        variantTableBody.innerHTML = '';
+
+        if (combos.length === 0) {
+            productStockInput.removeAttribute('readonly');
+            return;
+        }
+
+        const basePrice = parseFloat(basePriceInput.value) || 0;
+
+        // ✅ Tạo bảng biến thể
+        combos.forEach((combo, idx) => {
+            const values = Array.isArray(combo) ? combo : [combo];
+            const label = values.map(v => v.name).join(' / ');
+            const ids = values.map(v => v.id).join(',');
+
+            variantTableBody.innerHTML += `
+                <tr>
+                    <td>
+                        <span class="badge bg-info">${label}</span>
+                        <input type="hidden" name="variants[${idx}][value_ids]" value="${ids}">
+                    </td>
+                    <td>
+                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" placeholder="SKU">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" name="variants[${idx}][price]" class="form-control form-control-sm" value="${basePrice}">
+                    </td>
+                    <td>
+                        <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="0">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        updateProductStock();
+    }
+
+    // ========== Cập nhật stock sản phẩm tổng ==========
+    function updateProductStock() {
+        const variantRows = variantTableBody.querySelectorAll('tr');
+        if (variantRows.length > 0) {
+            let totalStock = 0;
+            variantRows.forEach(row => {
+                const stockInput = row.querySelector('.variant-stock');
+                if (stockInput) {
+                    totalStock += parseInt(stockInput.value) || 0;
+                }
+            });
+            productStockInput.value = totalStock;
+            productStockInput.setAttribute('readonly', true);
+        } else {
+            productStockInput.removeAttribute('readonly');
+        }
+    }
+
+    // ========== Restore old variants khi có lỗi validation ==========
+    const oldVariants = @json(old('variants', []));
+    if (oldVariants && oldVariants.length > 0) {
+        oldVariants.forEach((variant, idx) => {
+            variantTableBody.innerHTML += `
+                <tr>
+                    <td>
+                        <input type="hidden" name="variants[${idx}][value_ids]" value="${variant.value_ids || ''}">
+                        <span class="text-muted">${variant.value_ids || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" value="${variant.sku || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" name="variants[${idx}][price]" class="form-control form-control-sm" value="${variant.price || 0}">
+                    </td>
+                    <td>
+                        <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="${variant.stock || 0}">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
+                    </td>
+                </tr>
+            `;
+        });
+        updateProductStock();
+    }
+});
+</script>
+@endpush

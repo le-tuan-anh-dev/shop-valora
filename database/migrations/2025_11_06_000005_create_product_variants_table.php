@@ -8,16 +8,21 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('product_variants', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->unsignedBigInteger('product_id');
             $table->string('sku', 100)->unique()->nullable();
-            $table->string('title', 150)->nullable();
             $table->decimal('price', 10, 2)->nullable();
             $table->integer('stock')->default(0);
             $table->string('image_url')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products')
+                ->onDelete('cascade');
         });
     }
+
     public function down(): void {
         Schema::dropIfExists('product_variants');
     }

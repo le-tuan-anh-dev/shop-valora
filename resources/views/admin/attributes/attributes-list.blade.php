@@ -1,321 +1,174 @@
 @extends('admin.layouts.main_nav')
+@section('title', 'Danh sách thuộc tính')
 
 @section('content')
-          <div class="page-content">
+<div class="page-content">
+    <div class="container-fluid">
 
-               <!-- Start Container Fluid -->
-               <div class="container-xxl">
-
-                    <div class="row">
-                         <div class="col-xl-12">
-                              <div class="card">
-                                   <div class="d-flex card-header justify-content-between align-items-center">
-                                        <div>
-                                             <h4 class="card-title">All Attribute List</h4>
-                                        </div>
-                                        <div class="dropdown">
-                                             <a href="#" class="dropdown-toggle btn btn-sm btn-outline-light rounded" data-bs-toggle="dropdown" aria-expanded="false">
-                                                  This Month
-                                             </a>
-                                             <div class="dropdown-menu dropdown-menu-end">
-                                                  <!-- item-->
-                                                  <a href="#!" class="dropdown-item">Download</a>
-                                                  <!-- item-->
-                                                  <a href="#!" class="dropdown-item">Export</a>
-                                                  <!-- item-->
-                                                  <a href="#!" class="dropdown-item">Import</a>
-                                             </div>
-                                        </div>
-                                   </div>
-                                   <div>
-                                        <div class="table-responsive">
-                                             <table class="table align-middle mb-0 table-hover table-centered">
-                                                  <thead class="bg-light-subtle">
-                                                       <tr>
-                                                            <th style="width: 20px;">
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck1">
-                                                                      <label class="form-check-label" for="customCheck1"></label>
-                                                                 </div>
-                                                            </th>
-                                                            <th>ID</th>
-                                                            <th>Variant</th>
-                                                            <th>Value</th>
-                                                            <th>Option</th>
-                                                            <th>Created On</th>
-                                                            <th>Published</th>
-                                                            <th>Action</th>
-                                                       </tr>
-                                                  </thead>
-                                                  <tbody>
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>BR-3922</td>
-                                                            <td>Brand</td>
-                                                            <td>Dyson , H&M, Nike , GoPro , Huawei , Rolex , Zara , Thenorthface</td>
-                                                            <td>Dropdown</td>
-                                                            <td>10 Sep 2023</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" checked="">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>CL-3721</td>
-                                                            <td>Color</td>
-                                                            <td>Black , Blue , Green , Yellow , White</td>
-                                                            <td>Dropdown</td>
-                                                            <td>16 May 2024</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" checked="">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>SZ-2291</td>
-                                                            <td>Size</td>
-                                                            <td>XS , S , M , XL , XXL , 3XL</td>
-                                                            <td>Radio</td>
-                                                            <td>27 Jan 2024</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" checked="">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>WG-9212</td>
-                                                            <td>Weight</td>
-                                                            <td>500gm , 1kg , 2kg , 3kg , up to 4kg</td>
-                                                            <td>Radio</td>
-                                                            <td>12 March 2024</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" checked="">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>PC-1022</td>
-                                                            <td>Packaging</td>
-                                                            <td>Paper Box , Plastic Box , Heard Box , Tin</td>
-                                                            <td>Dropdown</td>
-                                                            <td>02 Jan 2024</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>ML-0022</td>
-                                                            <td>Material</td>
-                                                            <td>Cotton , Polyester , Leather , Chiffon , Denim , Linen , Satin</td>
-                                                            <td>Dropdown</td>
-                                                            <td>20 April 2024</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>MM-9011</td>
-                                                            <td>Memory</td>
-                                                            <td>64 , 128 , 250 , 512 , 1TB</td>
-                                                            <td>Radio</td>
-                                                            <td>29 March 2024</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" checked="">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>SZ-2911</td>
-                                                            <td>Shoes Size</td>
-                                                            <td>18 to 22 , 38 to 44</td>
-                                                            <td>Radio</td>
-                                                            <td>03 Dec 2023</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" checked="">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>ST-4525</td>
-                                                            <td>Style</td>
-                                                            <td>Classic , Modern , Ethnic , Western</td>
-                                                            <td>Dropdown</td>
-                                                            <td>30 Jun 2024</td>
-                                                            <td>
-                                                                 <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1">
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-                                                  </tbody>
-                                             </table>
-                                        </div>
-                                        <!-- end table-responsive -->
-                                   </div>
-                                   <div class="card-footer border-top">
-                                        <nav aria-label="Page navigation example">
-                                             <ul class="pagination justify-content-end mb-0">
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">Previous</a></li>
-                                                  <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">Next</a></li>
-                                             </ul>
-                                        </nav>
-                                   </div>
-                              </div>
-                         </div>
+        {{-- Header --}}
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between mb-3">
+                    <h4 class="page-title">Danh sách thuộc tính</h4>
+                    <div class="page-title-right">
+                        <a href="{{ route('admin.attributes.add') }}" class="btn btn-primary">
+                            <iconify-icon icon="solar:add-circle-bold-duotone" class="me-1"></iconify-icon>
+                            Thêm thuộc tính
+                        </a>
                     </div>
+                </div>
+            </div>
+        </div>
+        @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <iconify-icon icon="solar:check-circle-bold-duotone" class="me-2"></iconify-icon>
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 
-               </div>
-               <!-- End Container Fluid -->
+@if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <iconify-icon icon="solar:danger-circle-bold-duotone" class="me-2"></iconify-icon>
+        {{ $errors->first() }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 
-               <!-- ========== Footer Start ========== -->
-               <footer class="footer">
-                   <div class="container-fluid">
-                       <div class="row">
-                           <div class="col-12 text-center">
-                               <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                   href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                           </div>
-                       </div>
-                   </div>
-               </footer>
-               <!-- ========== Footer End ========== -->
+        {{-- Success Message --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <iconify-icon icon="solar:check-circle-bold-duotone" class="me-2"></iconify-icon>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-          </div>
+        {{-- Main Content --}}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <iconify-icon icon="solar:tag-bold-duotone" class="me-2"></iconify-icon>
+                    Danh sách thuộc tính & giá trị
+                </h5>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle table-centered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 60px;">#</th>
+                            <th>Tên thuộc tính</th>
+                            <th style="width: 150px;">Slug</th>
+                            <th>Giá trị</th>
+                            <th class="text-center" style="width: 120px;">Ngày tạo</th>
+                            <th class="text-center" style="width: 140px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($attributes as $attribute)
+                            <tr>
+                                <td class="text-center text-muted fw-medium">{{ $loop->iteration }}</td>
+                                <td><h6 class="fw-semibold mb-0">{{ $attribute->name }}</h6></td>
+                                <td><span class="badge bg-light-secondary text-secondary">{{ $attribute->slug }}</span></td>
+                                <td>
+                                    @if($attribute->values->count() > 0)
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            @foreach($attribute->values->take(3) as $value)
+                                                <span class="badge bg-light-info text-info">{{ $value->value }}</span>
+                                            @endforeach
+                                            @if($attribute->values->count() > 3)
+                                                <span class="badge bg-light-primary text-primary">
+                                                    +{{ $attribute->values->count() - 3 }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <small class="text-muted">
+                                        {{ $attribute->created_at ? $attribute->created_at->format('d/m/Y') : '—' }}
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{{ route('admin.attributes.edit', $attribute->id) }}" 
+                                           class="btn btn-sm btn-icon btn-light" 
+                                           data-bs-toggle="tooltip" 
+                                           title="Chỉnh sửa">
+                                            <iconify-icon icon="solar:pen-bold-duotone"></iconify-icon>
+                                        </a>
+                                        <form action="{{ route('admin.attributes.delete', $attribute->id) }}" 
+                                              method="POST" 
+                                              class="d-inline delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-icon btn-light text-danger" 
+                                                    data-bs-toggle="tooltip" 
+                                                    title="Xóa">
+                                                <iconify-icon icon="solar:trash-bin-trash-bold-duotone"></iconify-icon>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <iconify-icon icon="solar:inbox-bold-duotone" style="font-size: 3rem; opacity: 0.5;"></iconify-icon>
+                                    <h5 class="text-muted mt-2">Không có thuộc tính nào</h5>
+                                    <p class="text-muted mb-3">Bắt đầu thêm thuộc tính mới vào hệ thống</p>
+                                    <a href="{{ route('admin.attributes.add') }}" class="btn btn-primary">
+                                        <iconify-icon icon="solar:add-circle-bold-duotone" class="me-1"></iconify-icon>
+                                        Thêm thuộc tính mới
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($attributes instanceof \Illuminate\Pagination\AbstractPaginator && $attributes->hasPages())
+                <div class="card-footer bg-light">
+                    <div class="row align-items-center">
+                        <div class="col-sm-6">
+                            <div class="text-muted">
+                                Hiển thị <span class="fw-semibold">{{ $attributes->firstItem() }}</span> 
+                                đến <span class="fw-semibold">{{ $attributes->lastItem() }}</span> 
+                                trong tổng <span class="fw-semibold">{{ $attributes->total() }}</span> thuộc tính
+                            </div>
+                        </div>
+                        <div class="col-sm-6 d-flex justify-content-end">
+                            {{ $attributes->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Hiện tooltip
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
+
+    // Xác nhận xóa
+    document.body.addEventListener('submit', function(e) {
+        if (e.target.classList.contains('delete-form')) {
+            if (!confirm('Bạn có chắc chắn muốn xóa thuộc tính này không?\nHành động này không thể hoàn tác!')) {
+                e.preventDefault();
+            }
+        }
+    });
+});
+</script>
+@endpush
+
 @endsection

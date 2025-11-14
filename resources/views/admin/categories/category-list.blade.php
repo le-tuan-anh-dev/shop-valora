@@ -1,380 +1,290 @@
 @extends('admin.layouts.main_nav')
+@section('title', 'Danh sách danh mục')
 
 @section('content')
-          <div class="page-content">
+<div class="page-content">
+    <div class="container-fluid">
 
-               <!-- Start Container Fluid -->
-               <div class="container-xxl">
+        {{-- Header Section --}}
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between mb-3">
+                    <h4 class="page-title">Danh mục sản phẩm</h4>
+                    <div class="page-title-right">
+                        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
+                            <iconify-icon icon="solar:add-circle-bold-duotone" class="me-1"></iconify-icon>
+                            Thêm danh mục
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="row">
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body text-center">
-                                        <div class="rounded bg-secondary-subtle d-flex align-items-center justify-content-center mx-auto">
-                                             <img src="assets/images/product/p-1.png" alt="" class="avatar-xl">
-                                        </div>
-                                        <h4 class="mt-3 mb-0">Fashion Categories</h4>
-                                   </div>
-                              </div>
-                         </div>
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body text-center">
-                                        <div class="rounded bg-primary-subtle d-flex align-items-center justify-content-center mx-auto">
-                                             <img src="assets/images/product/p-6.png" alt="" class="avatar-xl">
-                                        </div>
-                                        <h4 class="mt-3 mb-0">Electronics Headphone</h4>
-                                   </div>
-                              </div>
-                         </div>
 
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body text-center">
-                                        <div class="rounded bg-warning-subtle d-flex align-items-center justify-content-center mx-auto">
-                                             <img src="assets/images/product/p-7.png" alt="" class="avatar-xl">
-                                        </div>
-                                        <h4 class="mt-3 mb-0">Foot Wares</h4>
-                                   </div>
-                              </div>
-                         </div>
 
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body text-center">
-                                        <div class="rounded bg-info-subtle d-flex align-items-center justify-content-center mx-auto">
-                                             <img src="assets/images/product/p-9.png" alt="" class="avatar-xl">
-                                        </div>
-                                        <h4 class="mt-3 mb-0">Eye Ware & Sunglass</h4>
-                                   </div>
-                              </div>
-                         </div>
+        {{-- Alert Messages --}}
+@if(session('success'))
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <iconify-icon icon="solar:check-circle-bold-duotone" class="me-2"></iconify-icon>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+@elseif(session('error'))
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <iconify-icon icon="solar:danger-bold-duotone" class="me-2"></iconify-icon>
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+@endif
+
+        {{-- Table Card --}}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0">Danh sách danh mục</h5>
+                        <div class="card-toolbar">
+                            <span class="badge bg-light-primary text-primary">
+                                Tổng: {{ $categories->total() ?? count($categories) }}
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="row">
-                         <div class="col-xl-12">
-                              <div class="card">
-                                   <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                                        <h4 class="card-title flex-grow-1">All Categories List</h4>
-
-                                        <a href="product-add.html" class="btn btn-sm btn-primary">
-                                             Add Product
-                                        </a>
-
-                                        <div class="dropdown">
-                                             <a href="#" class="dropdown-toggle btn btn-sm btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
-                                                  This Month
-                                             </a>
-                                             <div class="dropdown-menu dropdown-menu-end">
-                                                  <!-- item-->
-                                                  <a href="#!" class="dropdown-item">Download</a>
-                                                  <!-- item-->
-                                                  <a href="#!" class="dropdown-item">Export</a>
-                                                  <!-- item-->
-                                                  <a href="#!" class="dropdown-item">Import</a>
-                                             </div>
-                                        </div>
-                                   </div>
-                                   <div>
-                                        <div class="table-responsive">
-                                             <table class="table align-middle mb-0 table-hover table-centered">
-                                                  <thead class="bg-light-subtle">
-                                                       <tr>
-                                                            <th style="width: 20px;">
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck1">
-                                                                      <label class="form-check-label" for="customCheck1"></label>
-                                                                 </div>
-                                                            </th>
-                                                            <th>Categories</th>
-                                                            <th>Starting Price</th>
-                                                            <th>Create by</th>
-                                                            <th>ID</th>
-                                                            <th>Product Stock</th>
-                                                            <th>Action</th>
-                                                       </tr>
-                                                  </thead>
-                                                  <tbody>
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2"></label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex align-items-center gap-2">
-                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                           <img src="assets/images/product/p-1.png" alt="" class="avatar-md">
-                                                                      </div>
-                                                                      <p class="text-dark fw-medium fs-15 mb-0">Fashion Men , Women & Kid's</p>
-                                                                 </div>
-
-                                                            </td>
-                                                            <td>$80 to $400</td>
-                                                            <td>Seller</td>
-                                                            <td>FS16276</td>
-                                                            <td>46233</td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex align-items-center gap-2">
-                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                           <img src="assets/images/product/p-2.png" alt="" class="avatar-md">
-                                                                      </div>
-                                                                      <div>
-                                                                           <p class="text-dark fw-medium fs-15 mb-0">Women Hand Bag</p>
-                                                                      </div>
-                                                                 </div>
-
-                                                            </td>
-                                                            <td>$120 to $500</td>
-                                                            <td>Admin</td>
-                                                            <td>HB73029</td>
-                                                            <td>2739</td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex align-items-center gap-2">
-                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                           <img src="assets/images/product/p-4.png" alt="" class="avatar-md">
-                                                                      </div>
-                                                                      <div>
-                                                                           <p class="text-dark fw-medium fs-15 mb-0">Cap and Hat</p>
-                                                                      </div>
-                                                                 </div>
-
-                                                            </td>
-                                                            <td>$50 to $200</td>
-                                                            <td>Admin</td>
-                                                            <td>CH492-9</td>
-                                                            <td>1829</td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex align-items-center gap-2">
-                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                           <img src="assets/images/product/p-6.png" alt="" class="avatar-md">
-                                                                      </div>
-                                                                      <div>
-                                                                           <p class="text-dark fw-medium fs-15 mb-0">Electronics Headphone</p>
-                                                                      </div>
-                                                                 </div>
-
-                                                            </td>
-                                                            <td>$100 to $700</td>
-                                                            <td>Seller</td>
-                                                            <td>EC23818</td>
-                                                            <td>1902</td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex align-items-center gap-2">
-                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                           <img src="assets/images/product/p-7.png" alt="" class="avatar-md">
-                                                                      </div>
-                                                                      <div>
-                                                                           <p class="text-dark fw-medium fs-15 mb-0">Foot Wares</p>
-                                                                      </div>
-                                                                 </div>
-
-                                                            </td>
-                                                            <td>$70 to $400</td>
-                                                            <td>Seller</td>
-                                                            <td>FW11009</td>
-                                                            <td>2733</td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex align-items-center gap-2">
-                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                           <img src="assets/images/product/p-8.png" alt="" class="avatar-md">
-                                                                      </div>
-                                                                      <div>
-                                                                           <p class="text-dark fw-medium fs-15 mb-0">Wallet Categories</p>
-                                                                      </div>
-                                                                 </div>
-
-                                                            </td>
-                                                            <td>$120 to $300</td>
-                                                            <td>Admin</td>
-                                                            <td>WL38299</td>
-                                                            <td>890</td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex align-items-center gap-2">
-                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                           <img src="assets/images/product/p-11.png" alt="" class="avatar-md">
-                                                                      </div>
-                                                                      <div>
-                                                                           <p class="text-dark fw-medium fs-15 mb-0">Electronics Watch</p>
-                                                                      </div>
-                                                                 </div>
-
-                                                            </td>
-                                                            <td>$60 to $400</td>
-                                                            <td>Seller</td>
-                                                            <td>SM37817</td>
-                                                            <td>250</td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>
-                                                                 <div class="form-check">
-                                                                      <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                      <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                 <div class="d-flex align-items-center gap-2">
-                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                           <img src="assets/images/product/p-9.png" alt="" class="avatar-md">
-                                                                      </div>
-                                                                      <div>
-                                                                           <p class="text-dark fw-medium fs-15 mb-0">Eye Ware & Sunglass</p>
-                                                                      </div>
-                                                                 </div>
-
-                                                            </td>
-                                                            <td>$70 to $500</td>
-                                                            <td>Admin</td>
-                                                            <td>EG37878</td>
-                                                            <td>1900</td>
-                                                            <td>
-                                                                 <div class="d-flex gap-2">
-                                                                      <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
-                                                            </td>
-                                                       </tr>
-                                                  </tbody>
-                                             </table>
-                                        </div>
-                                        <!-- end table-responsive -->
-                                   </div>
-                                   <div class="card-footer border-top">
-                                        <nav aria-label="Page navigation example">
-                                             <ul class="pagination justify-content-end mb-0">
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">Previous</a></li>
-                                                  <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">Next</a></li>
-                                             </ul>
-                                        </nav>
-                                   </div>
-                              </div>
-                         </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle table-nowrap mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 60px;">ID</th>
+                                    <th>Tên danh mục</th>
+                                    <th style="width: 200px;">Danh mục cha</th>
+                                    <th style="width: 120px;">Trạng thái</th>
+                                    <th style="width: 160px;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($categories as $c)
+                                    <tr>
+                                        <td>
+                                            <span class="fw-semibold">#{{ $c->id }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <h6 class="mb-0 fw-semibold">{{ $c->name }}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if($c->parent)
+                                                <span class="badge bg-light-info text-info">
+                                                    {{ $c->parent->name }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($c->is_active)
+                                                <span class="badge bg-light-success text-success">
+                                                    <iconify-icon icon="solar:check-circle-bold-duotone" class="me-1"></iconify-icon>
+                                                    Hiển thị
+                                                </span>
+                                            @else
+                                                <span class="badge bg-light-secondary text-secondary">
+                                                    <iconify-icon icon="solar:eye-closed-bold-duotone" class="me-1"></iconify-icon>
+                                                    Ẩn
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <a href="{{ route('admin.categories.edit', $c->id) }}" 
+                                                   class="btn btn-sm btn-icon btn-light" 
+                                                   data-bs-toggle="tooltip" 
+                                                   data-bs-title="Chỉnh sửa">
+                                                    <iconify-icon icon="solar:pen-bold-duotone"></iconify-icon>
+                                                </a>
+                                                <form action="{{ route('admin.categories.destroy', $c->id) }}" 
+                                                      method="POST" 
+                                                      class="d-inline" 
+                                                      onsubmit="return confirm('Bạn chắc chắn muốn xóa danh mục này?')">
+                                                    @csrf 
+                                                    @method('DELETE')
+                                                    <button type="submit" 
+                                                            class="btn btn-sm btn-icon btn-light" 
+                                                            data-bs-toggle="tooltip" 
+                                                            data-bs-title="Xóa">
+                                                        <iconify-icon icon="solar:trash-bin-trash-bold-duotone" class="text-danger"></iconify-icon>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5">
+                                            <div class="text-muted">
+                                                <iconify-icon icon="solar:inbox-bold-duotone" style="font-size: 3rem; opacity: 0.5;"></iconify-icon>
+                                                <p class="mt-3 mb-0">Chưa có danh mục nào</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
 
-               </div>
-               <!-- End Container Fluid -->
+                    {{-- Pagination --}}
+                    @if($categories->hasPages())
+                        <div class="card-footer">
+                            {{ $categories->links('pagination::bootstrap-5') }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
 
-               <!-- ========== Footer Start ========== -->
-               <footer class="footer">
-                   <div class="container-fluid">
-                       <div class="row">
-                           <div class="col-12 text-center">
-                               <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                   href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                           </div>
-                       </div>
-                   </div>
-               </footer>
-               <!-- ========== Footer End ========== -->
+    </div>
+</div>
 
-          </div>
+{{-- Styles --}}
+@push('styles')
+<style>
+    .page-content {
+        padding: 20px 0;
+    }
+
+    .page-title-box {
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e9ecef;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+        margin-bottom: 24px;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.85rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    /* Badge colors - Larkon style */
+    .badge.bg-light-success {
+        background-color: #d1f8ea !important;
+        color: #0f7e4f !important;
+    }
+
+    .badge.bg-light-info {
+        background-color: #d1ecf1 !important;
+        color: #0c5460 !important;
+    }
+
+    .badge.bg-light-primary {
+        background-color: #cfe2ff !important;
+        color: #084298 !important;
+    }
+
+    .badge.bg-light-secondary {
+        background-color: #e2e3e5 !important;
+        color: #383d41 !important;
+    }
+
+    /* Button icon styles */
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border-radius: 0.25rem;
+    }
+
+    .btn-light {
+        color: #6c757d;
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+    }
+
+    .btn-light:hover {
+        color: #495057;
+        background-color: #e2e6ea;
+        border-color: #dae0e5;
+    }
+
+    /* Card footer pagination */
+    .card-footer {
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        padding: 1rem 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .page-title-box {
+            flex-direction: column;
+        }
+
+        .page-title-right {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .page-title-right .btn {
+            width: 100%;
+        }
+
+        .btn-group-sm .btn {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .table {
+            font-size: 0.875rem;
+        }
+
+        .d-flex.gap-2 {
+            flex-wrap: wrap;
+        }
+    }
+
+    /* Responsive table */
+    @media (max-width: 576px) {
+        .table-responsive {
+            font-size: 0.8rem;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 0.875rem;
+        }
+    }
+</style>
+@endpush
+
 @endsection
