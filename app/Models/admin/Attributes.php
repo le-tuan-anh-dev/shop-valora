@@ -1,5 +1,5 @@
 <?php 
-namespace App\Models\admin;
+namespace App\Models\Admin;
 
 use App\Models\admin\AttributeValue;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

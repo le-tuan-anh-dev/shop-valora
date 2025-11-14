@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
@@ -9,7 +11,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 
 Route::get('/', function () {
-    return view('client.home');
+    return view('home.shop');
 })->name('home');
 
 
@@ -44,8 +46,13 @@ Route::prefix('admin')->group(function () {
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
     Route::get('/products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
 
+
     // Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.list');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 });
+
+});
+
+

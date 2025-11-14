@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->dateTime('starts_at')->nullable();
             $table->dateTime('ends_at')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->timestamps();
         });
     }
     public function down(): void {
