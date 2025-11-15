@@ -15,6 +15,7 @@ use App\Models\Admin\Category;
 use App\Models\Admin\ProductVariant;
 use App\Models\Admin\VariantAttributeValue;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -220,7 +221,6 @@ class ProductController extends Controller
     }
 
     /**
-
      * 1. UPDATE products
      * 2. UPDATE/CREATE product_variants
      * 3. UPDATE/DELETE variant_attribute_values (liên kết trực tiếp tới attribute_values)
@@ -383,7 +383,7 @@ class ProductController extends Controller
             return redirect()->route('admin.products.list')->with('success', 'Cập nhật sản phẩm thành công!');
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Update product error: ' . $e->getMessage());
+            Log::error('Update product error: ' . $e->getMessage());
             return back()->withInput()->withErrors(['error' => 'Lỗi khi cập nhật sản phẩm: ' . $e->getMessage()]);
         }
     }

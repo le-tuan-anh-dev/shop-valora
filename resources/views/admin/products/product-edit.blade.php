@@ -350,23 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     `);
                 }
             });
-        } else if (existingVariantsData.length === 0) {
-            // Nếu không có groups và không có existing, thêm biến thể mặc định
-            const defaultKey = 'default_0';
-            variantTableBody.insertAdjacentHTML('beforeend', `
-                <tr data-variant-type="new" data-key="${defaultKey}">
-                    <td>
-                        <span class="badge bg-info">Biến thể mặc định</span>
-                        <input type="hidden" name="variants[${defaultKey}][id]" value="">
-                        <input type="hidden" name="variants[${defaultKey}][value_ids]" value="">
-                        <input type="hidden" name="variants[${defaultKey}][type]" value="new">
-                    </td>
-                    <td><input type="text" name="variants[${defaultKey}][sku]" class="form-control form-control-sm" value=""></td>
-                    <td><input type="number" name="variants[${defaultKey}][price]" class="form-control form-control-sm" value="${basePrice}"></td>
-                    <td><input type="number" name="variants[${defaultKey}][stock]" class="form-control form-control-sm variant-stock" value="0"></td>
-                    <td></td>
-                </tr>
-            `);
         }
 
         updateProductStock();
