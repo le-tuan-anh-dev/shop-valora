@@ -6,15 +6,26 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\ProductDetailController;
 
 Route::get('/', function () {
-    return view('home.shop');
+    return view('client.home');
 })->name('home');
 
-
+Route::prefix('products')->group(function () {
+    // Hiển thị trang product detail (Blade view)
+    Route::get('{id}', [ProductDetailController::class, 'show'])->name('products.detail');
+    
+    // AJAX endpoints (dùng trong page)
+    Route::post('{id}/get-available-attributes', [ProductDetailController::class, 'getAvailableAttributes']);
+    Route::post('{id}/get-variant', [ProductDetailController::class, 'getVariant']);
+    Route::post('{id}/check-variants', [ProductDetailController::class, 'checkMultipleVariants']);
+    
+    // Add to cart
+    Route::post('add-to-cart', [ProductDetailController::class, 'addToCart'])->name('cart.add');
+});
 
 Route::prefix('admin')->group(function () {
 
@@ -52,7 +63,3 @@ Route::prefix('admin')->group(function () {
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 });
-
-});
-
-
