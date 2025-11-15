@@ -9,11 +9,10 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\ProductDetailController;
+use App\Http\Controllers\HomeController;
 
 
-Route::get('/', function () {
-    return view('client.home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::prefix('products')->group(function () {
     // Hiển thị trang product detail (Blade view)
@@ -33,7 +32,7 @@ Route::prefix('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
->>>>>>> c08bff0325358c5ccc870ee37a501e7e6add06b1
+
     //  Attributes
     Route::get('attributes', [AttributeController::class, 'index'])->name('admin.attributes.list');
     Route::get('attributes/add', [AttributeController::class, 'create'])->name('admin.attributes.add');
