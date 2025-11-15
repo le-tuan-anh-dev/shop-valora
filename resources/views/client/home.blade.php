@@ -188,8 +188,8 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -247,8 +247,8 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -306,8 +306,8 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -548,8 +548,8 @@
                         {{-- Giá sản phẩm --}}
                         <p>
                             @if($product->discount_price)
-                                {{ number_format($product->discount_price, 0, ',', '.') }}₫ 
-                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                {{ number_format($product->base_price, 0, ',', '.') }}₫ 
+                                <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
                             @else
                                 {{ number_format($product->base_price, 0, ',', '.') }}₫
                             @endif

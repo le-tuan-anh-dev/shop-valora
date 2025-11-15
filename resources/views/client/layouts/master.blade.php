@@ -7,6 +7,7 @@
     <meta name="description" content="Katie"/>
     <meta name="keywords" content="Katie"/>
     <meta name="author" content="pixelstrap"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <title>@yield('title', 'Katie - Online Fashion Store')</title>
     
