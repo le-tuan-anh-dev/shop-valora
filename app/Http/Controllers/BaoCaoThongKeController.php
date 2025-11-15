@@ -28,7 +28,7 @@ class BaoCaoThongKeController extends Controller
             'totalOrders',
             'totalRevenue',
             'totalProducts',
-            'doanhThuTheoThang', // ✅ nhớ truyền vào đây
+            'doanhThuTheoThang', 
             'danhMucSanPham'
         ));
     }

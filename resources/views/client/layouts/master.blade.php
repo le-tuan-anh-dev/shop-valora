@@ -17,7 +17,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com/"/>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet"/>
-    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
     <!-- CSS Files -->
     <link rel="stylesheet" type="text/css" href="{{ asset('client/assets/css/vendors/fontawesome.css')}}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('client/assets/css/vendors/iconsax.css')}}"/>
