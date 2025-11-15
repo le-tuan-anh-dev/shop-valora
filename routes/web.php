@@ -18,13 +18,18 @@ Route::prefix('products')->group(function () {
     // Hiển thị trang product detail (Blade view)
     Route::get('{id}', [ProductDetailController::class, 'show'])->name('products.detail');
     
-    // AJAX endpoints (dùng trong page)
     Route::post('{id}/get-available-attributes', [ProductDetailController::class, 'getAvailableAttributes']);
     Route::post('{id}/get-variant', [ProductDetailController::class, 'getVariant']);
     Route::post('{id}/check-variants', [ProductDetailController::class, 'checkMultipleVariants']);
     
     // Add to cart
     Route::post('add-to-cart', [ProductDetailController::class, 'addToCart'])->name('cart.add');
+});
+
+// Thêm route này vào routes/web.php
+Route::get('/create-session', function () {
+    session()->put('user_id', 1);
+    return "Session user_id created! ID: " . session()->get('user_id');
 });
 
 Route::prefix('admin')->group(function () {

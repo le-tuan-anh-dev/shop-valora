@@ -64,14 +64,23 @@
 
                         <!-- Price -->
                         <p>
-    <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
-    @if($product->discount_price)
-        <del>{{ number_format($product->discount_price, 0, ',', '.') }} đ</del>
-        <span class="offer-btn">
-            {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% off
-        </span>
-    @endif
-</p>
+                            <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
+                            @if($product->discount_price)
+                                <del>{{ number_format($product->discount_price, 0, ',', '.') }} đ</del>
+                                <span class="offer-btn">
+                                    {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% off
+                                </span>
+                            @endif
+                        </p>
+                        <ul class="rating">      
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star-half-stroke"></i></li>
+                            <li><i class="fa-regular fa-star"></i></li>
+                            <li>4.5</li>
+                            
+                        </ul>
 
                         <h6 >
                             {{ $product->description }}
@@ -87,93 +96,102 @@
                         </div>
 
                         <!-- Attributes Selection -->
-                        <form id="variantForm" action="{{ route('cart.add') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <input type="hidden" name="variant_id" id="variantId">
-                            <input type="hidden" name="attribute_value_ids" id="attributeValueIds">
+<form id="variantForm" action="{{ route('cart.add') }}" method="POST">
+    @csrf
+    <input type="hidden" name="product_id" value="{{ $product->id }}">
+    <input type="hidden" name="variant_id" id="variantId" value="">
+    <input type="hidden" name="attribute_value_ids" id="attributeValueIds">
 
-                            <!--  Attribute -->
-                            @foreach($attributes as $attribute)
-                                <div class="d-flex mb-4">
-                                    <div style="flex: 1;"> 
-                                        <h5>{{ $attribute['name'] }}:</h5>
-                                        <div class="size-box">
-                                            <ul class="selected" id="attr_{{ $attribute['id'] }}">
-                                                @foreach($attribute['values'] as $value)
-                                                    <li>
-                                                        <a href="#" 
-                                                           class="attribute-btn"
-                                                           data-attr-id="{{ $attribute['id'] }}"
-                                                           data-attr-name="{{ $attribute['name'] }}"
-                                                           data-value-id="{{ $value['id'] }}"
-                                                           data-value="{{ $value['value'] }}"
-                                                           onclick="selectAttribute(event)">
-                                                            {{ $value['value'] }}
-                                                        </a>
-                                                    </li>
-                                                @endforeach
-                            </ul>
-                        </div>
+    <!-- Nếu có attributes, hiển thị -->
+    @if(count($attributes) > 0)
+        @foreach($attributes as $attribute)
+            <div class="d-flex mb-4">
+                <div style="flex: 1;"> 
+                    <h5>{{ $attribute['name'] }}:</h5>
+                    <div class="size-box">
+                        <ul class="selected" id="attr_{{ $attribute['id'] }}">
+                            @foreach($attribute['values'] as $value)
+                                <li>
+                                    <a href="#" 
+                                       class="attribute-btn"
+                                       data-attr-id="{{ $attribute['id'] }}"
+                                       data-attr-name="{{ $attribute['name'] }}"
+                                       data-value-id="{{ $value['id'] }}"
+                                       data-value="{{ $value['value'] }}"
+                                       onclick="selectAttribute(event)">
+                                        {{ $value['value'] }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
-                @endforeach
+            </div>
+        @endforeach
+    @else
+       
+    @endif
 
-                <!-- Quantity & Add to Cart -->
-                <div class="quantity-box d-flex align-items-center gap-3" style="margin: 20px 0;">
-                    <div class="quantity">
-                        <button class="" type="button" id="decreaseBtn">
-                         <i class="fa-solid fa-minus"></i>
-                         </button>
-                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="20" readonly>
-                        <button class="" type="button" id="increaseBtn">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                    </div>
-                    <div class="d-flex align-items-center gap-3 w-100">   
-                        <button type="submit" 
-                                id="addToCartBtn"
-                                class="btn btn_black sm" 
-                                disabled>
-                            Thêm vào giỏ hàng
-                        </button>
-                        <a class="btn btn_outline sm" href="#">Mua ngay</a>
-                    </div>
-                </div>
+    <!-- Quantity & Add to Cart -->
+    <div class="quantity-box d-flex align-items-center gap-3" style="margin: 20px 0;">
+        <div class="quantity">
+            <button class="" type="button" id="decreaseBtn">
+             <i class="fa-solid fa-minus"></i>
+             </button>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" max="20" readonly>
+            <button class="" type="button" id="increaseBtn">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+        <div class="d-flex align-items-center gap-3 w-100">   
+            <button type="submit" 
+                    id="addToCartBtn"
+                    class="btn btn_black sm" 
+                    {{ count($attributes) > 0 ? 'disabled' : '' }}>
+                Thêm vào giỏ hàng
+            </button>
+            <button type="button" 
+                id="buyNowBtn"
+                class="btn btn_outline sm" 
+                {{ count($attributes) > 0 ? 'disabled' : '' }}>
+            Mua ngay
+            </button>
+        </div>
+    </div>
 
-                <!-- Wishlist & Compare -->
-                <div class="buy-box">
-                    <ul> 
-                        <li><a href="wishlist.html"><i class="fa-regular fa-heart me-2"></i>Thêm vào sản phẩm yêu thích</a></li>
-                        <li><a href="compare.html"><i class="fa-solid fa-arrows-rotate me-2"></i>Add To Compare</a></li>
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#social-box"><i class="fa-solid fa-share-nodes me-2"></i>Chia sẻ</a></li>
-                    </ul>
-                </div>
+    <!-- Wishlist & Compare -->
+    <div class="buy-box">
+        <ul> 
+            <li><a href="wishlist.html"><i class="fa-regular fa-heart me-2"></i>Thêm vào sản phẩm yêu thích</a></li>
+            <li><a href="compare.html"><i class="fa-solid fa-arrows-rotate me-2"></i>Add To Compare</a></li>
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#social-box"><i class="fa-solid fa-share-nodes me-2"></i>Chia sẻ</a></li>
+        </ul>
+    </div>
 
-                <!-- Info Box -->
-                <div class="dz-info"> 
-                    <ul> 
-                        <li>
-                            <div class="d-flex align-items-center gap-2"> 
-                                <h6>Mã sản phẩm:</h6>
-                                <span id="skuDisplay"></span>
-                            </div>
-                        </li>
-                        <li> 
-                            <div class="d-flex align-items-center gap-2"> 
-                                <h6>Số lượng còn:</h6>
-                                <span id="stockDisplay"></span>
-                            </div>
-                        </li>
-                        <li> 
-                            <div class="d-flex align-items-center gap-2"> 
-                                <h6>Thẻ:</h6>
-                                <p>{{ $product->name }}</p>
-                            </div>
-                        </li>
-                    </ul>
+    <!-- Info Box -->
+    <div class="dz-info"> 
+        <ul> 
+            <li>
+                <div class="d-flex align-items-center gap-2"> 
+                    <h6>Mã sản phẩm:</h6>
+                    <span id="skuDisplay">{{ $product->id }}</span>
                 </div>
-            </form>
+            </li>
+            <li> 
+                <div class="d-flex align-items-center gap-2"> 
+                    <h6>Số lượng còn:</h6>
+                    <span id="stockDisplay">{{ $product->stock }}</span>
+                </div>
+            </li>
+            <li> 
+                <div class="d-flex align-items-center gap-2"> 
+                    <h6>Thẻ:</h6>
+                    <p>{{ $product->name }}</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
         </div>
     </div>
 </div>
@@ -188,15 +206,10 @@
         <div class="custom-container container">
             <div class="row"> 
                 <div class="col-12"> 
-                    <ul class="product-tab theme-scrollbar nav nav-tabs nav-underline" id="Product" role="tablist">
-
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="Reviews-tab" data-bs-toggle="tab" data-bs-target="#Reviews-tab-pane" role="tab" aria-controls="Reviews-tab-pane" aria-selected="false">Reviews</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content product-content" id="ProductContent">
-
-                        <div class="tab-pane fade" id="Reviews-tab-pane" role="tabpanel" aria-labelledby="Reviews-tab" tabindex="0"> 
+                    <h4 class="fw-semibold mb-4" style="color: #rgb(217 184 145);">Reviews</h4>
+                    <div class="product-content"> 
+                        
+                        <div id="Reviews-tab-pane" role="tabpanel"> 
                             <div class="row gy-4">
                                 <div class="col-lg-4">
                                     <div class="review-right">
@@ -358,18 +371,21 @@
 <script>
     let selectedAttributes = {};
     let allVariants = @json($variants);
+    const hasAttributes = @json(count($attributes) > 0);
 
-    // ✅ Quantity Controls - Fixed (sử dụng Event Listener)
     document.addEventListener('DOMContentLoaded', function() {
         const increaseBtn = document.getElementById('increaseBtn');
         const decreaseBtn = document.getElementById('decreaseBtn');
         const qtyInput = document.getElementById('quantity');
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        const buyNowBtn = document.getElementById('buyNowBtn');
+        const variantForm = document.getElementById('variantForm');
 
         // Increase quantity
         increaseBtn?.addEventListener('click', function(e) {
             e.preventDefault();
             const currentVal = parseInt(qtyInput.value) || 1;
-            const newVal = Math.min(currentVal + 1, 20); // Max 20
+            const newVal = Math.min(currentVal + 1, 20);
             qtyInput.value = newVal;
         });
 
@@ -377,8 +393,47 @@
         decreaseBtn?.addEventListener('click', function(e) {
             e.preventDefault();
             const currentVal = parseInt(qtyInput.value) || 1;
-            const newVal = Math.max(currentVal - 1, 1); // Min 1
+            const newVal = Math.max(currentVal - 1, 1);
             qtyInput.value = newVal;
+        });
+
+        // Nếu không có biến thể, enable button ngay
+        if (!hasAttributes) {
+            addToCartBtn.disabled = false;
+            buyNowBtn.disabled = false;
+        }
+
+        // Xử lý nút "Mua ngay"
+        buyNowBtn?.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Kiểm tra xem đã chọn đủ attributes chưa (nếu có attributes)
+            if (hasAttributes) {
+                const totalAttributes = @json(count($attributes));
+                const selectedCount = Object.keys(selectedAttributes).length;
+
+                if (selectedCount < totalAttributes) {
+                    alert('Vui lòng chọn đủ phân loại sản phẩm');
+                    return;
+                }
+            }
+
+            // Kiểm tra variant_id nếu có attributes
+            const variantId = document.getElementById('variantId').value;
+            if (hasAttributes && !variantId) {
+                alert('Vui lòng chọn phân loại sản phẩm');
+                return;
+            }
+
+            // Thêm hidden input để xác định là "mua ngay"
+            const buyNowInput = document.createElement('input');
+            buyNowInput.type = 'hidden';
+            buyNowInput.name = 'buy_now';
+            buyNowInput.value = '1';
+            variantForm.appendChild(buyNowInput);
+
+            // Submit form
+            variantForm.submit();
         });
     });
 
@@ -399,20 +454,17 @@
         const valueId = btn.dataset.valueId;
         const value = btn.dataset.value;
 
-        // Update selected attributes
         selectedAttributes[attrId] = { 
             attrName,
             valueId, 
             value 
         };
 
-        // Update UI - highlight selected
         document.querySelectorAll(`[data-attr-id="${attrId}"]`).forEach(b => {
             b.parentElement.classList.remove('active');
         });
         btn.parentElement.classList.add('active');
 
-        // Get number of attributes needed
         const totalAttributes = @json(count($attributes));
         const selectedCount = Object.keys(selectedAttributes).length;
 
@@ -468,14 +520,9 @@
                 const variant = data.data.variant;
                 const stock = data.data.stock_info;
                 
-                // Update form - variant ID
                 document.getElementById('variantId').value = variant.id;
                 
-                // ✅ FIX: Lưu attribute_value_ids dưới dạng hidden inputs array
-                // Xóa old inputs
                 document.querySelectorAll('input[name="attribute_value_ids[]"]').forEach(el => el.remove());
-                
-                // Thêm new inputs
                 selectedIds.forEach(id => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
@@ -484,21 +531,22 @@
                     document.getElementById('variantForm').appendChild(input);
                 });
                 
-                // Update display fields
                 document.getElementById('skuDisplay').textContent = variant.sku || '-';
                 document.getElementById('stockDisplay').textContent = stock.stock_status;
                 
-                // Update image if available
                 if (variant.image_url) {
                     document.getElementById('mainImage0').src = variant.image_url;
                 }
                 
-                // Enable/Disable button
-                const btn = document.getElementById('addToCartBtn');
+                const addToCartBtn = document.getElementById('addToCartBtn');
+                const buyNowBtn = document.getElementById('buyNowBtn');
+                
                 if (stock.is_in_stock) {
-                    btn.disabled = false;
+                    addToCartBtn.disabled = false;
+                    buyNowBtn.disabled = false;
                 } else {
-                    btn.disabled = true;
+                    addToCartBtn.disabled = true;
+                    buyNowBtn.disabled = true;
                 }
             }
         })
