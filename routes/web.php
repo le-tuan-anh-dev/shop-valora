@@ -6,13 +6,13 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 
-Route::get('/', function () {
-    return view('home.shop');
+Route::get('/home', function () {
+    return view('client.home');
 })->name('home');
 
 
-
 Route::prefix('admin')->group(function () {
+    
     //  Attributes
     Route::get('attributes', [AttributeController::class, 'index'])->name('admin.attributes.list');
     Route::get('attributes/add', [AttributeController::class, 'create'])->name('admin.attributes.add');
