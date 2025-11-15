@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
                 'category_id' => 4,
                 'name' => 'Áo thun nam basic',
                 'description' => 'Áo thun nam cổ tròn, chất cotton mềm mại',
+                'cost_price' => 120000,
                 'base_price' => 200000,
                 'discount_price' => 180000,
                 'stock' => 50,
@@ -50,6 +51,7 @@ class DatabaseSeeder extends Seeder
                 'category_id' => 5,
                 'name' => 'Quần jeans nữ slimfit',
                 'description' => 'Quần jeans nữ ôm vừa, co giãn thoải mái',
+                'cost_price' => 200000,
                 'base_price' => 350000,
                 'discount_price' => null,
                 'stock' => 30,
@@ -64,6 +66,7 @@ class DatabaseSeeder extends Seeder
                 'category_id' => 3,
                 'name' => 'Mũ lưỡi trai unisex',
                 'description' => 'Mũ thời trang phù hợp mọi giới tính',
+                'cost_price' => 60000,
                 'base_price' => 120000,
                 'discount_price' => 100000,
                 'stock' => 40,
@@ -152,5 +155,10 @@ class DatabaseSeeder extends Seeder
             ],
         ];
         DB::table('product_variants')->insert($productVariants);
+
+        $this->call([
+            UsersTableSeeder::class,
+            OrdersTableSeeder::class,
+        ]);
     }
 }

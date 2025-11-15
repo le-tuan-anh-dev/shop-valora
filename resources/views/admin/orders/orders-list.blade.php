@@ -6,14 +6,38 @@
                     <!-- Start Container Fluid -->
                     <div class="container-xxl">
 
+                         @if (session('success'))
+                             <div class="row">
+                                 <div class="col-12">
+                                     <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                         <iconify-icon icon="solar:check-circle-bold-duotone" class="me-2"></iconify-icon>
+                                         {{ session('success') }}
+                                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                     </div>
+                                 </div>
+                             </div>
+                         @endif
+
+                         @if (session('error'))
+                             <div class="row">
+                                 <div class="col-12">
+                                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                         <iconify-icon icon="solar:close-circle-bold-duotone" class="me-2"></iconify-icon>
+                                         {{ session('error') }}
+                                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                     </div>
+                                 </div>
+                             </div>
+                         @endif
+
                          <div class="row">
                               <div class="col-md-6 col-xl-3">
                                    <div class="card">
                                         <div class="card-body">
                                              <div class="d-flex align-items-center justify-content-between">
                                                   <div>
-                                                       <h4 class="card-title mb-2">Payment Refund</h4>
-                                                       <p class="text-muted fw-medium fs-22 mb-0">490</p>
+                                                       <h4 class="card-title mb-2">Chưa thanh toán</h4>
+                                                       <p class="text-muted fw-medium fs-22 mb-0">{{ number_format($stats['unpaid_orders']) }}</p>
                                                   </div>
                                                   <div>
                                                        <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -29,8 +53,8 @@
                                         <div class="card-body">
                                              <div class="d-flex align-items-center justify-content-between">
                                                   <div>
-                                                       <h4 class="card-title mb-2">Order Cancel</h4>
-                                                       <p class="text-muted fw-medium fs-22 mb-0">241</p>
+                                                       <h4 class="card-title mb-2">Đã hủy</h4>
+                                                       <p class="text-muted fw-medium fs-22 mb-0">{{ number_format($stats['cancelled_orders']) }}</p>
                                                   </div>
                                                   <div>
                                                        <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -47,26 +71,8 @@
                                         <div class="card-body">
                                              <div class="d-flex align-items-center justify-content-between">
                                                   <div>
-                                                       <h4 class="card-title mb-2">Order Shipped</h4>
-                                                       <p class="text-muted fw-medium fs-22 mb-0">630</p>
-                                                  </div>
-                                                  <div>
-                                                       <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                            <iconify-icon icon="solar:box-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                       </div>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                   </div>
-                              </div>
-
-                              <div class="col-md-6 col-xl-3">
-                                   <div class="card">
-                                        <div class="card-body">
-                                             <div class="d-flex align-items-center justify-content-between">
-                                                  <div>
-                                                       <h4 class="card-title mb-2">Order Delivering</h4>
-                                                       <p class="text-muted fw-medium fs-22 mb-0">170</p>
+                                                       <h4 class="card-title mb-2">Chờ xử lý</h4>
+                                                       <p class="text-muted fw-medium fs-22 mb-0">{{ number_format($stats['pending_orders']) }}</p>
                                                   </div>
                                                   <div>
                                                        <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -83,12 +89,30 @@
                                         <div class="card-body">
                                              <div class="d-flex align-items-center justify-content-between">
                                                   <div>
-                                                       <h4 class="card-title mb-2">Pending Review</h4>
-                                                       <p class="text-muted fw-medium fs-22 mb-0">210</p>
+                                                       <h4 class="card-title mb-2">Đã xác nhận</h4>
+                                                       <p class="text-muted fw-medium fs-22 mb-0">{{ number_format($stats['confirmed_orders']) }}</p>
                                                   </div>
                                                   <div>
                                                        <div class="avatar-md bg-primary bg-opacity-10 rounded">
                                                             <iconify-icon icon="solar:clipboard-remove-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+
+                              <div class="col-md-6 col-xl-3">
+                                   <div class="card">
+                                        <div class="card-body">
+                                             <div class="d-flex align-items-center justify-content-between">
+                                                  <div>
+                                                       <h4 class="card-title mb-2">Đang giao</h4>
+                                                       <p class="text-muted fw-medium fs-22 mb-0">{{ number_format($stats['shipping_orders']) }}</p>
+                                                  </div>
+                                                  <div>
+                                                       <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                                            <iconify-icon icon="solar:box-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
                                                        </div>
                                                   </div>
                                              </div>
@@ -100,8 +124,8 @@
                                         <div class="card-body">
                                              <div class="d-flex align-items-center justify-content-between">
                                                   <div>
-                                                       <h4 class="card-title mb-2">Pending Payment</h4>
-                                                       <p class="text-muted fw-medium fs-22 mb-0">608</p>
+                                                       <h4 class="card-title mb-2">Tổng đơn hàng</h4>
+                                                       <p class="text-muted fw-medium fs-22 mb-0">{{ number_format($stats['total_orders']) }}</p>
                                                   </div>
                                                   <div>
                                                        <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -117,29 +141,12 @@
                                         <div class="card-body">
                                              <div class="d-flex align-items-center justify-content-between">
                                                   <div>
-                                                       <h4 class="card-title mb-2">Delivered</h4>
-                                                       <p class="text-muted fw-medium fs-22 mb-0">200</p>
+                                                       <h4 class="card-title mb-2">Hoàn thành</h4>
+                                                       <p class="text-muted fw-medium fs-22 mb-0">{{ number_format($stats['completed_orders']) }}</p>
                                                   </div>
                                                   <div>
                                                        <div class="avatar-md bg-primary bg-opacity-10 rounded">
                                                             <iconify-icon icon="solar:clipboard-check-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                       </div>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                   </div>
-                              </div>
-                              <div class="col-md-6 col-xl-3">
-                                   <div class="card">
-                                        <div class="card-body">
-                                             <div class="d-flex align-items-center justify-content-between">
-                                                  <div>
-                                                       <h4 class="card-title mb-2">In Progress</h4>
-                                                       <p class="text-muted fw-medium fs-22 mb-0">656</p>
-                                                  </div>
-                                                  <div>
-                                                       <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                            <iconify-icon icon="solar:inbox-line-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
                                                        </div>
                                                   </div>
                                              </div>
@@ -153,20 +160,32 @@
                                    <div class="card">
                                         <div class="d-flex card-header justify-content-between align-items-center">
                                              <div>
-                                                  <h4 class="card-title">All Order List</h4>
+                                                  <h4 class="card-title">Danh sách đơn hàng</h4>
                                              </div>
-                                             <div class="dropdown">
-                                                  <a href="#" class="dropdown-toggle btn btn-sm btn-outline-light rounded" data-bs-toggle="dropdown" aria-expanded="false">
-                                                       This Month
-                                                  </a>
-                                                  <div class="dropdown-menu dropdown-menu-end">
-                                                       <!-- item-->
-                                                       <a href="#!" class="dropdown-item">Download</a>
-                                                       <!-- item-->
-                                                       <a href="#!" class="dropdown-item">Export</a>
-                                                       <!-- item-->
-                                                       <a href="#!" class="dropdown-item">Import</a>
-                                                  </div>
+                                             <div>
+                                                  <form method="GET" action="{{ route('admin.orders.list') }}" class="d-flex gap-2">
+                                                       <input type="text" 
+                                                              name="search" 
+                                                              class="form-control form-control-sm" 
+                                                              placeholder="Tìm kiếm..." 
+                                                              value="{{ request('search') }}"
+                                                              style="width: 200px;">
+                                                       <select name="status" class="form-select form-select-sm" style="width: 150px;">
+                                                            <option value="">Tất cả trạng thái</option>
+                                                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xác nhận</option>
+                                                            <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
+                                                            <option value="awaiting_pickup" {{ request('status') == 'awaiting_pickup' ? 'selected' : '' }}>Chờ lấy hàng</option>
+                                                            <option value="shipping" {{ request('status') == 'shipping' ? 'selected' : '' }}>Đang giao</option>
+                                                            <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Đã giao hàng</option>
+                                                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Đã hoàn thành</option>
+                                                            <option value="cancelled_by_customer" {{ request('status') == 'cancelled_by_customer' ? 'selected' : '' }}>Khách hủy</option>
+                                                            <option value="cancelled_by_admin" {{ request('status') == 'cancelled_by_admin' ? 'selected' : '' }}>Admin hủy</option>
+                                                            <option value="delivery_failed" {{ request('status') == 'delivery_failed' ? 'selected' : '' }}>Giao thất bại</option>
+                                                       </select>
+                                                       <button type="submit" class="btn btn-sm btn-primary">
+                                                            <iconify-icon icon="solar:magnifer-linear"></iconify-icon>
+                                                       </button>
+                                                  </form>
                                              </div>
                                         </div>
                                         <div class="card-body p-0">
@@ -174,244 +193,141 @@
                                                   <table class="table align-middle mb-0 table-hover table-centered">
                                                        <thead class="bg-light-subtle">
                                                             <tr>
-                                                                 <th>Order ID</th>
-                                                                 <th>Created at</th>
-                                                                 <th>Customer</th>
-                                                                 <th>Priority</th>
-                                                                 <th>Total</th>
-                                                                 <th>Payment Status</th>
-                                                                 <th>Items</th>
-                                                                 <th>Delivery Number</th>
-                                                                 <th>Order Status</th>
-                                                                 <th>Action</th>
+                                                                 <th>Mã đơn hàng</th>
+                                                                 <th>Ngày đặt</th>
+                                                                 <th>Khách hàng</th>
+                                                                 <th>Tổng tiền</th>
+                                                                 <th>Thanh toán</th>
+                                                                 <th>Số lượng</th>
+                                                                 <th>Trạng thái</th>
+                                                                 <th>Hành động</th>
                                                             </tr>
                                                        </thead>
                                                        <tbody>
+                                                            @forelse($orders as $order)
                                                             <tr>
                                                                  <td>
-                                                                      #583488/80
+                                                                      <span class="fw-semibold">#{{ $order->order_number }}</span>
                                                                  </td>
-                                                                 <td>Apr 23 , 2024</td>
+                                                                 <td>{{ $order->created_at->format('d/m/Y') }}</td>
                                                                  <td>
-                                                                      <a href="#!" class="link-primary fw-medium">Gail C. Anderson</a>
+                                                                      <a href="#" class="link-primary fw-medium">{{ $order->customer_name }}</a>
+                                                                      <p class="text-muted mb-0 fs-12">{{ $order->customer_email }}</p>
                                                                  </td>
-                                                                 <td> Normal</td>
-                                                                 <td> $1,230.00</td>
-                                                                 <td> <span class="badge bg-light text-dark  px-2 py-1 fs-13">Unpaid</span></td>
-                                                                 <td> 4</td>
-                                                                 <td> -</td>
-                                                                 <td> <span class="badge border border-secondary text-secondary  px-2 py-1 fs-13">Draft</span></td>
+                                                                 <td>{{ number_format($order->total_amount, 0, ',', '.') }}₫</td>
+                                                                 <td>
+                                                                      @php
+                                                                          $paymentStatusColors = [
+                                                                              'unpaid' => ['bg' => 'bg-light', 'text' => 'text-dark', 'label' => 'Chưa thanh toán'],
+                                                                              'paid' => ['bg' => 'bg-success', 'text' => 'text-light', 'label' => 'Đã thanh toán'],
+                                                                              'failed' => ['bg' => 'bg-danger', 'text' => 'text-light', 'label' => 'Thanh toán thất bại']
+                                                                          ];
+                                                                          $paymentStatus = $paymentStatusColors[$order->payment_status] ?? ['bg' => 'bg-light', 'text' => 'text-dark', 'label' => ucfirst($order->payment_status)];
+                                                                      @endphp
+                                                                      <span class="badge {{ $paymentStatus['bg'] }} {{ $paymentStatus['text'] }} px-2 py-1 fs-13">{{ $paymentStatus['label'] }}</span>
+                                                                 </td>
+                                                                 <td>{{ $order->orderItems->count() }}</td>
+                                                                 <td>
+                                                                      @php
+                                                                          $statusColors = [
+                                                                              'pending' => ['border' => 'border-warning', 'text' => 'text-warning', 'label' => 'Chờ xác nhận'],
+                                                                              'confirmed' => ['border' => 'border-info', 'text' => 'text-info', 'label' => 'Đã xác nhận'],
+                                                                              'awaiting_pickup' => ['border' => 'border-info', 'text' => 'text-info', 'label' => 'Chờ lấy hàng'],
+                                                                              'shipping' => ['border' => 'border-primary', 'text' => 'text-primary', 'label' => 'Đang giao'],
+                                                                              'delivered' => ['border' => 'border-success', 'text' => 'text-success', 'label' => 'Đã giao hàng'],
+                                                                              'completed' => ['border' => 'border-success', 'text' => 'text-success', 'label' => 'Đã hoàn thành'],
+                                                                              'cancelled_by_customer' => ['border' => 'border-danger', 'text' => 'text-danger', 'label' => 'Khách hủy'],
+                                                                              'cancelled_by_admin' => ['border' => 'border-danger', 'text' => 'text-danger', 'label' => 'Admin hủy'],
+                                                                              'delivery_failed' => ['border' => 'border-danger', 'text' => 'text-danger', 'label' => 'Giao thất bại']
+                                                                          ];
+                                                                          $status = $statusColors[$order->status] ?? ['border' => 'border-secondary', 'text' => 'text-secondary', 'label' => ucfirst($order->status)];
+                                                                      @endphp
+                                                                      <span class="badge border {{ $status['border'] }} {{ $status['text'] }} px-2 py-1 fs-13">{{ $status['label'] }}</span>
+                                                                 </td>
                                                                  <td>
                                                                       <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
+                                                                           <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-title="Xem chi tiết">
+                                                                                <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
+                                                                           </a>
+                                                                           <div class="dropdown">
+                                                                                <button class="btn btn-soft-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="Cập nhật trạng thái">
+                                                                                     <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
+                                                                                </button>
+                                                                                <ul class="dropdown-menu">
+                                                                                     @php
+                                                                                         $statusOptions = [
+                                                                                             'pending' => 'Chờ xác nhận',
+                                                                                             'confirmed' => 'Đã xác nhận',
+                                                                                             'awaiting_pickup' => 'Chờ lấy hàng',
+                                                                                             'shipping' => 'Đang giao',
+                                                                                             'delivered' => 'Đã giao hàng',
+                                                                                             'completed' => 'Đã hoàn thành',
+                                                                                             'cancelled_by_customer' => 'Khách hủy',
+                                                                                             'cancelled_by_admin' => 'Admin hủy',
+                                                                                             'delivery_failed' => 'Giao thất bại',
+                                                                                         ];
+                                                                                         $allowedStatuses = $order->allowedStatuses ?? [];
+                                                                                         $isCancelled = in_array($order->status, ['cancelled_by_customer', 'cancelled_by_admin', 'completed']);
+                                                                                     @endphp
+                                                                                     
+                                                                                     @foreach($statusOptions as $statusKey => $statusLabel)
+                                                                                         @php
+                                                                                             $isAllowed = in_array($statusKey, $allowedStatuses);
+                                                                                             $isCurrent = $order->status == $statusKey;
+                                                                                             $isCancelStatus = in_array($statusKey, ['cancelled_by_customer', 'cancelled_by_admin', 'delivery_failed']);
+                                                                                         @endphp
+                                                                                         @if($isAllowed || $isCurrent)
+                                                                                             @if($isCancelStatus && !$isCurrent && $loop->first)
+                                                                                                 <li><hr class="dropdown-divider"></li>
+                                                                                             @endif
+                                                                                             <li>
+                                                                                                 <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="d-inline">
+                                                                                                     @csrf
+                                                                                                     @method('PUT')
+                                                                                                     <input type="hidden" name="status" value="{{ $statusKey }}">
+                                                                                                     <button type="submit" 
+                                                                                                             class="dropdown-item {{ $isCurrent ? 'active' : '' }} {{ $isCancelStatus ? 'text-danger' : '' }}"
+                                                                                                             {{ $isCurrent ? 'disabled' : '' }}>
+                                                                                                         {{ $statusLabel }}
+                                                                                                         @if($isCurrent)
+                                                                                                             <span class="float-end">✓</span>
+                                                                                                         @endif
+                                                                                                     </button>
+                                                                                                 </form>
+                                                                                             </li>
+                                                                                         @endif
+                                                                                     @endforeach
+                                                                                     
+                                                                                     @if(empty($allowedStatuses) && !$isCancelled)
+                                                                                         <li class="dropdown-item-text text-muted small">Không có trạng thái nào có thể chuyển</li>
+                                                                                     @endif
+                                                                                </ul>
+                                                                      </div>
                                                                       </div>
                                                                  </td>
                                                             </tr>
-
+                                                            @empty
                                                             <tr>
-                                                                 <td>
-                                                                      #456754/80
-                                                                 </td>
-                                                                 <td>Apr 20 , 2024</td>
-                                                                 <td>
-                                                                      <a href="#!" class="link-primary fw-medium">Jung S. Ayala</a>
-                                                                 </td>
-                                                                 <td> Normal</td>
-                                                                 <td> $987.00</td>
-                                                                 <td> <span class="badge bg-success text-light  px-2 py-1 fs-13">Paid</span></td>
-                                                                 <td> 2</td>
-                                                                 <td> -</td>
-                                                                 <td> <span class="badge border border-warning text-warning  px-2 py-1 fs-13">Packaging</span></td>
-                                                                 <td>
-                                                                      <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
+                                                                 <td colspan="8" class="text-center py-5">
+                                                                      <div class="mb-3">
+                                                                           <iconify-icon icon="solar:inbox-bold-duotone" style="font-size: 3rem; opacity: 0.5;"></iconify-icon>
                                                                       </div>
+                                                                      <h5 class="text-muted">Không có đơn hàng nào</h5>
                                                                  </td>
                                                             </tr>
-                                                            <tr>
-                                                                 <td>
-                                                                      #578246/80
-                                                                 </td>
-                                                                 <td>Apr 19 , 2024</td>
-                                                                 <td>
-                                                                      <a href="#!" class="link-primary fw-medium">David A. Arnold</a>
-                                                                 </td>
-                                                                 <td> High</td>
-                                                                 <td> $1,478.00</td>
-                                                                 <td> <span class="badge  bg-success text-light px-2 py-1 fs-13">Paid</span></td>
-                                                                 <td> 5</td>
-                                                                 <td> #D-57837678</td>
-                                                                 <td> <span class="badge border border-success text-success  px-2 py-1 fs-13">Completed</span></td>
-                                                                 <td>
-                                                                      <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      </div>
-                                                                 </td>
-                                                            </tr>
-
-                                                            <tr>
-                                                                 <td>
-                                                                      #348930/80
-                                                                 </td>
-                                                                 <td>Apr 04 , 2024</td>
-                                                                 <td>
-                                                                      <a href="#!" class="link-primary fw-medium">Cecile D. Gordon</a>
-                                                                 </td>
-                                                                 <td> Normal</td>
-                                                                 <td> $720.00</td>
-                                                                 <td> <span class="badge bg-light text-dark  px-2 py-1 fs-13">Refund</span></td>
-                                                                 <td> 4</td>
-                                                                 <td> -</td>
-                                                                 <td> <span class="badge border border-danger text-danger  px-2 py-1 fs-13">Canceled</span></td>
-                                                                 <td>
-                                                                      <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      </div>
-                                                                 </td>
-                                                            </tr>
-
-
-                                                            <tr>
-                                                                 <td>
-                                                                      #391367/80
-                                                                 </td>
-                                                                 <td>Apr 02 , 2024</td>
-                                                                 <td>
-                                                                      <a href="#!" class="link-primary fw-medium">William Moreno</a>
-                                                                 </td>
-                                                                 <td> Normal</td>
-                                                                 <td> $1,909.00</td>
-                                                                 <td><span class="badge  bg-success text-light px-2 py-1 fs-13">Paid</span></td>
-                                                                 <td> 6</td>
-                                                                 <td> #D-89734235</td>
-                                                                 <td> <span class="badge border border-success text-success  px-2 py-1 fs-13">Completed</span></td>
-                                                                 <td>
-                                                                      <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      </div>
-                                                                 </td>
-                                                            </tr>
-
-
-                                                            <tr>
-                                                                 <td>
-                                                                      #930447/80
-                                                                 </td>
-                                                                 <td>March 28 , 2024</td>
-                                                                 <td>
-                                                                      <a href="#!" class="link-primary fw-medium">Alphonse Roy</a>
-                                                                 </td>
-                                                                 <td> High</td>
-                                                                 <td> $879.00</td>
-                                                                 <td><span class="badge  bg-success text-light px-2 py-1 fs-13">Paid</span></td>
-                                                                 <td> 4</td>
-                                                                 <td> #D-35227268</td>
-                                                                 <td><span class="badge border border-success text-success  px-2 py-1 fs-13">Completed</span></td>
-                                                                 <td>
-                                                                      <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      </div>
-                                                                 </td>
-                                                            </tr>
-
-                                                            <tr>
-                                                                 <td>
-                                                                      #462397/80
-                                                                 </td>
-                                                                 <td>March 20 , 2024</td>
-                                                                 <td>
-                                                                      <a href="#!" class="link-primary fw-medium">Pierpont Marleau</a>
-                                                                 </td>
-                                                                 <td> High</td>
-                                                                 <td> $1,230.00</td>
-                                                                 <td> <span class="badge bg-light text-dark  px-2 py-1 fs-13">Refund</span></td>
-                                                                 <td> 2</td>
-                                                                 <td> -</td>
-                                                                 <td> <span class="badge border border-danger text-danger  px-2 py-1 fs-13">Canceled</span></td>
-                                                                 <td>
-                                                                      <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      </div>
-                                                                 </td>
-                                                            </tr>
-
-                                                            <tr>
-                                                                 <td>
-                                                                      #472356/80
-                                                                 </td>
-                                                                 <td>March 12 , 2024</td>
-                                                                 <td>
-                                                                      <a href="#!" class="link-primary fw-medium">Madeleine Gervais</a>
-                                                                 </td>
-                                                                 <td> Normal</td>
-                                                                 <td> $1,264.00</td>
-                                                                 <td> <span class="badge bg-success text-light  px-2 py-1 fs-13">Paid</span></td>
-                                                                 <td> 3</td>
-                                                                 <td> #D-74922656</td>
-                                                                 <td> <span class="badge border border-success text-success  px-2 py-1 fs-13">Completed</span></td>
-                                                                 <td>
-                                                                      <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      </div>
-                                                                 </td>
-                                                            </tr>
-
-                                                            <tr>
-                                                                 <td>
-                                                                      #448226/80
-                                                                 </td>
-                                                                 <td>March 02 , 2024</td>
-                                                                 <td>
-                                                                      <a href="#!" class="link-primary fw-medium">Satordi Gaillou</a>
-                                                                 </td>
-                                                                 <td> High</td>
-                                                                 <td> $1,787.00</td>
-                                                                 <td> <span class="badge bg-success text-light  px-2 py-1 fs-13">Paid</span></td>
-                                                                 <td> 4</td>
-                                                                 <td> -</td>
-                                                                 <td> <span class="badge border border-warning text-warning  px-2 py-1 fs-13">Packaging</span></td>
-                                                                 <td>
-                                                                      <div class="d-flex gap-2">
-                                                                           <a href="#!" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                           <a href="#!" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                      </div>
-                                                                 </td>
-                                                            </tr>
-
-
+                                                            @endforelse
                                                        </tbody>
                                                   </table>
                                              </div>
                                              <!-- end table-responsive -->
                                         </div>
+                                        @if($orders->hasPages())
                                         <div class="card-footer border-top">
                                              <nav aria-label="Page navigation example">
-                                                  <ul class="pagination justify-content-end mb-0">
-                                                       <li class="page-item"><a class="page-link" href="javascript:void(0);">Previous</a></li>
-                                                       <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
-                                                       <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
-                                                       <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
-                                                       <li class="page-item"><a class="page-link" href="javascript:void(0);">Next</a></li>
-                                                  </ul>
+                                                  {{ $orders->links('pagination::bootstrap-5') }}
                                              </nav>
                                         </div>
+                                        @endif
                                    </div>
                               </div>
 

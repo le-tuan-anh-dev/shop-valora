@@ -72,8 +72,8 @@ class ProductController extends Controller
 
     /**
      * 1. INSERT INTO products
-     * 2. INSERT INTO product_variants (mỗi variant)
-     * 3. INSERT INTO variant_attribute_values (liên kết trực tiếp tới attribute_values)
+     * 2. INSERT INTO product_variants 
+     * 3. INSERT INTO variant_attribute_values 
      */
     public function store(Request $request)
     {
@@ -98,7 +98,7 @@ class ProductController extends Controller
             'variants.*.price.numeric' => 'Giá biến thể phải là số.',
             'variants.*.stock.integer' => 'Tồn kho biến thể phải là số nguyên.',
             'variants.*.stock.min'     => 'Tồn kho biến thể không được âm.',
-            'variants.*.sku.unique'    => 'SKU biến thể đã tồn tại.',
+            'variants.*.sku.unique'    => 'SKU biến thể đã tồn tại.',   
         ];
 
         // Validate dữ liệu
