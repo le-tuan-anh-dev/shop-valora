@@ -293,7 +293,6 @@
                                                 </div>
                                             </div>
 
-<<<<<<< Updated upstream
                                             <div class="product-detail">
                                                 <div class="add-button">
                                                     <a href="{{ route('products.detail', $product->id) }}">
@@ -303,13 +302,6 @@
 
                                                 <a href="{{ route('products.detail', $product->id) }}">
                                                     <h5>{{ Str::limit($product->name, 40) }}</h5>
-=======
-                                            <div class="product-image">
-                                                <a href="{{ route('products.detail', $p->id) }}">
-                                                    <img class="bg-img"
-                                                        src="{{ $p->image_main ? asset('storage/app/public/' . $p->image_main) : asset('client/assets/images/no-image.png') }}"
-                                                        alt="{{ $p->name }}">
->>>>>>> Stashed changes
                                                 </a>
 
                                                 <p>

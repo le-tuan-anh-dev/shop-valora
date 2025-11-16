@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     protected $fillable = [
         'name',
@@ -16,26 +15,20 @@ class User extends Authenticatable
         'password',
         'phone',
         'image',
-        'role',
-        'status',
+        'role',              // enum('admin','customer')
+        'status',            // enum('active','locked','banned')
+        'google_id',
+        'email_verified_at',
+        'verification_token',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'verification_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(\App\Models\Admin\Order::class);
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 }
-

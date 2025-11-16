@@ -13,6 +13,35 @@ use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\admin\ReviewController;
+use App\Http\Controllers\AuthController;
+
+
+
+// Trang chủ
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// ==== AUTH ====
+
+// Form
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.show');
+
+// Submit
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Google Login
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+// Xác nhận email cho cả đăng ký thường & Google
+Route::get('/verify-email', [AuthController::class, 'verifyEmail'])->name('auth.verify');
+Route::get('/login-demo', function () {
+    return view('client.login');
+});
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
