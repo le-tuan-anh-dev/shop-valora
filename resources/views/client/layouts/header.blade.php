@@ -11,7 +11,7 @@
             <div class="col-12 p-0"> 
                 <div class="mobile-fix-option"> 
                     <ul> 
-                        <li><a href="#"><i class="iconsax" data-icon="home-1"></i>Home</a></li>
+                        <li><a href="{{ route('home') }}"><i class="iconsax" ></i>Home</a></li>
                        
                         
                         <a href="#" data-bs-toggle="modal" data-bs-target="#addtocart">
@@ -70,7 +70,7 @@
                                 </div>
                             </li>
                             <li class="onhover-div shopping-cart"> 
-                                <a class="p-0" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight">
+                                <a class="p-0" href="{{ route('cart.index') }}"  data-bs-target="#offcanvasRight">
                                     <div class="shoping-prize">
                                         <i class="iconsax pe-2" data-icon="basket-2"></i>0 items
                                     </div>

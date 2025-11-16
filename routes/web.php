@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\HomeController;
 
@@ -26,12 +27,19 @@ Route::prefix('products')->group(function () {
     Route::post('add-to-cart', [ProductDetailController::class, 'addToCart'])->name('cart.add');
 });
 
-// Thêm route này vào routes/web.php
+
 Route::get('/create-session', function () {
     session()->put('user_id', 1);
     return "Session user_id created! ID: " . session()->get('user_id');
 });
 
+Route::middleware(['web'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/remove/{cartItemId}', [CartController::class, 'removeItem'])->name('cart.removeItem');
+    Route::post('/cart/update-quantity/{cartItemId}', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+    Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+    Route::get('/cart/total', [CartController::class, 'getCartTotal'])->name('cart.total');
+});
 Route::prefix('admin')->group(function () {
 
     // Dashboard
