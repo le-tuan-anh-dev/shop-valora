@@ -123,20 +123,6 @@
             <h6>HOẶC</h6>
           </div>
 
-          <div class="log-in-button"> 
-            <ul> 
-              <li>
-                <a href="{{ route('auth.google.redirect') }}">
-                  <i class="fa-brands fa-google me-2"></i>Google
-                </a>
-              </li>
-              <li>
-                <a href="https://www.facebook.com/" target="_blank">
-                  <i class="fa-brands fa-facebook-f me-2"></i>Facebook
-                </a>
-              </li>
-            </ul>
-          </div>
 
           <div class="other-log-in"></div>
 
