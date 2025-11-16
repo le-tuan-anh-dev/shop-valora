@@ -29,12 +29,31 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
-            'name'     => 'required|string|max:100',
-            'email'    => 'required|email|unique:users,email|max:100',
-            'password' => 'required|string|min:6|confirmed',
-            'phone'    => 'nullable|string|max:20',
-        ]);
+        $messages = [
+        'name.required' => 'Họ và tên không được để trống.',
+        'name.string'   => 'Họ và tên phải là chuỗi ký tự.',
+        'name.max'      => 'Họ và tên không được vượt quá 100 ký tự.',
+
+        'email.required' => 'Email không được để trống.',
+        'email.email'    => 'Email không đúng định dạng.',
+        'email.unique'   => 'Email đã tồn tại.',
+        'email.max'      => 'Email không được vượt quá 100 ký tự.',
+
+        'password.required'  => 'Mật khẩu không được để trống.',
+        'password.string'    => 'Mật khẩu phải là chuỗi ký tự.',
+        'password.min'       => 'Mật khẩu phải có ít nhất 6 ký tự.',
+        'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+
+        'phone.string' => 'Số điện thoại phải là chuỗi ký tự.',
+        'phone.max'    => 'Số điện thoại không được vượt quá 20 ký tự.',
+    ];
+
+    $request->validate([
+        'name'     => 'required|string|max:100',
+        'email'    => 'required|email|unique:users,email|max:100',
+        'password' => 'required|string|min:6|confirmed',
+        'phone'    => 'nullable|string|max:20',
+    ], $messages);
 
         // Tạo token xác thực
         $token = Str::random(60);
@@ -44,8 +63,8 @@ class AuthController extends Controller
             'email'              => $request->email,
             'password'           => Hash::make($request->password),
             'phone'              => $request->phone,
-            'role'               => 'customer',   // enum('admin','customer')
-            'status'             => 'locked',     // CHƯA ACTIVE
+            'role'               => 'customer',   
+            'status'             => 'locked',     
             'email_verified_at'  => null,
             'verification_token' => $token,
         ]);
@@ -91,10 +110,17 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+       $messages = [
+                'email.required'    => 'Email không được để trống.',
+                'email.email'       => 'Email không đúng định dạng.',
+                'password.required' => 'Mật khẩu không được để trống.',
+                'password.string'   => 'Mật khẩu phải là chuỗi ký tự.',
+            ];
+
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required|string',
-        ]);
+        ], $messages);
 
         // Chỉ cho phép user status = active
         $credentials = [
@@ -105,6 +131,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
+            $request->session()->put('user_id', Auth::id());
             return redirect()->intended(route('home'))->with('success', 'Đăng nhập thành công!');
         }
 
@@ -134,66 +161,66 @@ class AuthController extends Controller
 
     // ==== GOOGLE LOGIN (ĐĂNG KÝ + XÁC NHẬN EMAIL) ====
 
-    public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->redirect();
-    }
+    // public function redirectToGoogle()
+    // {
+    //     return Socialite::driver('google')->redirect();
+    // }
 
-    public function handleGoogleCallback()
-    {
-        try {
-            $googleUser = Socialite::driver('google')->user();
-        } catch (\Exception $e) {
-            return redirect()->route('login.show')->withErrors([
-                'google' => 'Không thể đăng nhập bằng Google. Vui lòng thử lại.',
-            ]);
-        }
+    // public function handleGoogleCallback()
+    // {
+    //     try {
+    //         $googleUser = Socialite::driver('google')->user();
+    //     } catch (\Exception $e) {
+    //         return redirect()->route('login.show')->withErrors([
+    //             'google' => 'Không thể đăng nhập bằng Google. Vui lòng thử lại.',
+    //         ]);
+    //     }
 
-        // Nếu đã có user với email này
-        $user = User::where('email', $googleUser->getEmail())->first();
+    //     // Nếu đã có user với email này
+    //     $user = User::where('email', $googleUser->getEmail())->first();
 
-        if ($user) {
-            // Nếu đã active => login ngay
-            if ($user->status === 'active') {
-                Auth::login($user);
-                return redirect()->route('home')->with('success', 'Đăng nhập bằng Google thành công!');
-            }
+    //     if ($user) {
+    //         // Nếu đã active => login ngay
+    //         if ($user->status === 'active') {
+    //             Auth::login($user);
+    //             return redirect()->route('home')->with('success', 'Đăng nhập bằng Google thành công!');
+    //         }
 
-            // Nếu chưa active, gửi lại mail xác nhận nếu thiếu token
-            if (!$user->verification_token) {
-                $user->verification_token = Str::random(60);
-                $user->save();
-            }
+    //         // Nếu chưa active, gửi lại mail xác nhận nếu thiếu token
+    //         if (!$user->verification_token) {
+    //             $user->verification_token = Str::random(60);
+    //             $user->save();
+    //         }
 
-            $verifyUrl = route('auth.verify', ['token' => $user->verification_token]);
-            Mail::to($user->email)->send(new VerifyEmailMail($verifyUrl));
+    //         $verifyUrl = route('auth.verify', ['token' => $user->verification_token]);
+    //         Mail::to($user->email)->send(new VerifyEmailMail($verifyUrl));
 
-            return redirect()->route('login.show')->with('success',
-                'Tài khoản Google của bạn chưa được kích hoạt. Vui lòng kiểm tra email để xác nhận.'
-            );
-        }
+    //         return redirect()->route('login.show')->with('success',
+    //             'Tài khoản Google của bạn chưa được kích hoạt. Vui lòng kiểm tra email để xác nhận.'
+    //         );
+    //     }
 
-        // Nếu chưa có user => tạo user ở trạng thái locked, chờ xác nhận
-        $token = Str::random(60);
+    //     // Nếu chưa có user => tạo user ở trạng thái locked, chờ xác nhận
+    //     $token = Str::random(60);
 
-        $user = User::create([
-            'name'               => $googleUser->getName() ?? $googleUser->getNickname() ?? 'User',
-            'email'              => $googleUser->getEmail(),
-            'google_id'          => $googleUser->getId(),
-            'password'           => Hash::make(uniqid('google_', true)),
-            'image'              => $googleUser->getAvatar(),
-            'role'               => 'customer',
-            'status'             => 'locked',        // CHƯA ACTIVE
-            'email_verified_at'  => null,
-            'verification_token' => $token,
-        ]);
+    //     $user = User::create([
+    //         'name'               => $googleUser->getName() ?? $googleUser->getNickname() ?? 'User',
+    //         'email'              => $googleUser->getEmail(),
+    //         'google_id'          => $googleUser->getId(),
+    //         'password'           => Hash::make(uniqid('google_', true)),
+    //         'image'              => $googleUser->getAvatar(),
+    //         'role'               => 'customer',
+    //         'status'             => 'locked',        // CHƯA ACTIVE
+    //         'email_verified_at'  => null,
+    //         'verification_token' => $token,
+    //     ]);
 
-        // Gửi email xác nhận
-        $verifyUrl = route('auth.verify', ['token' => $token]);
-        Mail::to($user->email)->send(new VerifyEmailMail($verifyUrl));
+    //     // Gửi email xác nhận
+    //     $verifyUrl = route('auth.verify', ['token' => $token]);
+    //     Mail::to($user->email)->send(new VerifyEmailMail($verifyUrl));
 
-        return redirect()->route('login.show')->with('success',
-            'Vui lòng kiểm tra email để xác nhận tài khoản Google trước khi đăng nhập.'
-        );
-    }
+    //     return redirect()->route('login.show')->with('success',
+    //         'Vui lòng kiểm tra email để xác nhận tài khoản Google trước khi đăng nhập.'
+    //     );
+    // }
 }

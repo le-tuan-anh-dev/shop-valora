@@ -20,7 +20,7 @@ class CartController extends Controller
         $userId = session()->get('user_id');
         
         if (!$userId) {
-            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập');
+            return redirect()->route('login.show')->with('error', 'Vui lòng đăng nhập');
         }
 
         $cart = Cart::where('user_id', $userId)->first();

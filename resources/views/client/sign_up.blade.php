@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Sign Up')
+@section('title', 'Velora - Đăng Ký')
 
 @section('content')
 <section class="section-b-space pt-0"> 
@@ -8,12 +8,12 @@
     <div class="custom-container container">
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <h4>Sign Up</h4>
+          <h4>Đăng Ký</h4>
         </div>
         <div class="col-sm-6">
           <ul class="breadcrumb float-end">
             <li class="breadcrumb-item">
-              <a href="{{ route('home') }}">Home</a>
+              <a href="{{ route('home') }}">Trang Chủ</a>
             </li>
           </ul>
         </div>
@@ -27,36 +27,15 @@
     <div class="row align-items-center"> 
       <div class="col-xxl-7 col-6 d-none d-lg-block">
         <div class="login-img">
-          <img class="img-fluid" src="{{ asset('client/assets/images/login/1.svg') }}" alt="Sign Up Illustration">
+          <img class="img-fluid" src="{{ asset('client/assets/images/other-img/dashboard.png') }}" alt="">
         </div>
       </div>
       <div class="col-xxl-4 col-lg-6 mx-auto">
         <div class="log-in-box">
           <div class="log-in-title"> 
-            <h4>Welcome To Katie</h4>
-            <p>Create New Account</p>
+            <h4>Chào Mừng Đến Velora</h4>
+            <p>Tạo tài khoản mới</p>
           </div>
-
-          {{-- Hiển thị message --}}
-          @if(session('success'))
-              <div class="alert alert-success">
-                  {{ session('success') }}
-              </div>
-          @endif
-
-          @if(session('error'))
-              <div class="alert alert-danger">
-                  {{ session('error') }}
-              </div>
-          @endif
-
-          @if($errors->any())
-              <div class="alert alert-danger">
-                  @foreach($errors->all() as $error)
-                      <div>{{ $error }}</div>
-                  @endforeach
-              </div>
-          @endif
 
           <div class="login-box"> 
             <form class="row g-3" method="POST" action="{{ route('register.post') }}">
@@ -68,8 +47,8 @@
                          type="text"
                          name="name"
                          value="{{ old('name') }}"
-                         placeholder="Full Name">
-                  <label for="floatingInputValue">Enter Your Name</label>
+                         placeholder="Họ và Tên">
+                  <label for="floatingInputValue">Nhập Họ và Tên</label>
                   @error('name')
                       <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -80,11 +59,12 @@
                 <div class="form-floating">
                   <input class="form-control @error('email') is-invalid @enderror"
                          id="floatingInputValue1"
-                         type="email"
+                         {{-- type="email" --}}
+                         type="text"
                          name="email"
                          value="{{ old('email') }}"
-                         placeholder="name@example.com">
-                  <label for="floatingInputValue1">Enter Your Email</label>
+                         placeholder="email@example.com">
+                  <label for="floatingInputValue1">Nhập Email</label>
                   @error('email')
                       <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -98,8 +78,8 @@
                          type="text"
                          name="phone"
                          value="{{ old('phone') }}"
-                         placeholder="Phone">
-                  <label for="floatingPhone">Enter Your Phone</label>
+                         placeholder="Số điện thoại">
+                  <label for="floatingPhone">Nhập Số Điện Thoại</label>
                   @error('phone')
                       <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -112,8 +92,8 @@
                          id="floatingInputValue2"
                          type="password"
                          name="password"
-                         placeholder="Password">
-                  <label for="floatingInputValue2">Enter Your Password</label>
+                         placeholder="Mật khẩu">
+                  <label for="floatingInputValue2">Nhập Mật Khẩu</label>
                   @error('password')
                       <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
@@ -126,30 +106,21 @@
                          id="floatingInputValue3"
                          type="password"
                          name="password_confirmation"
-                         placeholder="Confirm Password">
-                  <label for="floatingInputValue3">Confirm Password</label>
+                         placeholder="Xác nhận mật khẩu">
+                  <label for="floatingInputValue3">Xác Nhận Mật Khẩu</label>
                 </div>
               </div>
 
-              <div class="col-12">
-                <div class="forgot-box">
-                  <div>
-                    <input class="custom-checkbox me-2" id="category1" type="checkbox" required>
-                    <label for="category1">
-                      I agree with <span><a href="#">Terms</a></span> and <span><a href="#">Privacy</a></span>
-                    </label>
-                  </div>
-                </div>
-              </div>
+             
 
               <div class="col-12"> 
-                <button class="btn login btn_black sm" type="submit">Sign Up</button>
+                <button class="btn login btn_black sm" type="submit">Đăng Ký</button>
               </div>
             </form>
           </div>
 
           <div class="other-log-in"> 
-            <h6>OR</h6>
+            <h6>HOẶC</h6>
           </div>
 
           <div class="log-in-button"> 
@@ -170,8 +141,8 @@
           <div class="other-log-in"></div>
 
           <div class="sign-up-box"> 
-            <p>Already have an account?</p>
-            <a href="{{ route('login.show') }}">Log In</a>
+            <p>Đã có tài khoản?</p>
+            <a href="{{ route('login.show') }}">Đăng Nhập</a>
           </div>
         </div>
       </div>

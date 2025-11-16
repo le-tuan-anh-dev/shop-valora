@@ -37,47 +37,69 @@
                             <li class="mobile-back" id="mobile-back">
                                 Back<i class="fa-solid fa-angle-right ps-2"></i>
                             </li>
-                            <li><a class="nav-link" href="#">Home</a></li>
+                            <li><a class="nav-link" href="{{ route('home') }}">Home</a></li>
                             <li><a class="nav-link" href="#">Shop</a></li>
                             <li><a class="nav-link" href="#">About</a></li>
                             <li><a class="nav-link" href="#">Contact</a></li>
                         </ul>
                     </nav>
                     
-                    <div class="sub_header">
-                        <div class="toggle-nav" id="toggle-nav">
-                            <i class="fa-solid fa-bars-staggered sidebar-bar"></i>
-                        </div>
-                        <ul class="justify-content-end">
-                            <li> 
-                                <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop">
-                                    <i class="iconsax" data-icon="search-normal-2"></i>
-                                </button>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="iconsax" data-icon="heart"></i>
-                                    <span class="cart_qty_cls">2</span>
-                                </a>
-                            </li>
-                            <li class="onhover-div">
-                                <a href="#"><i class="iconsax" data-icon="user-2"></i></a>
-                                <div class="onhover-show-div user"> 
-                                    <ul> 
-                                        <li><a href="#">Login</a></li>
-                                        <li><a href="#">Register</a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <li class="onhover-div shopping-cart"> 
-                                <a class="p-0" href="{{ route('cart.index') }}"  data-bs-target="#offcanvasRight">
-                                    <div class="shoping-prize">
-                                        <i class="iconsax pe-2" data-icon="basket-2"></i>0 items
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+<div class="sub_header">
+    <div class="toggle-nav" id="toggle-nav">
+        <i class="fa-solid fa-bars sidebar-bar"></i>
+    </div>
+    <ul class="justify-content-end">
+        <li> 
+            <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fa-regular fa-heart"></i>
+                <span class="cart_qty_cls">2</span>
+            </a>
+        </li>
+
+        @if(Auth::check())
+            <!-- Nếu đã đăng nhập -->
+            <li class="onhover-div">
+                <a href="#"><i class="fa-solid fa-user"></i> {{ Auth::user()->name }}</a>
+                <div class="onhover-show-div user"> 
+                    <ul> 
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn-logout">Đăng xuất</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        @else
+            <!-- Nếu chưa đăng nhập -->
+            <li class="onhover-div">
+                <a href="#"><i class="fa-solid fa-user"></i></a>
+                <div class="onhover-show-div user"> 
+                    <ul> 
+                        <li><a href="{{ route('login.show') }}">Đăng nhập</a></li>
+                        <li><a href="{{ route('register.show') }}">Đăng ký</a></li>
+                    </ul>
+                </div>
+            </li>
+        @endif
+
+        <li class="onhover-div shopping-cart"> 
+            <a class="p-0" href="{{ route('cart.index') }}" data-bs-target="#offcanvasRight">
+                <div class="shoping-prize">
+                    <i class="fa-solid fa-cart-shopping pe-2"></i>
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
                 </div>
             </div>
         </div>
