@@ -4,6 +4,7 @@
 
 <head>
     <!-- Title Meta -->
+       <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
     <meta charset="utf-8" />
     <title>Dashboard | Larkon - Responsive Admin Dashboard Template</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -434,6 +435,37 @@
 
                     </li>
 
+
+                    <li class="nav-item">
+  <a
+    class="nav-link"
+    href="{{ route('admin.comments.list') }}"
+    role="button"
+    aria-expanded="false"
+    aria-controls="sidebarComments"
+  >
+    <span class="nav-icon">
+      <iconify-icon icon="solar:chat-dots-bold-duotone"></iconify-icon>
+    </span>
+    <span class="nav-text"> Bình luận </span>
+  </a>
+</li>
+
+<li class="nav-item">
+  <a
+    class="nav-link"
+    href="{{ route('admin.reviews.index') }}"
+    role="button"
+    aria-expanded="false"
+    aria-controls="sidebarReviews"
+  >
+    <span class="nav-icon">
+      <iconify-icon icon="solar:star-bold-duotone"></iconify-icon>
+    </span>
+    <span class="nav-text"> Đánh giá </span>
+  </a>
+</li>
+
                     <li class="nav-item">
                         <a class="nav-link menu-arrow" href="#sidebarInvoice" data-bs-toggle="collapse"
                             role="button" aria-expanded="false" aria-controls="sidebarInvoice">
@@ -590,6 +622,18 @@
     <script src="{{ asset('admin/assets/vendor/jsvectormap/js/jsvectormap.min.js') }}"></script>
     <script src="{{ asset('admin/assets/vendor/jsvectormap/maps/world-merc.js') }}"></script>
     <script src="{{ asset('admin/assets/vendor/jsvectormap/maps/world.js') }}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
+<script>
+    lightbox.option({
+        fadeDuration: 200,
+        imageFadeDuration: 200,
+        resizeDuration: 200,
+        wrapAround: true
+    });
+</script>
 
     @stack('scripts')
 </body>

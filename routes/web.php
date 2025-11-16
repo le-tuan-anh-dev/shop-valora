@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\admin\ReviewController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -76,4 +78,22 @@ Route::prefix('admin')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.list');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+
+
+    //Comments
+     Route::get('/comments', [CommentController::class, 'index'])->name('admin.comments.list');
+     Route::delete('admin/comments/{id}', [CommentController::class, 'destroy'])
+    ->name('admin.comments.destroy');
+     Route::post('/comments/banned-words', [CommentController::class, 'addBannedWord'])->name('admin.comments.banned.add');
+     Route::post('/banned-words/{id}', [CommentController::class, 'updateBannedWord'])->name('admin.comments.banned.update');
+    Route::delete('/comments/banned-words/{id}', [CommentController::class, 'deleteBannedWord'])->name('admin.comments.banned.delete');
+
+    //Reviews
+    Route::get('/reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('admin.reviews.store');
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+        Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
+
+    // XÓA REVIEW + XÓA REPLY
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 });
