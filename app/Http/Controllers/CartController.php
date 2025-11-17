@@ -31,7 +31,7 @@ class CartController extends Controller
                 'total' => 0,
                 'itemCount' => 0,
                 'subtotal' => 0,
-                'shipping' => 0,
+                'shipping' => 30000,
                 'discountProducts' => collect()
             ]);
         }
@@ -40,9 +40,6 @@ class CartController extends Controller
         $cartItemsModel = CartItem::where('cart_id', $cart->id)
             ->with(['product', 'variant'])
             ->get();
-        
-        Log::info('=== CART DEBUG ===');
-        Log::info('Total Items: ' . $cartItemsModel->count());
 
         $cartItems = $cartItemsModel->map(function ($item) {
             $price = 0;
@@ -95,12 +92,9 @@ class CartController extends Controller
 
         // ===== TÍNH TOÁN TỔNG TIỀN =====
         $subtotal = $cartItems->sum('total');
-        $shipping = $subtotal > 500 ? 0 : 50;
+        $shipping = 30000;
         $total = $subtotal + $shipping;
 
-        Log::info('Subtotal: ' . $subtotal);
-        Log::info('Shipping: ' . $shipping);
-        Log::info('Total: ' . $total);
 
         // ===== LẤY SẢN PHẨM GIẢM GIÁ (NGOÀI LOOP) =====
         Log::info('===== GETTING DISCOUNT PRODUCTS =====');
