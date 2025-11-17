@@ -404,145 +404,145 @@ class CheckoutController extends Controller
         }
     }
     // Apply coupon/voucher
-    public function applyCoupon(Request $request)
-    {
-        $validated = $request->validate([
-            'coupon_code' => 'required|string'
-        ]);
+    // public function applyCoupon(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'coupon_code' => 'required|string'
+    //     ]);
 
-        try {
-            $user = auth()->user();
-            $cart = Cart::where('user_id', $user->id)->firstOrFail();
-            $cartItems = CartItem::where('cart_id', $cart->id)
-                ->with(['product', 'variant'])
-                ->get();
+    //     try {
+    //         $user = auth()->user();
+    //         $cart = Cart::where('user_id', $user->id)->firstOrFail();
+    //         $cartItems = CartItem::where('cart_id', $cart->id)
+    //             ->with(['product', 'variant'])
+    //             ->get();
 
-            // Find voucher by code
-            $voucher = Voucher::where('code', $validated['coupon_code'])
-                ->where('is_active', true)
-                ->first();
+    //         // Find voucher by code
+    //         $voucher = Voucher::where('code', $validated['coupon_code'])
+    //             ->where('is_active', true)
+    //             ->first();
 
-            if (!$voucher) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Mã voucher không hợp lệ hoặc đã hết hạn'
-                ], 400);
-            }
+    //         if (!$voucher) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Mã voucher không hợp lệ hoặc đã hết hạn'
+    //             ], 400);
+    //         }
 
-            // Check if voucher is still available
-            if ($voucher->used_count >= $voucher->max_uses) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Mã voucher đã hết lượt sử dụng'
-                ], 400);
-            }
+    //         // Check if voucher is still available
+    //         if ($voucher->used_count >= $voucher->max_uses) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Mã voucher đã hết lượt sử dụng'
+    //             ], 400);
+    //         }
 
-            // Check date range
-            $now = now();
-            if ($voucher->starts_at && $now < $voucher->starts_at) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Mã voucher chưa được kích hoạt'
-                ], 400);
-            }
+    //         // Check date range
+    //         $now = now();
+    //         if ($voucher->starts_at && $now < $voucher->starts_at) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Mã voucher chưa được kích hoạt'
+    //             ], 400);
+    //         }
 
-            if ($voucher->ends_at && $now > $voucher->ends_at) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Mã voucher đã hết hạn'
-                ], 400);
-            }
+    //         if ($voucher->ends_at && $now > $voucher->ends_at) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Mã voucher đã hết hạn'
+    //             ], 400);
+    //         }
 
-            // Check per user limit
-            $userUsageCount = VoucherUsage::where('voucher_id', $voucher->id)
-                ->where('user_id', $user->id)
-                ->count();
+    //         // Check per user limit
+    //         $userUsageCount = VoucherUsage::where('voucher_id', $voucher->id)
+    //             ->where('user_id', $user->id)
+    //             ->count();
 
-            if ($userUsageCount >= $voucher->per_user_limit) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Bạn đã sử dụng mã voucher này quá nhiều lần'
-                ], 400);
-            }
+    //         if ($userUsageCount >= $voucher->per_user_limit) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Bạn đã sử dụng mã voucher này quá nhiều lần'
+    //             ], 400);
+    //         }
 
-            // Check if voucher is assigned to this user or for all users
-            if ($voucher->assigned_user_id && $voucher->assigned_user_id !== $user->id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Mã voucher này không áp dụng cho bạn'
-                ], 400);
-            }
+    //         // Check if voucher is assigned to this user or for all users
+    //         if ($voucher->assigned_user_id && $voucher->assigned_user_id !== $user->id) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Mã voucher này không áp dụng cho bạn'
+    //             ], 400);
+    //         }
 
-            // Calculate subtotal
-            $subtotal = 0;
-            foreach ($cartItems as $item) {
-                $price = $item->variant ? $item->variant->price : $item->product->base_price;
-                $subtotal += $item->quantity * $price;
-            }
+    //         // Calculate subtotal
+    //         $subtotal = 0;
+    //         foreach ($cartItems as $item) {
+    //             $price = $item->variant ? $item->variant->price : $item->product->base_price;
+    //             $subtotal += $item->quantity * $price;
+    //         }
 
-            // Calculate discount based on voucher type
-            $discount = 0;
-            if ($voucher->type === 'percentage') {
-                $discount = round($subtotal * $voucher->value / 100);
-            } else if ($voucher->type === 'fixed') {
-                $discount = $voucher->value;
-            }
+    //         // Calculate discount based on voucher type
+    //         $discount = 0;
+    //         if ($voucher->type === 'percentage') {
+    //             $discount = round($subtotal * $voucher->value / 100);
+    //         } else if ($voucher->type === 'fixed') {
+    //             $discount = $voucher->value;
+    //         }
 
-            // Make sure discount doesn't exceed subtotal
-            if ($discount > $subtotal) {
-                $discount = $subtotal;
-            }
+    //         // Make sure discount doesn't exceed subtotal
+    //         if ($discount > $subtotal) {
+    //             $discount = $subtotal;
+    //         }
 
-            $shipping = 30000;
-            $tax = round(($subtotal - $discount) * 0.1);
-            $total = $subtotal - $discount + $shipping + $tax;
+    //         $shipping = 30000;
+    //         $tax = round(($subtotal - $discount) * 0.1);
+    //         $total = $subtotal - $discount + $shipping + $tax;
 
-            // Store voucher code in session for order creation
-            session(['applied_voucher' => [
-                'id' => $voucher->id,
-                'code' => $voucher->code,
-                'discount' => $discount
-            ]]);
+    //         // Store voucher code in session for order creation
+    //         session(['applied_voucher' => [
+    //             'id' => $voucher->id,
+    //             'code' => $voucher->code,
+    //             'discount' => $discount
+    //         ]]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Mã voucher áp dụng thành công',
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'shipping' => $shipping,
-                'tax' => $tax,
-                'total' => $total
-            ]);
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Mã voucher áp dụng thành công',
+    //             'subtotal' => $subtotal,
+    //             'discount' => $discount,
+    //             'shipping' => $shipping,
+    //             'tax' => $tax,
+    //             'total' => $total
+    //         ]);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi: ' . $e->getMessage()
-            ], 400);
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Lỗi: ' . $e->getMessage()
+    //         ], 400);
+    //     }
+    // }
 
     // Handle payment
-    private function handlePayment($order, $paymentMethod)
-    {
-        switch ($paymentMethod) {
-            case 'Thanh toán khi nhận hàng':
-            case 'COD':
-            case 'cod':
-                $order->update(['status' => 'confirmed']);
-                return redirect()->route('order.success', $order->id)
-                    ->with('success', 'Đơn hàng của bạn đã được đặt thành công!');
+    // private function handlePayment($order, $paymentMethod)
+    // {
+    //     switch ($paymentMethod) {
+    //         case 'Thanh toán khi nhận hàng':
+    //         case 'COD':
+    //         case 'cod':
+    //             $order->update(['status' => 'confirmed']);
+    //             return redirect()->route('order.success', $order->id)
+    //                 ->with('success', 'Đơn hàng của bạn đã được đặt thành công!');
             
-            case 'Stripe':
-            case 'stripe':
-                return redirect()->route('payment.stripe', $order->id);
+    //         case 'Stripe':
+    //         case 'stripe':
+    //             return redirect()->route('payment.stripe', $order->id);
             
-            case 'PayPal':
-            case 'paypal':
-                return redirect()->route('payment.paypal', $order->id);
+    //         case 'PayPal':
+    //         case 'paypal':
+    //             return redirect()->route('payment.paypal', $order->id);
             
-            default:
-                return redirect()->back()->with('error', 'Phương thức thanh toán không hỗ trợ');
-        }
-    }
+    //         default:
+    //             return redirect()->back()->with('error', 'Phương thức thanh toán không hỗ trợ');
+    //     }
+    // }
 }

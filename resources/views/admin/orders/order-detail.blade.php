@@ -1,18 +1,18 @@
 @extends('admin.layouts.main_nav')
 
 @section('content')
+
           @php
               $paymentMethods = [
-                  'cod' => 'Thanh toán khi nhận hàng',
-                  'bank_transfer' => 'Chuyển khoản ngân hàng',
+                  '1' => 'Thanh toán khi nhận hàng',
+                  '2' => 'Chuyển khoản',
                   'credit_card' => 'Thẻ tín dụng',
                   'momo' => 'Ví MoMo',
                   'paypal' => 'PayPal'
               ];
-              $paymentMethodLabel = $paymentMethods[$order->payment_method] ?? ucfirst($order->payment_method);
+              $paymentMethodLabel = $paymentMethods[$order->payment_method_id] ?? ucfirst($order->payment_method);
           @endphp
           <div class="page-content">
-
                <!-- Start Container -->
                <div class="container-xxl">
 
@@ -262,18 +262,36 @@
                                                                                           </p>
                                                                                      @endif
                                                                                      @if($item->product_options)
-                                                                                          @php
-                                                                                              $options = is_array($item->product_options) ? $item->product_options : json_decode($item->product_options, true);
-                                                                                          @endphp
-                                                                                          @if($options)
-                                                                                               <p class="text-muted mb-0 mt-1 fs-13">
-                                                                                                    @foreach($options as $key => $value)
-                                                                                                         <span>{{ ucfirst($key) }}: {{ $value }}</span>
-                                                                                                         @if(!$loop->last), @endif
-                                                                                                    @endforeach
-                                                                                               </p>
-                                                                                          @endif
+                                                                                     @php
+                                                                                          // Handle product_options - could be string or array
+                                                                                          if (is_string($item->product_options)) {
+                                                                                               $decoded = json_decode($item->product_options, true);
+                                                                                          } else {
+                                                                                               $decoded = $item->product_options;
+                                                                                          }
+                                                                                          
+                                                                                          // Build options display
+                                                                                          $optionsDisplay = [];
+                                                                                          if (is_array($decoded)) {
+                                                                                               foreach ($decoded as $option) {
+                                                                                                    if (is_array($option) && isset($option['attribute']) && isset($option['value'])) {
+                                                                                                         
+                                                                                                         $optionsDisplay[] = ucfirst($option['attribute']) . ': ' . $option['value'];
+                                                                                                    } elseif (is_array($option)) {
+                                                                                                         
+                                                                                                         $optionsDisplay[] = implode(' - ', $option);
+                                                                                                    }
+                                                                                               }
+                                                                                          }
+                                                                                     @endphp
+                                                                                     
+                                                                                     @if(!empty($optionsDisplay))
+                                                                                          <p class="text-muted mb-0 mt-1 fs-13">
+                                                                                               <span></span>{{ implode(', ', $optionsDisplay) }}
+                                                                                          </p>
                                                                                      @endif
+                                                                                     @endif
+
                                                                                 </div>
                                                                            </div>
                                                                       </td>

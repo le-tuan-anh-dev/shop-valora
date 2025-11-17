@@ -71,7 +71,7 @@
                                         <div class="card-body">
                                              <div class="d-flex align-items-center justify-content-between">
                                                   <div>
-                                                       <h4 class="card-title mb-2">Chờ xử lý</h4>
+                                                       <h4 class="card-title mb-2">Chờ xác nhận</h4>
                                                        <p class="text-muted fw-medium fs-22 mb-0">{{ number_format($stats['pending_orders']) }}</p>
                                                   </div>
                                                   <div>
@@ -248,11 +248,11 @@
                                                                  <td>
                                                                       <div class="d-flex gap-2">
                                                                            <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-title="Xem chi tiết">
-                                                                                <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
+                                                                                <iconify-icon icon="solar:eye-bold-duotone"></iconify-icon>
                                                                            </a>
                                                                            <div class="dropdown">
-                                                                                <button class="btn btn-soft-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="Cập nhật trạng thái">
-                                                                                     <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
+                                                                                <button class="btn btn-sm btn-icon btn-light" type="button" data-bs-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="Cập nhật trạng thái">
+                                                                                     <iconify-icon icon="solar:pen-bold-duotone"></iconify-icon>
                                                                                 </button>
                                                                                 <ul class="dropdown-menu">
                                                                                      @php
