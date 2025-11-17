@@ -5,6 +5,7 @@ namespace App\Models\Admin;
 use App\Models\Admin\Attributes;
 use App\Models\admin\AttributeValue;
 use App\Models\Admin\Product;
+use App\Models\Admin\VariantAttributeValue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,6 +44,12 @@ class ProductVariant extends Model
             'variant_id',
             'attribute_value_id'
         )->withPivot(['variant_id', 'attribute_value_id']);
+    }
+
+    // Quan hệ tới VariantAttributeValue (pivot table)
+    public function variantAttributeValues(): HasMany
+    {
+        return $this->hasMany(VariantAttributeValue::class, 'variant_id');
     }
 
     //  Quan hệ tới Attribute (qua AttributeValue)

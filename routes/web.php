@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\admin\ReviewController;
 use App\Http\Controllers\AuthController;
@@ -19,6 +20,9 @@ use Illuminate\Support\Facades\Mail;
 
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+//shop 
+Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 
 // đăng ký đăng nhập
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
