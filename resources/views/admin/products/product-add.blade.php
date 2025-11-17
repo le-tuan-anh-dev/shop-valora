@@ -75,7 +75,7 @@
                         <h5 class="fw-semibold">Giá sản phẩm</h5>
                         <div class="mb-3">
                             <label class="form-label">Giá nhập (đ) *</label>
-                            <input type="number" step="0.01" name="cost_price" class="form-control @error('cost_price') is-invalid @enderror" value="{{ old('cost_price') }}">
+                            <input type="number" min=0  name="cost_price" class="form-control @error('cost_price') is-invalid @enderror" value="{{ old('cost_price') }}">
                             @error('cost_price')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -83,7 +83,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Giá bán (đ) *</label>
-                            <input type="number" step="0.01" name="base_price" class="form-control @error('base_price') is-invalid @enderror" value="{{ old('base_price') }}" id="base-price-input">
+                            <input type="number"  name="base_price" class="form-control @error('base_price') is-invalid @enderror" value="{{ old('base_price') }}" id="base-price-input">
                             @error('base_price')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -91,7 +91,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Giá khuyến mãi (đ)</label>
-                            <input type="number" step="0.01" name="discount_price" class="form-control @error('discount_price') is-invalid @enderror" value="{{ old('discount_price') }}">
+                            <input type="number" min=0 name="discount_price" class="form-control @error('discount_price') is-invalid @enderror" value="{{ old('discount_price') }}">
                             @error('discount_price')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -99,7 +99,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Tồn kho *</label>
-                            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock') }}" id="product-stock-input">
+                            <input type="number"  name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock') }}" id="product-stock-input">
                             @error('stock')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

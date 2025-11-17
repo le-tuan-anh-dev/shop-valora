@@ -7,6 +7,7 @@
     <meta name="description" content="Katie"/>
     <meta name="keywords" content="Katie"/>
     <meta name="author" content="pixelstrap"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <title>@yield('title', 'Katie - Online Fashion Store')</title>
     
@@ -17,7 +18,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com/"/>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet"/>
-    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
     <!-- CSS Files -->
     <link rel="stylesheet" type="text/css" href="{{ asset('client/assets/css/vendors/fontawesome.css')}}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('client/assets/css/vendors/iconsax.css')}}"/>
@@ -56,5 +59,10 @@
     <script src="{{ asset('client/assets/js/script.js')}}"></script>
     
     @stack('scripts')
+    @if(session('success'))
+    <div class="alert alert-success text-center">
+        {{ session('success') }}
+    </div>
+@endif
 </body>
 </html>
