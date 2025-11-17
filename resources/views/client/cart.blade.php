@@ -4,6 +4,18 @@
 
 @section('content')
 
+<!-- Flash Messages -->
+@if (session('success'))
+    <div class="alert alert-success position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        {{ session('success') }}
+    </div>
+@endif
+@if (session('error'))
+    <div class="alert alert-danger position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        {{ session('error') }}
+    </div>
+@endif
+
 <section class="section-b-space pt-0"> 
   <div class="heading-banner">
     <div class="custom-container container">
@@ -96,8 +108,8 @@
                         </span>
                       </td>
                       <td>
-                        <a class="deleteButton" href="javascript:void(0)">
-                          <i class="iconsax" data-icon="trash"></i>
+                        <a class="deleteButton" href="javascript:void(0)" style="color: #e74c3c; cursor: pointer; font-size: 18px;">
+                          <i class="fa-solid fa-trash-can"></i>
                         </a>
                       </td>
                     </tr>
@@ -139,7 +151,7 @@
       @endif
     </div>
   </div>
-  @if($itemCount > 0)
+  @if($itemCount >= 0)
   <div class="col-12"> 
     <div class="cart-slider"> 
       <div class="d-flex align-items-start justify-content-between">
@@ -204,11 +216,25 @@
 
 @push('scripts')
 <script>
+  // Hàm hiển thị thông báo
+  function showNotification(message, type = 'success') {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${alertClass} position-fixed top-0 end-0 m-3`;
+    alertDiv.style.zIndex = '9999';
+    alertDiv.textContent = message;
+    document.body.appendChild(alertDiv);
+    
+    // Tự động ẩn sau 3 giây
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 3000);
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     const clearAllButton = document.getElementById('clearAllButton');
     const cartTable = document.getElementById('cart-tbody');
     
-    // Lấy CSRF token từ meta tag hoặc form
     let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     
     if (!csrfToken) {
@@ -217,7 +243,7 @@
     
     if (!csrfToken) {
       console.error('CSRF Token không tìm thấy!');
-      alert('Lỗi bảo mật: không tìm thấy CSRF token');
+      showNotification('Lỗi bảo mật: không tìm thấy CSRF token', 'error');
     }
 
     console.log('CSRF Token:', csrfToken);
@@ -237,15 +263,15 @@
         .then(data => {
           console.log('Clear response:', data);
           if (data.success) {
-            alert('Đã xóa tất cả sản phẩm');
-            location.reload();
+            showNotification('Đã xóa tất cả sản phẩm', 'success');
+            setTimeout(() => location.reload(), 1000);
           } else {
-            alert('Lỗi: ' + data.error);
+            showNotification('Lỗi: ' + data.error, 'error');
           }
         })
         .catch(err => {
           console.error('Error:', err);
-          alert('Lỗi khi xóa sản phẩm');
+          showNotification('Lỗi khi xóa sản phẩm', 'error');
         });
       }
     });
@@ -287,7 +313,7 @@
           .then(data => {
             console.log('Delete response:', data);
             if (data.success) {
-              alert(data.message || 'Xóa sản phẩm thành công');
+              showNotification(data.message || 'Xóa sản phẩm thành công', 'success');
               row.remove();
               updateCartTotal();
               
@@ -295,12 +321,12 @@
                 setTimeout(() => location.reload(), 500);
               }
             } else {
-              alert('Lỗi: ' + (data.error || 'Không thể xóa sản phẩm'));
+              showNotification('Lỗi: ' + (data.error || 'Không thể xóa sản phẩm'), 'error');
             }
           })
           .catch(err => {
             console.error('Fetch Error:', err);
-            alert('Lỗi khi xóa sản phẩm: ' + err.message);
+            showNotification('Lỗi khi xóa sản phẩm: ' + err.message, 'error');
           });
         }
       });
@@ -321,7 +347,7 @@
         });
 
         if (quantity > maxStock) {
-          alert(`Chỉ còn ${maxStock} sản phẩm trong kho`);
+          showNotification(`Chỉ còn ${maxStock} sản phẩm trong kho`, 'error');
           this.value = maxStock;
           return;
         }
@@ -331,7 +357,6 @@
           return;
         }
 
-        // Lấy giá từ cell price
         const priceCell = row.querySelector('.item-price');
         const priceText = priceCell.textContent.trim();
         const price = parseInt(priceText.replace(/[^\d]/g, ''));
@@ -358,20 +383,19 @@
               maximumFractionDigits: 0
             });
             
-            // Tính tổng tiền item = giá × số lượng
             const itemTotal = data.itemTotal;
             row.querySelector('.item-total').textContent = formatter.format(itemTotal) + ' đ';
             
             console.log('Updated item total to:', itemTotal);
             updateCartTotal();
           } else {
-            alert(data.error);
+            showNotification(data.error, 'error');
             location.reload();
           }
         })
         .catch(err => {
           console.error('Error updating quantity:', err);
-          alert('Lỗi khi cập nhật số lượng');
+          showNotification('Lỗi khi cập nhật số lượng', 'error');
         });
       });
     });
