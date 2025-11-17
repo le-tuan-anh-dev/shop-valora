@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\admin\ReviewController;
 use App\Http\Controllers\AuthController;
@@ -20,13 +21,16 @@ use App\Http\Controllers\CheckoutController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// đăng ký đăng nhập 
+//shop
+Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+
+// đăng ký đăng nhập
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login-form', [AuthController::class, 'showLoginForm'])->name('login.show');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.show');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
-// Google 
+// Google
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 // Xác nhận email
@@ -38,11 +42,11 @@ Route::get('/login-demo', function () {
 Route::prefix('products')->group(function () {
     // Hiển thị trang product detail
     Route::get('{id}', [ProductDetailController::class, 'show'])->name('products.detail');
-    
+
     Route::post('{id}/get-available-attributes', [ProductDetailController::class, 'getAvailableAttributes']);
     Route::post('{id}/get-variant', [ProductDetailController::class, 'getVariant']);
     Route::post('{id}/check-variants', [ProductDetailController::class, 'checkMultipleVariants']);
-    
+
     // Add to cart
     Route::post('add-to-cart', [ProductDetailController::class, 'addToCart'])->name('cart.add');
 });
@@ -54,16 +58,16 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/cart/update-quantity/{cartItemId}', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
     Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
     Route::get('/cart/total', [CartController::class, 'getCartTotal'])->name('cart.total');
-    
+
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Checkout
-    
+
     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('place-order');
     Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply-coupon');
-    
+
     Route::post('/checkout/address', [CheckoutController::class, 'storeAddress'])->name('checkout.store-address');
     Route::put('/checkout/address/{id}', [CheckoutController::class, 'updateAddress'])->name('checkout.update-address');
     Route::delete('/checkout/address/{id}', [CheckoutController::class, 'deleteAddress'])->name('checkout.delete-address');

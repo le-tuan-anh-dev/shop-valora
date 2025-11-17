@@ -38,7 +38,7 @@
                                 Back<i class="fa-solid fa-angle-right ps-2"></i>
                             </li>
                             <li><a class="nav-link" href="{{ route('home') }}">Home</a></li>
-                            <li><a class="nav-link" href="#">Shop</a></li>
+                            <li><a class="nav-link" href="{{ route('shop.index') }}">Shop</a></li>
                             <li><a class="nav-link" href="#">About</a></li>
                             <li><a class="nav-link" href="#">Contact</a></li>
                         </ul>

@@ -86,7 +86,6 @@ class DatabaseSeeder extends Seeder
             [
                 'product_id' => 1,
                 'sku' => 'ATN-BLACK-M',
-                'title' => 'Áo thun nam đen size M',
                 'price' => 180000,
                 'stock' => 20,
                 'image_url' => 'ao-thun-nam-black-m.jpg',
@@ -97,7 +96,6 @@ class DatabaseSeeder extends Seeder
             [
                 'product_id' => 1,
                 'sku' => 'ATN-WHITE-L',
-                'title' => 'Áo thun nam trắng size L',
                 'price' => 180000,
                 'stock' => 15,
                 'image_url' => 'ao-thun-nam-white-l.jpg',
@@ -110,7 +108,6 @@ class DatabaseSeeder extends Seeder
             [
                 'product_id' => 2,
                 'sku' => 'QJN-BLUE-28',
-                'title' => 'Quần jeans nữ xanh size 28',
                 'price' => 350000,
                 'stock' => 15,
                 'image_url' => 'quan-jeans-nu-blue-28.jpg',
@@ -121,7 +118,6 @@ class DatabaseSeeder extends Seeder
             [
                 'product_id' => 2,
                 'sku' => 'QJN-BLUE-30',
-                'title' => 'Quần jeans nữ xanh size 30',
                 'price' => 350000,
                 'stock' => 15,
                 'image_url' => 'quan-jeans-nu-blue-30.jpg',
@@ -134,7 +130,6 @@ class DatabaseSeeder extends Seeder
             [
                 'product_id' => 3,
                 'sku' => 'MULUOI-BLACK',
-                'title' => 'Mũ lưỡi trai đen',
                 'price' => 100000,
                 'stock' => 20,
                 'image_url' => 'mu-luoi-trai-black.jpg',
@@ -145,7 +140,6 @@ class DatabaseSeeder extends Seeder
             [
                 'product_id' => 3,
                 'sku' => 'MULUOI-WHITE',
-                'title' => 'Mũ lưỡi trai trắng',
                 'price' => 100000,
                 'stock' => 20,
                 'image_url' => 'mu-luoi-trai-white.jpg',
