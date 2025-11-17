@@ -14,53 +14,64 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\admin\ReviewController;
 use App\Http\Controllers\AuthController;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
+
+
 
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// đăng ký đăng nhập
+// ==== AUTH ====
+
+// Form
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.show');
-Route::get('/verify-email', [AuthController::class, 'verifyEmail'])->name('auth.verify');
+
+// Submit
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 // Google Login
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
+// Xác nhận email cho cả đăng ký thường & Google
+Route::get('/verify-email', [AuthController::class, 'verifyEmail'])->name('auth.verify');
+Route::get('/login-demo', function () {
+    return view('client.login');
+});
+
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
 Route::prefix('products')->group(function () {
-    // Hiển thị trang product detail 
+    // Hiển thị trang product detail (Blade view)
     Route::get('{id}', [ProductDetailController::class, 'show'])->name('products.detail');
     
     Route::post('{id}/get-available-attributes', [ProductDetailController::class, 'getAvailableAttributes']);
     Route::post('{id}/get-variant', [ProductDetailController::class, 'getVariant']);
     Route::post('{id}/check-variants', [ProductDetailController::class, 'checkMultipleVariants']);
+    
     // Add to cart
     Route::post('add-to-cart', [ProductDetailController::class, 'addToCart'])->name('cart.add');
 });
 
 
-Route::get('/debug-middleware', function () {
-    $kernel = app('Illuminate\Contracts\Http\Kernel');
-    dd($kernel->getRouteMiddleware());
+Route::get('/create-session', function () {
+    session()->put('user_id', 1);
+    return "Session user_id created! ID: " . session()->get('user_id');
 });
-Route::middleware('auth')->middleware('role:customer')->group(function () {
+
+Route::middleware(['web'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/remove/{cartItemId}', [CartController::class, 'removeItem'])->name('cart.removeItem');
     Route::post('/cart/update-quantity/{cartItemId}', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
     Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
     Route::get('/cart/total', [CartController::class, 'getCartTotal'])->name('cart.total');
-
-    // đăng xuất
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
-Route::get('/test-role', function () {
-    return Auth::user()->role ?? 'Not logged in';
-});
-
-Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
+Route::prefix('admin')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');

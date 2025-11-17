@@ -73,8 +73,8 @@ class AuthController extends Controller
         $verifyUrl = route('auth.verify', ['token' => $token]);
         Mail::to($user->email)->send(new VerifyEmailMail($verifyUrl));
 
-        return redirect()->route('login.show')
-            ->with('success', 'Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.');
+        return view('client.register_success');
+            
     }
 
     // ==== XÁC NHẬN EMAIL (DÙNG CHUNG CHO CẢ FORM & GOOGLE) ====
@@ -92,7 +92,7 @@ class AuthController extends Controller
 
         if (!$user) {
             return redirect()->route('login.show')
-                ->with('error', 'Token xác nhận không hợp lệ hoặc đã được sử dụng.');
+                ->with('error', 'Tài khoản đã được xác thực.');
         }
 
         // Kích hoạt tài khoản
@@ -102,6 +102,8 @@ class AuthController extends Controller
         $user->save();
 
         Auth::login($user);
+        session(['user_id' => $user->id]);
+
 
         return redirect()->route('home')->with('success', 'Tài khoản của bạn đã được kích hoạt thành công!');
     }

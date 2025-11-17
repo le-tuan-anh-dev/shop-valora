@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Online Fashion Store')
+@section('title', ' Online Fashion Store')
 
 @section('content')
 @if (session('success'))
