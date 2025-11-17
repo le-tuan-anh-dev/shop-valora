@@ -53,6 +53,5 @@ Route::prefix('admin')->group(function () {
     Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 });
 
-});
 
 

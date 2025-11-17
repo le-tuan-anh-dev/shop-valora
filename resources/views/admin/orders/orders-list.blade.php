@@ -213,6 +213,7 @@
                                                                  <td>
                                                                       <a href="#" class="link-primary fw-medium">{{ $order->customer_name }}</a>
                                                                       <p class="text-muted mb-0 fs-12">{{ $order->customer_email }}</p>
+                                                                      <p class="text-muted mb-0 fs-12">{{ $order->customer_phone }}</p>
                                                                  </td>
                                                                  <td>{{ number_format($order->total_amount, 0, ',', '.') }}₫</td>
                                                                  <td>
