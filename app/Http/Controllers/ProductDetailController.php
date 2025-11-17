@@ -446,7 +446,7 @@ public function addToCart(Request $request)
 
     $cart->touch();
      if ($request->has('buy_now') && $request->buy_now == '1') {
-        return redirect()->back()->with('success', 'Sản phẩm đã thêm vào giỏ hàng và sang trang cart!');
+        return redirect()->route('cart.index')->with('success', 'Sản phẩm đã thêm vào giỏ hàng');
     }
 
     return back()->with('success', 'Thêm sản phẩm vào giỏ hàng thành công');
