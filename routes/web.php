@@ -84,6 +84,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Ordet success
     Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
 });
+// MoMo Callback (không cần auth)
+Route::get('/momo/callback', [CheckoutController::class, 'momoCallback'])->name('momo.callback');
 
 // Admin routes - tất cả routes
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {

@@ -168,7 +168,7 @@
                                                 {{-- Icon chỉ còn wishlist --}}
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                       <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -229,7 +229,7 @@
 
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -288,7 +288,7 @@
 
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                        <i class="fas fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -525,8 +525,7 @@
                         {{-- Icons --}}
                         <div class="cart-info-icon">
                             <a class="wishlist-icon" href="javascript:void(0)" tabindex="0">
-                                <i class="iconsax" data-icon="heart" aria-hidden="true" 
-                                    data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                <i class="fas fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                             </a>
                         </div>
                     </div>
