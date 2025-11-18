@@ -3,6 +3,18 @@
 @section('title', 'Velora - Order Success')
 
 @section('content')
+
+<!-- Flash Messages -->
+@if (session('success'))
+    <div class="alert alert-success position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        {{ session('success') }}
+    </div>
+@endif
+@if (session('error'))
+    <div class="alert alert-danger position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        {{ session('error') }}
+    </div>
+@endif
 <section class="section-b-space py-0">
   <div class="container-fluid">
     <div class="row">

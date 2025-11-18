@@ -519,7 +519,7 @@ class CheckoutController extends Controller
                 session()->forget('pending_order');
 
                 return redirect()->route('order.success', $order->id)
-                    ->with('success', 'Thanh toán thành công! Đơn hàng đã được xác nhận.');
+                    ->with('success', 'Thanh toán thành công!');
 
             } catch (\Exception $e) {
                 Log::error('Lỗi tạo đơn hàng từ MoMo callback: ' . $e->getMessage());
