@@ -144,7 +144,7 @@
                   </div>
                   
                   {{-- Available Vouchers List --}}
-                  @if($availableVouchers && count($availableVouchers) > 0)
+                  {{-- @if($availableVouchers && count($availableVouchers) > 0)
                     <div class="mt-3">
                       <p class="text-muted mb-2"><small><strong>Các voucher có sẵn:</strong></small></p>
                       @foreach($availableVouchers as $voucher)
@@ -173,7 +173,7 @@
                         </div>
                       @endforeach
                     </div>
-                  @endif
+                  @endif --}}
                 </div>
                 <div class="total">
                   <h6>Tổng cộng :</h6>

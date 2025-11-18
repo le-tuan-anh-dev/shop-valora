@@ -312,7 +312,7 @@
                                                 <span class="lable-1">GIẢM GIÁ</span>
                                             @endif
                                             <a class="label-2 wishlist-icon" href="javascript:void(0)" tabindex="0">
-                                                <i class="iconsax" data-icon="heart" aria-hidden="true" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                              <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                             </a>
                                         </div>
                                         <div class="product-image">
