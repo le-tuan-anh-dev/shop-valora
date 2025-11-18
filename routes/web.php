@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -16,6 +17,9 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\admin\ReviewController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\PostController as ClientPostController;
+
 
 // Trang chủ
 
@@ -23,6 +27,11 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 //shop
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+
+
+//post
+Route::get('/posts', [ClientPostController::class, 'index'])->name('posts.index');
+Route::get('/posts/{id}', [ClientPostController::class, 'show'])->name('posts.show');
 
 // đăng ký đăng nhập
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -109,7 +118,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
     // Comments
-    Route::get('/comments', [CommentController::class, 'index'])->name('admin.comments.list');
+    //Comments
+     Route::get('/comments', [CommentController::class, 'indexComments'])
+    ->name('admin.comments.list');
+
+Route::delete('/comments/{id}', [CommentController::class, 'destroy'])
+    ->name('admin.comments.destroy');
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
     Route::post('/comments/banned-words', [CommentController::class, 'addBannedWord'])->name('admin.comments.banned.add');
     Route::post('/banned-words/{id}', [CommentController::class, 'updateBannedWord'])->name('admin.comments.banned.update');
@@ -120,4 +134,16 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store'])->name('admin.reviews.store');
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
+
+     // XÓA REVIEW + XÓA REPLY
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+
+    Route::resource('posts', PostController::class)->names('admin.posts');
+
+    
+    
+    // Route riêng để CKEditor gửi file ảnh lên
+     Route::post('/admin/tinymce/upload', [PostController::class, 'tinymceUpload'])
+    ->withoutMiddleware([VerifyCsrfToken::class])
+    ->name('admin.tinymce.upload');
 });
