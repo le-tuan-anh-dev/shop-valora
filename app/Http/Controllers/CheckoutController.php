@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderConfirmation;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Admin\Order;
@@ -14,6 +15,8 @@ use App\Models\Voucher;
 use App\Models\VoucherUsage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -59,8 +62,7 @@ class CheckoutController extends Controller
         // Calculate totals
         $subtotal = $formattedCartItems->sum('total');
         $shipping = 30000;
-        $tax = round($subtotal * 0.1);
-        $total = $subtotal + $shipping + $tax;
+        $total = $subtotal + $shipping ;
 
         // Get user addresses
         $shippingAddresses = UserAddress::where('user_id', $user->id)->get();
@@ -76,7 +78,6 @@ class CheckoutController extends Controller
             'shippingAddresses' => $shippingAddresses,
             'subtotal' => $subtotal,
             'shipping' => $shipping,
-            'tax' => $tax,
             'total' => $total,
             'paymentMethods' => $paymentMethods,
             'availableVouchers' => $availableVouchers
@@ -395,9 +396,26 @@ class CheckoutController extends Controller
             //  XÓA GIỎ HÀNG
             CartItem::where('cart_id', $cart->id)->delete();
 
-            //  REDIRECT ĐẾN TRANG THANH TOÁN HOẶC XÁC NHẬN
-            return redirect()->route('checkout')
-                ->with('success', 'Đơn hàng đã được tạo!');
+
+            // GỬI EMAIL ĐƠN HÀNG
+            try {
+            $orderItems = OrderItem::where('order_id', $order->id)->get();
+            
+                // Thử gửi email
+                Mail::to($order->customer_email)->send(new OrderConfirmation($order, $orderItems));
+                
+                Log::info('Email gửi thành công cho: ' . $order->customer_email);
+            } catch (\Exception $mailException) {
+                // Ghi log lỗi nhưng không block order
+                Log::error('Lỗi gửi email: ' . $mailException->getMessage());
+                
+                // Có thể thêm thông báo cho admin
+            }
+
+            
+            // TRANG THANH TIANS THÀNH CÔNG
+            return redirect()->route('order.success', $order->id)
+            ->with('success', 'Đơn hàng đã được tạo thành công!');
 
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Lỗi: ' . $e->getMessage());
@@ -545,4 +563,28 @@ class CheckoutController extends Controller
     //             return redirect()->back()->with('error', 'Phương thức thanh toán không hỗ trợ');
     //     }
     // }
+
+
+public function orderSuccess(Order $order)
+{
+
+    // Kiểm tra xem user có quyền truy cập không
+    if ($order->user_id !== auth()->id()) {
+        return redirect()->route('home')->with('error', 'Không có quyền truy cập');
+    }
+
+    try {
+        // Lấy các item trong đơn hàng
+        $orderItems = $order->orderItems()->with(['product', 'variant'])->get();
+        
+    
+        
+        return view('client.order_success', [
+            'order' => $order,
+            'orderItems' => $orderItems,
+        ]);
+    } catch (\Exception $e) {
+        dd('Lỗi: ' . $e->getMessage());
+    }
+}
 }
