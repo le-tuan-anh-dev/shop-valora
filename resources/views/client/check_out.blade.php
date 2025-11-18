@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Check Out')
+@section('title', 'Velora - Check Out')
 
 @section('content')
 
@@ -124,6 +124,9 @@
                             {{ implode(', ', array_column($item['attribute_values'], 'value')) }}
                           @endif
                         </span>
+                        <div style="margin-top: 5px; font-size: 0.9rem; color: #666;">
+                          <span>x<strong>{{ $item['quantity'] }}</strong></span>
+                        </div>
                       </div>
                       <p>{{ number_format($item['total'], 0, ',', '.') }} đ</p>
                     </li>

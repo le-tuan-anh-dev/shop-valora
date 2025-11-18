@@ -284,7 +284,7 @@ class CartController extends Controller
                 $subtotal += $price * $item->quantity;
             }
 
-            $shipping = $subtotal > 500 ? 0 : 50;
+            $shipping = 30000;
             $total = $subtotal + $shipping;
 
             return response()->json([

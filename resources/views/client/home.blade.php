@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Online Fashion Store')
+@section('title', 'Velora - Online Fashion Store')
 
 @section('content')
     {{-- danh mục và banner --}}

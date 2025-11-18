@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Cart')
+@section('title', 'Velora - Cart')
 
 @section('content')
 

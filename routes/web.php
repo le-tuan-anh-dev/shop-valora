@@ -60,7 +60,7 @@ Route::prefix('products')->group(function () {
     Route::post('add-to-cart', [ProductDetailController::class, 'addToCart'])->name('cart.add');
 });
 
-// Customer routes - chỉ giỏ hàng và checkout
+// Customer  giỏ hàng và checkout
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/remove/{cartItemId}', [CartController::class, 'removeItem'])->name('cart.removeItem');
@@ -80,6 +80,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/checkout/address', [CheckoutController::class, 'storeAddress'])->name('checkout.store-address');
     Route::put('/checkout/address/{id}', [CheckoutController::class, 'updateAddress'])->name('checkout.update-address');
     Route::delete('/checkout/address/{id}', [CheckoutController::class, 'deleteAddress'])->name('checkout.delete-address');
+
+    // Ordet success
+    Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
 });
 
 // Admin routes - tất cả routes
