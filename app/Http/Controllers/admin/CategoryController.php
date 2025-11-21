@@ -27,10 +27,10 @@ class CategoryController extends Controller
             'name' => 'required|string|max:100',
             'slug' => 'nullable|string|max:150|unique:categories,slug',
             'parent_id' => 'nullable|exists:categories,id',
-            'is_active' => 'required|boolean', // checkbox luôn gửi 0 hoặc 1
+            'is_active' => 'required|boolean',
         ]);
 
-        // ✅ Nếu không nhập slug thì tự sinh từ name
+        // Nếu không nhập slug thì tự sinh từ name
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
         }
@@ -62,7 +62,7 @@ class CategoryController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
-        // ✅ Nếu không nhập slug thì tự sinh từ name
+        //  Nếu không nhập slug thì tự sinh từ name
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
         }

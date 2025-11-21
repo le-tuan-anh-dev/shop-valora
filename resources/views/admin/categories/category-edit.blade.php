@@ -40,11 +40,11 @@
 
         {{-- Form Card --}}
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
-                            <iconify-icon icon="solar:pen-bold-duotone" class="me-2"></iconify-icon>
+                           
                             Thông tin danh mục
                         </h5>
                     </div>
@@ -57,7 +57,7 @@
                             {{-- Tên danh mục --}}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">
-                                    <iconify-icon icon="solar:tag-bold-duotone" class="me-1"></iconify-icon>
+                                    
                                     Tên danh mục
                                     <span class="text-danger">*</span>
                                 </label>
@@ -77,7 +77,7 @@
                             {{-- Slug --}}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">
-                                    <iconify-icon icon="solar:link-bold-duotone" class="me-1"></iconify-icon>
+                                    
                                     Slug
                                 </label>
                                 <input type="text" 
@@ -96,7 +96,7 @@
                             {{-- Danh mục cha --}}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">
-                                    <iconify-icon icon="solar:hierarchy-square-bold-duotone" class="me-1"></iconify-icon>
+                                    
                                     Danh mục cha
                                 </label>
                                 <select name="parent_id" class="form-select @error('parent_id') is-invalid @enderror">
@@ -121,7 +121,7 @@
                             {{-- Trạng thái --}}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold mb-2">
-                                    <iconify-icon icon="solar:eye-bold-duotone" class="me-1"></iconify-icon>
+                                  
                                     Trạng thái
                                 </label>
                                 <div class="form-check form-switch">
@@ -142,12 +142,8 @@
 
                         {{-- Form Footer --}}
                         <div class="card-footer bg-light d-flex gap-2 justify-content-end">
-                            <a href="{{ route('admin.categories.list') }}" class="btn btn-secondary">
-                                <iconify-icon icon="solar:close-circle-linear" class="me-1"></iconify-icon>
-                                Hủy
-                            </a>
                             <button type="submit" class="btn btn-primary">
-                                <iconify-icon icon="solar:check-circle-bold-duotone" class="me-1"></iconify-icon>
+                               
                                 Cập nhật
                             </button>
                         </div>
@@ -156,61 +152,7 @@
             </div>
 
             {{-- Side Info --}}
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <iconify-icon icon="solar:info-square-bold-duotone" class="me-2"></iconify-icon>
-                            Thông tin
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <p class="text-muted mb-1">ID:</p>
-                            <p class="fw-semibold">#{{ $category->id }}</p>
-                        </div>
-
-                        <div class="mb-3">
-                            <p class="text-muted mb-1">Ngày tạo:</p>
-                            <p class="fw-semibold">{{ $category->created_at->format('d/m/Y H:i') }}</p>
-                        </div>
-
-                        <div class="mb-3">
-                            <p class="text-muted mb-1">Cập nhật lần cuối:</p>
-                            <p class="fw-semibold">{{ $category->updated_at->format('d/m/Y H:i') }}</p>
-                        </div>
-
-                        <div class="mb-3">
-                            <p class="text-muted mb-1">Số sản phẩm:</p>
-                            <p class="fw-semibold">
-                                <span class="badge bg-light-primary text-primary">
-                                    {{ $category->products_count ?? 0 }}
-                                </span>
-                            </p>
-                        </div>
-
-                        <hr>
-
-                        <div>
-                            <p class="text-muted mb-2">
-                                <iconify-icon icon="solar:eye-bold-duotone" class="me-1"></iconify-icon>
-                                Trạng thái:
-                            </p>
-                            @if($category->is_active)
-                                <span class="badge bg-light-success text-success">
-                                    <iconify-icon icon="solar:check-circle-bold-duotone" class="me-1"></iconify-icon>
-                                    Đang hiển thị
-                                </span>
-                            @else
-                                <span class="badge bg-light-secondary text-secondary">
-                                    <iconify-icon icon="solar:eye-closed-bold-duotone" class="me-1"></iconify-icon>
-                                    Đang ẩn
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
+           
 
             </div>
         </div>

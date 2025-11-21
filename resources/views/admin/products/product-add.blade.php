@@ -243,7 +243,21 @@ document.addEventListener('DOMContentLoaded', function () {
             return ret;
         });
     }
-
+    function generateSKU() {
+        // Tạo 2-3 chữ cái ngẫu nhiên in hoa
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const lettersLength = Math.random() < 0.5 ? 2 : 3; // Random 2 hoặc 3 chữ
+        let randomLetters = '';
+        
+        for (let i = 0; i < lettersLength; i++) {
+            randomLetters += letters.charAt(Math.floor(Math.random() * letters.length));
+        }
+        
+        // Tạo số ngẫu nhiên (6 chữ số)
+        const randomNumbers = Math.floor(Math.random() * 900) + 100;
+        
+        return `${randomLetters}-${randomNumbers}`;
+    }
     // ========== Sinh biến thể từ nhóm thuộc tính ==========
     function generateVariants() {
         const selectedGroups = [];
@@ -284,6 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const values = Array.isArray(combo) ? combo : [combo];
             const label = values.map(v => v.name).join(' / ');
             const ids = values.map(v => v.id).join(',');
+             const autoSKU = generateSKU();
 
             variantTableBody.innerHTML += `
                 <tr>
@@ -292,10 +307,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="hidden" name="variants[${idx}][value_ids]" value="${ids}">
                     </td>
                     <td>
-                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" placeholder="SKU">
+                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" value="${autoSKU}">
                     </td>
                     <td>
-                        <input type="number" step="0.01" name="variants[${idx}][price]" class="form-control form-control-sm" value="${basePrice}">
+                        <input type="number" step="1" name="variants[${idx}][price]" class="form-control form-control-sm" value="${basePrice}">
                     </td>
                     <td>
                         <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="0">
@@ -339,10 +354,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         <span class="text-muted">${variant.value_ids || 'N/A'}</span>
                     </td>
                     <td>
-                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" value="${variant.sku || ''}">
+                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" placeholder="SKU" value="${autoSKU}">
                     </td>
                     <td>
-                        <input type="number" step="0.01" name="variants[${idx}][price]" class="form-control form-control-sm" value="${variant.price || 0}">
+                        <input type="number" step="1" name="variants[${idx}][price]" class="form-control form-control-sm" value="${variant.price || 0}">
                     </td>
                     <td>
                         <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="${variant.stock || 0}">
