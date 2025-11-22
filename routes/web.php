@@ -4,6 +4,7 @@ use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\admin\ReviewController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
+
 
 // Trang chủ
 
@@ -75,7 +77,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Ordet success
     Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
 });
-// MoMo Callback (không cần auth)
+
 Route::get('/momo/callback', [CheckoutController::class, 'momoCallback'])->name('momo.callback');
 
 // Admin routes - tất cả routes
@@ -125,4 +127,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store'])->name('admin.reviews.store');
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
+
+    // brand
+    Route::get('/brands', [BrandController::class, 'index'])->name('admin.brands.index');
+    Route::get('/brands/create', [BrandController::class, 'create'])->name('admin.brands.create');
+    Route::post('/brands', [BrandController::class, 'store'])->name('admin.brands.store');
+    Route::get('/brands/{id}/edit', [BrandController::class, 'edit'])->name('admin.brands.edit');
+    Route::put('/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
+    Route::delete('/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
 });
