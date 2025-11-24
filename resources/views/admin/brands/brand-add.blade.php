@@ -62,7 +62,7 @@
                                        placeholder="Slug sẽ tự động tạo từ tên"
                                        value="{{ old('slug') }}"
                                        required>
-                                <small class="form-text text-muted">Slug được tạo tự động từ tên thương hiệu</small>
+                               
                                 @error('slug')
                                     <div class="invalid-feedback d-block">
                                         {{ $message }}
@@ -94,7 +94,7 @@
                                            id="logo" 
                                            name="logo" 
                                            accept="image/*">
-                                    <small class="form-text text-muted">Định dạng: JPG, PNG, GIF (Tối đa 2MB)</small>
+                                    
                                     @error('logo')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -267,6 +267,60 @@
         }
     }
 </style>
+@endpush
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('name');
+    const slugInput = document.getElementById('slug');
+    const regenerateBtn = document.getElementById('regenerateSlug');
+    let isAutoGenerating = true;
+
+    // Hàm chuyển đổi tiếng Việt có dấu thành không dấu
+    function removeVietnameseDiacritics(str) {
+        return str
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D');
+    }
+
+    // Hàm tạo slug từ tên
+    function generateSlug(name) {
+        return removeVietnameseDiacritics(name)
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    // Tự động tạo slug khi nhập tên
+    nameInput.addEventListener('input', function() {
+        if (isAutoGenerating) {
+            const slug = generateSlug(this.value);
+            slugInput.value = slug;
+        }
+    });
+
+    // Nếu người dùng chỉnh sửa slug thủ công, dừng auto-generate
+    slugInput.addEventListener('input', function() {
+        isAutoGenerating = false;
+    });
+
+    // Nút "Tạo lại slug"
+    regenerateBtn.addEventListener('click', function() {
+        const name = nameInput.value.trim();
+        if (name) {
+            const slug = generateSlug(name);
+            slugInput.value = slug;
+            isAutoGenerating = true;
+        } else {
+            alert('Vui lòng nhập tên thương hiệu trước');
+        }
+    });
+});
+</script>
 @endpush
 
 @endsection

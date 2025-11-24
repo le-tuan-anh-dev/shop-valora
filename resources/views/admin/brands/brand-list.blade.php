@@ -121,7 +121,7 @@
                                                    data-bs-title="Chỉnh sửa">
                                                     <iconify-icon icon="solar:pen-bold-duotone"></iconify-icon>
                                                 </a>
-                                                <form action="#" 
+                                                <form action="{{ route('admin.brands.destroy', $brand->id) }}" 
                                                       method="POST" 
                                                       class="d-inline" 
                                                       onsubmit="return confirm('Bạn chắc chắn muốn xóa thương hiệu này?')">

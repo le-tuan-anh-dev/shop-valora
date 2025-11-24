@@ -150,6 +150,8 @@ Route::delete('/comments/{id}', [CommentController::class, 'destroy'])
     Route::get('/brands/{id}/edit', [BrandController::class, 'edit'])->name('admin.brands.edit');
     Route::put('/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
     Route::delete('/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
+
+    
     // Users
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.list');
     Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
