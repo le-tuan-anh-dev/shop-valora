@@ -6,32 +6,66 @@ use App\Http\Controllers\Controller;
 use App\Models\admin\Review;
 use App\Models\admin\ReviewImage;
 use App\Models\admin\BannedWord;
+use App\Models\Admin\Product;
+use App\Models\Admin\ProductVariant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
     // -----------------------------
-    // LIST + FILTER
+    // LIST + FILTER (Đã cập nhật)
     // -----------------------------
-    public function index(Request $request)
-    {
-        $query = Review::with(['user', 'images', 'replies.user']);
-        $query = Review::with(['user', 'images', 'replies.user', 'product']);
+   public function index(Request $request)
+{
+    // 1. Query cơ bản
+    $query = Review::with(['user', 'images', 'replies.user', 'product', 'variant']); // Eager load thêm 'variant'
 
-
-        if ($request->rating) {
-            $query->where('rating', $request->rating);
-        }
-
-        $reviews = $query->whereNull('parent_id')
-            ->latest()
-            ->paginate(10);
-
-        return view('admin.reviews.reviews-list', compact('reviews'));
+    // 2. Lọc theo Product ID (Dropdown)
+    if ($request->filled('product_id')) {
+        $query->where('product_id', $request->product_id);
     }
 
+    // 3. Lọc theo Variant ID (Dropdown)
+    if ($request->filled('variant_id')) {
+        $query->where('variant_id', $request->variant_id);
+    }
+
+    // 4. Các bộ lọc cũ (Rating, Date)
+    if ($request->filled('rating')) {
+        $query->where('rating', $request->rating);
+    }
+    if ($request->filled('date_from')) {
+        $query->whereDate('created_at', '>=', $request->date_from);
+    }
+    if ($request->filled('date_to')) {
+        $query->whereDate('created_at', '<=', $request->date_to);
+    }
+
+    // 5. Lấy dữ liệu phân trang
+    $reviews = $query->whereNull('parent_id')
+        ->latest()
+        ->cursorPaginate(10)
+        ->withQueryString();
+
+    // --- DỮ LIỆU CHO FILTER FORM ---
+    
+    // Lấy tất cả sản phẩm (chỉ lấy id và name cho nhẹ)
+    $products = Product::select('id', 'name')->get();
+
+    // Lấy biến thể: Chỉ lấy khi người dùng ĐÃ CHỌN một sản phẩm cụ thể
+    $variants = [];
+    if ($request->filled('product_id')) {
+        $variants = ProductVariant::where('product_id', $request->product_id)
+                    ->select('id', 'title') // Giả sử cột tên biến thể là 'title'
+                    ->get();
+    }
+
+    return view('admin.reviews.reviews-list', compact('reviews', 'products', 'variants'));
+}
+
     // -----------------------------
-    // STORE (tạo đánh giá + reply)
+    // STORE (Giữ nguyên logic cũ)
     // -----------------------------
     public function store(Request $request)
     {
@@ -49,14 +83,15 @@ class ReviewController extends Controller
 
         // Kiểm từ cấm
         $content = $request->input('content', '');
-        foreach (BannedWord::pluck('word') as $bad) {
+        $bannedWords = BannedWord::pluck('word')->toArray(); // Tối ưu query
+        foreach ($bannedWords as $bad) {
             if (str_contains(strtolower($content), strtolower($bad))) {
                 return back()->with('error', "Nội dung chứa từ cấm: $bad");
             }
         }
 
         $review = Review::create([
-            'user_id' => auth()->id ?? 1,
+            'user_id' => Auth::id(),
             'product_id' => $request->product_id,
             'variant_id' => $request->variant_id ?? null,
             'rating' => $request->rating ?? null,
@@ -64,7 +99,6 @@ class ReviewController extends Controller
             'parent_id' => $request->parent_id ?? null,
         ]);
 
-        // Ảnh chỉ cho review, không cho reply
         if ($request->hasFile('images') && !$request->parent_id) {
             foreach ($request->file('images') as $img) {
                 $path = $img->store('reviews', 'public');
@@ -78,45 +112,31 @@ class ReviewController extends Controller
         return back()->with('success', $request->parent_id ? 'Phản hồi đã được thêm!' : 'Đánh giá đã được thêm!');
     }
 
- // -----------------------------
-// UPDATE (chỉ sửa reply)
-// -----------------------------
-public function update(Request $request, $id)
-{
-    $reply = Review::findOrFail($id);
-
-    // Chỉ cho phép sửa reply (phải có parent_id)
-    if (!$reply->parent_id) {
-        return back()->with('error', 'Chỉ có thể sửa phản hồi, không sửa đánh giá gốc.');
+    // -----------------------------
+    // UPDATE (Giữ nguyên)
+    // -----------------------------
+    public function update(Request $request, $id)
+    {
+        $reply = Review::findOrFail($id);
+        if (!$reply->parent_id) {
+            return back()->with('error', 'Chỉ có thể sửa phản hồi, không sửa đánh giá gốc.');
+        }
+        $request->validate(['content' => 'required|string']);
+        $reply->update(['content' => $request->input('content')]);
+        return back()->with('success', 'Đã cập nhật phản hồi!');
     }
 
-    $request->validate([
-        'content' => 'required|string'
-    ]);
-
-    $reply->update([
-        'content' => $request->input('content')
-    ]);
-
-    return back()->with('success', 'Đã cập nhật phản hồi!');
-}
-
-
     // -----------------------------
-    // DELETE (xóa review hoặc phản hồi)
+    // DELETE (Giữ nguyên)
     // -----------------------------
     public function destroy($id)
     {
         $review = Review::findOrFail($id);
-
-        // Nếu là review cha -> xóa luôn replies + images
         if (!$review->parent_id) {
             ReviewImage::where('review_id', $review->id)->delete();
             Review::where('parent_id', $review->id)->delete();
         }
-
         $review->delete();
-
         return back()->with('success', 'Đã xóa bình luận!');
     }
 }
