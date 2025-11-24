@@ -384,6 +384,16 @@
                         </a>
 
                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link " href="{{ route('admin.brands.index') }}" 
+                             aria-expanded="false" >
+                            <span class="nav-icon">
+                                <iconify-icon icon="solar:leaf-bold-duotone"></iconify-icon>
+                            </span>
+                            <span class="nav-text"> Thương hiệu </span>
+                        </a>
+                        
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link " href="#sidebarInventory" data-bs-toggle="collapse"
@@ -477,16 +487,7 @@
                             <span class="nav-text"> Settings </span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ route('admin.brands.index') }}" 
-                             aria-expanded="false" >
-                            <span class="nav-icon">
-                                <iconify-icon icon="solar:leaf-bold-duotone"></iconify-icon>
-                            </span>
-                            <span class="nav-text"> Thương hiệu </span>
-                        </a>
-                        
-                    </li>
+                   
 
                     <li class="menu-title mt-2">Users</li>
                     <li class="nav-item">
