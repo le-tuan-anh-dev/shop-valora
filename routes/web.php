@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
@@ -20,6 +19,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\PostController as ClientPostController;
 
 
@@ -160,4 +160,13 @@ Route::delete('/comments/{id}', [CommentController::class, 'destroy'])
     Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('/users/{id}/toggle-lock', [UserController::class, 'toggleLock'])->name('admin.users.toggleLock');
+
+    //voucher 
+    Route::get('/vouchers', [VoucherController::class, 'index'])->name('admin.vouchers.index');
+    Route::get('/vouchers/create', [VoucherController::class, 'create'])->name('admin.vouchers.create');
+    Route::post('/vouchers', [VoucherController::class, 'store'])->name('admin.vouchers.store');
+    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show'])->name('admin.vouchers.show');
+    Route::get('/vouchers/{voucher}/edit', [VoucherController::class, 'edit'])->name('admin.vouchers.edit');
+    Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('admin.vouchers.update');
+    Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
 });

@@ -469,7 +469,7 @@
                         </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#sidebarInvoice" data-bs-toggle="collapse"
+                        <a class="nav-link" href="{{ route('admin.vouchers.index') }}"
                             role="button" aria-expanded="false" aria-controls="sidebarInvoice">
                             <span class="nav-icon">
                                 <iconify-icon icon="solar:bill-list-bold-duotone"></iconify-icon>
