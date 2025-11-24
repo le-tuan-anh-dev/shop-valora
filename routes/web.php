@@ -15,6 +15,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\admin\ReviewController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 
@@ -128,11 +129,19 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
 
-    // brand
+     // brand
     Route::get('/brands', [BrandController::class, 'index'])->name('admin.brands.index');
     Route::get('/brands/create', [BrandController::class, 'create'])->name('admin.brands.create');
     Route::post('/brands', [BrandController::class, 'store'])->name('admin.brands.store');
     Route::get('/brands/{id}/edit', [BrandController::class, 'edit'])->name('admin.brands.edit');
     Route::put('/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
     Route::delete('/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
+    // Users
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.list');
+    Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('/users/{id}/toggle-lock', [UserController::class, 'toggleLock'])->name('admin.users.toggleLock');
 });

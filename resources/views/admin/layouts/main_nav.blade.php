@@ -432,7 +432,15 @@
                             </span>
                             <span class="nav-text"> Thuộc tính </span>
                         </a>
+                    </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.users.list') }}" role="button">
+                            <span class="nav-icon">
+                                <iconify-icon icon="solar:users-group-two-rounded-bold-duotone"></iconify-icon>
+                            </span>
+                            <span class="nav-text"> Người dùng </span>
+                        </a>
                     </li>
 
 
