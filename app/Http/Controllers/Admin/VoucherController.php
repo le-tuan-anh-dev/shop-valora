@@ -21,7 +21,7 @@ class VoucherController
     {
         $variants = ProductVariant::select('id', 'product_id', 'sku')->get();
         $users = User::where('role', 'customer')->select('id', 'name', 'email')->get();
-        return view('admin.vouchers.create', compact('variants', 'users'));
+        return view('admin.vouchers.voucher-create', compact('variants', 'users'));
     }
 
     public function store(Request $request)
