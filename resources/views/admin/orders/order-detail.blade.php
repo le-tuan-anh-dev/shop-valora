@@ -10,7 +10,7 @@
                   'momo' => 'Ví MoMo',
                   'paypal' => 'PayPal'
               ];
-              $paymentMethodLabel = $paymentMethods[$order->payment_method_id] ?? ucfirst($order->payment_method);
+              $paymentMethodLabel = $paymentMethods[$order->payment_method_id] ?? ucfirst($order->payment_method ?? '');
           @endphp
           <div class="page-content">
                <!-- Start Container -->
@@ -351,32 +351,30 @@
                                                                 <div>
                                                                     <a href="#"
                                                                         class="text-dark fw-medium fs-15">{{ $item->product_name }}</a>
-                                                                    @if ($item->variant_name)
+                                                                    
+                                                                    @php
+                                                                        
+                                                                        $productOptions = $item->product_options;
+                                                                        
+                                                                       
+                                                                        if (is_string($productOptions)) {
+                                                                            
+                                                                            if (substr($productOptions, 0, 1) === '"' && substr($productOptions, -1) === '"') {
+                                                                                $productOptions = substr($productOptions, 1, -1);
+                                                                            }
+                                                                            $productOptions = json_decode($productOptions, true);
+                                                                        }
+                                                                    @endphp
+                                                                    
+                                                                    @if ($productOptions && is_array($productOptions))
                                                                         <p class="text-muted mb-0 mt-1 fs-13">
-                                                                            <span>Biến thể:
-                                                                            </span>{{ $item->variant_name }}
+                                                                            @foreach ($productOptions as $option)
+                                                                                @if (isset($option['attribute']) && isset($option['value']))
+                                                                                    <span>{{ $option['attribute'] }}: <span class="text-dark fw-medium">{{ $option['value'] }}</span></span>
+                                                                                    @if (!$loop->last)<br>@endif
+                                                                                @endif
+                                                                            @endforeach
                                                                         </p>
-                                                                    @endif
-                                                                    @if ($item->product_options)
-                                                                        @php
-                                                                            $options = is_array($item->product_options)
-                                                                                ? $item->product_options
-                                                                                : json_decode(
-                                                                                    $item->product_options,
-                                                                                    true,
-                                                                                );
-                                                                        @endphp
-                                                                        @if ($options)
-                                                                            <p class="text-muted mb-0 mt-1 fs-13">
-                                                                                @foreach ($options as $key => $value)
-                                                                                    <span>{{ ucfirst($key) }}:
-                                                                                        {{ $value }}</span>
-                                                                                    @if (!$loop->last)
-                                                                                        ,
-                                                                                    @endif
-                                                                                @endforeach
-                                                                            </p>
-                                                                        @endif
                                                                     @endif
                                                                 </div>
                                                             </div>
@@ -675,13 +673,18 @@
                                     @endif
                                 </div>
                             </div>
-                            @if ($order->payment_details && isset($order->payment_details['transaction_id']))
-                                <p class="text-dark mb-1 fw-medium">
-                                    Mã giao dịch:
-                                    <span
-                                        class="text-muted fw-normal fs-13">{{ $order->payment_details['transaction_id'] }}</span>
-                                </p>
-                            @endif
+                            @php
+    $paymentDetails = is_array($order->payment_details) 
+        ? $order->payment_details 
+        : (is_string($order->payment_details) ? json_decode($order->payment_details, true) : []);
+@endphp
+@if (!empty($paymentDetails) && isset($paymentDetails['transaction_id']) && is_string($paymentDetails['transaction_id']))
+    <p class="text-dark mb-1 fw-medium">
+        Mã giao dịch:
+        <span
+            class="text-muted fw-normal fs-13">{{ $paymentDetails['transaction_id'] }}</span>
+    </p>
+@endif
                             @if ($order->payment_reference)
                                 <p class="text-dark mb-0 fw-medium">
                                     Mã tham chiếu:
