@@ -1,67 +1,75 @@
 <?php
 
-use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
-use App\Http\Controllers\Admin\AttributeController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\ProductDetailController;
+// Khai báo rõ controller cho client vs admin
+use App\Http\Controllers\DashboardController as ClientDashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
-use App\Http\Controllers\Admin\CommentController;
-use App\Http\Controllers\admin\ReviewController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductDetailController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\PostController as ClientPostController;
 
+// Admin controllers
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\PostController as AdminPostController;
 
 // Trang chủ
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-//shop
+// Shop
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 
-
-//post
+// Post
 Route::get('/posts', [ClientPostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{id}', [ClientPostController::class, 'show'])->name('posts.show');
 
-// đăng ký đăng nhập
+// Đăng ký đăng nhập
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login-form', [AuthController::class, 'showLoginForm'])->name('login.show');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.show');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
 // Google
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
 // Xác nhận email
 Route::get('/verify-email', [AuthController::class, 'verifyEmail'])->name('auth.verify');
 Route::get('/login-demo', function () {
     return view('client.login');
 });
 
+// Products
 Route::prefix('products')->group(function () {
-    // Hiển thị trang product detail
     Route::get('{id}', [ProductDetailController::class, 'show'])->name('products.detail');
-
     Route::post('{id}/get-available-attributes', [ProductDetailController::class, 'getAvailableAttributes']);
     Route::post('{id}/get-variant', [ProductDetailController::class, 'getVariant']);
     Route::post('{id}/check-variants', [ProductDetailController::class, 'checkMultipleVariants']);
-
-    // Add to cart
     Route::post('add-to-cart', [ProductDetailController::class, 'addToCart'])->name('cart.add');
 });
 
-// Customer  giỏ hàng và checkout
+// Customer routes (gộp chung)
 Route::middleware(['auth', 'role:customer'])->group(function () {
+    // Dashboard khách hàng
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])
+        ->name('client.dashboard');
+
+    Route::post('/dashboard/update-profile', [ClientDashboardController::class, 'updateProfile'])
+        ->name('client.dashboard.update-profile');
+
+    // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/remove/{cartItemId}', [CartController::class, 'removeItem'])->name('cart.removeItem');
     Route::post('/cart/update-quantity/{cartItemId}', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
@@ -72,7 +80,6 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Checkout
-
     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('place-order');
     Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply-coupon');
@@ -80,17 +87,26 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/checkout/address', [CheckoutController::class, 'storeAddress'])->name('checkout.store-address');
     Route::put('/checkout/address/{id}', [CheckoutController::class, 'updateAddress'])->name('checkout.update-address');
     Route::delete('/checkout/address/{id}', [CheckoutController::class, 'deleteAddress'])->name('checkout.delete-address');
+    Route::post('/checkout/address/{id}/set-default', [CheckoutController::class, 'setDefaultAddress'])
+        ->name('checkout.set-default-address');
 
-    // Ordet success
+    // Orders (customer)
+    Route::get('/orders', [CheckoutController::class, 'myOrders'])->name('orders.index');
+    Route::get('/orders/{order}', [CheckoutController::class, 'showOrder'])->name('orders.show');
+    Route::post('/orders/{order}/cancel', [CheckoutController::class, 'cancelOrder'])->name('orders.cancel');
+
+    // Order success
     Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
 });
+
 // MoMo Callback (không cần auth)
 Route::get('/momo/callback', [CheckoutController::class, 'momoCallback'])->name('momo.callback');
 
-// Admin routes - tất cả routes
+// Admin routes (prefix /admin)
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    // Dashboard admin
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('admin.dashboard');
 
     // Attributes
     Route::get('attributes', [AttributeController::class, 'index'])->name('admin.attributes.list');
@@ -109,30 +125,30 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
 
     // Products
-    Route::get('/products', [ProductController::class, 'index'])->name('admin.products.list');
-    Route::get('/products/create', [ProductController::class, 'create'])->name('admin.products.create');
-    Route::post('/products', [ProductController::class, 'store'])->name('admin.products.store');
-    Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('admin.products.edit');
-    Route::put('/products/{id}', [ProductController::class, 'update'])->name('admin.products.update');
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
-    Route::get('/products/{id}', [ProductController::class, 'show'])->name('admin.products.show');
+    Route::get('/products', [AdminProductController::class, 'index'])->name('admin.products.list');
+    Route::get('/products/create', [AdminProductController::class, 'create'])->name('admin.products.create');
+    Route::post('/products', [AdminProductController::class, 'store'])->name('admin.products.store');
+    Route::get('/products/{id}/edit', [AdminProductController::class, 'edit'])->name('admin.products.edit');
+    Route::put('/products/{id}', [AdminProductController::class, 'update'])->name('admin.products.update');
+    Route::delete('/products/{id}', [AdminProductController::class, 'destroy'])->name('admin.products.destroy');
+    Route::get('/products/{id}', [AdminProductController::class, 'show'])->name('admin.products.show');
 
-    // Orders
+    // Orders (admin)
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.list');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
     // Comments
-    //Comments
-     Route::get('/comments', [CommentController::class, 'indexComments'])
-    ->name('admin.comments.list');
-
-Route::delete('/comments/{id}', [CommentController::class, 'destroy'])
-    ->name('admin.comments.destroy');
-    Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
-    Route::post('/comments/banned-words', [CommentController::class, 'addBannedWord'])->name('admin.comments.banned.add');
-    Route::post('/banned-words/{id}', [CommentController::class, 'updateBannedWord'])->name('admin.comments.banned.update');
-    Route::delete('/comments/banned-words/{id}', [CommentController::class, 'deleteBannedWord'])->name('admin.comments.banned.delete');
+    Route::get('/comments', [CommentController::class, 'indexComments'])
+        ->name('admin.comments.list');
+    Route::delete('/comments/{id}', [CommentController::class, 'destroy'])
+        ->name('admin.comments.destroy');
+    Route::post('/comments/banned-words', [CommentController::class, 'addBannedWord'])
+        ->name('admin.comments.banned.add');
+    Route::post('/banned-words/{id}', [CommentController::class, 'updateBannedWord'])
+        ->name('admin.comments.banned.update');
+    Route::delete('/comments/banned-words/{id}', [CommentController::class, 'deleteBannedWord'])
+        ->name('admin.comments.banned.delete');
 
     // Reviews
     Route::get('/reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
@@ -140,15 +156,16 @@ Route::delete('/comments/{id}', [CommentController::class, 'destroy'])
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
 
-     // XÓA REVIEW + XÓA REPLY
-    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+    // Posts
+    Route::get('/posts', [AdminPostController::class, 'index'])->name('admin.posts.index');
+    Route::get('/posts/create', [AdminPostController::class, 'create'])->name('admin.posts.create');
+    Route::post('/posts', [AdminPostController::class, 'store'])->name('admin.posts.store');
+    Route::get('/posts/{id}/edit', [AdminPostController::class, 'edit'])->name('admin.posts.edit');
+    Route::put('/posts/{id}', [AdminPostController::class, 'update'])->name('admin.posts.update');
+    Route::delete('/posts/{id}', [AdminPostController::class, 'destroy'])->name('admin.posts.destroy');
 
-    Route::resource('posts', PostController::class)->names('admin.posts');
-
-    
-    
-    // Route riêng để CKEditor gửi file ảnh lên
-     Route::post('/admin/tinymce/upload', [PostController::class, 'tinymceUpload'])
-    ->withoutMiddleware([VerifyCsrfToken::class])
-    ->name('admin.tinymce.upload');
+    // CKEditor / TinyMCE upload
+    Route::post('/tinymce/upload', [AdminPostController::class, 'tinymceUpload'])
+        ->withoutMiddleware([VerifyCsrfToken::class])
+        ->name('admin.tinymce.upload');
 });

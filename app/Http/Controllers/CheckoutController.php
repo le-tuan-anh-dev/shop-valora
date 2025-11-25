@@ -59,42 +59,52 @@ class CheckoutController extends Controller
         $shipping = 30000;
         $total = $subtotal + $shipping ;
 
-        // lấy địa chỉ
-        $shippingAddresses = UserAddress::where('user_id', $user->id)->get();
+        // lấy địa chỉ: ưu tiên mặc định
+        $shippingAddresses = UserAddress::where('user_id', $user->id)
+            ->orderByDesc('is_default')
+            ->orderByDesc('id')
+            ->get();
 
-        // lấy phương thức thanh tonas
+        // lấy phương thức thanh toán
         $paymentMethods = PaymentMethod::all();
 
-        // lấy voucher của người dùng này
-        // $availableVouchers = $this->getAvailableVouchers($user->id, $subtotal);
-
         return view('client.check_out', [
-            'cartItems' => $formattedCartItems,
+            'cartItems'         => $formattedCartItems,
             'shippingAddresses' => $shippingAddresses,
-            'subtotal' => $subtotal,
-            'shipping' => $shipping,
-            'total' => $total,
-            'paymentMethods' => $paymentMethods,
-            // 'availableVouchers' => $availableVouchers
+            'subtotal'          => $subtotal,
+            'shipping'          => $shipping,
+            'total'             => $total,
+            'paymentMethods'    => $paymentMethods,
         ]);
     }
+
+    // ====================== ĐỊA CHỈ ======================
 
     // lưu địa chỉ 
     public function storeAddress(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:500',
+            'name'       => 'required|string|max:255',
+            'phone'      => 'required|string|max:20',
+            'address'    => 'required|string|max:500',
+            'is_default' => 'nullable|boolean',
         ]);
 
         try {
+            $userId    = auth()->id();
+            $isDefault = $request->boolean('is_default');
+
+            // Nếu chọn làm mặc định, reset các địa chỉ khác về 0
+            if ($isDefault) {
+                UserAddress::where('user_id', $userId)->update(['is_default' => 0]);
+            }
+
             $address = UserAddress::create([
-                'user_id' => auth()->id(),
-                'name' => $validated['name'],
-                'phone' => $validated['phone'],
-                'address' => $validated['address'],
-                'is_default' => 0
+                'user_id'    => $userId,
+                'name'       => $validated['name'],
+                'phone'      => $validated['phone'],
+                'address'    => $validated['address'],
+                'is_default' => $isDefault ? 1 : 0,
             ]);
 
             if ($request->expectsJson()) {
@@ -118,15 +128,111 @@ class CheckoutController extends Controller
         }
     }
 
+    /**
+     * Cập nhật / đặt mặc định địa chỉ (route: PUT /checkout/address/{id})
+     * Dùng cho form trong Dashboard.
+     */
+    public function updateAddress(Request $request, $id)
+    {
+        // Chỉ lấy địa chỉ của user hiện tại, tránh 403 oan
+        $address = UserAddress::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'name'       => 'nullable|string|max:255',
+            'phone'      => 'nullable|string|max:20',
+            'address'    => 'nullable|string|max:500',
+            'is_default' => 'nullable|boolean',
+        ]);
+
+        $userId    = auth()->id();
+        $isDefault = $request->boolean('is_default');
+
+        // Nếu click "Đặt làm mặc định"
+        if ($isDefault) {
+            UserAddress::where('user_id', $userId)
+                ->where('id', '!=', $address->id)
+                ->update(['is_default' => 0]);
+        }
+
+        // Cập nhật thông tin (nếu có truyền)
+        if (isset($validated['name'])) {
+            $address->name = $validated['name'];
+        }
+        if (isset($validated['phone'])) {
+            $address->phone = $validated['phone'];
+        }
+        if (isset($validated['address'])) {
+            $address->address = $validated['address'];
+        }
+
+        if ($request->has('is_default')) {
+            $address->is_default = $isDefault ? 1 : 0;
+        }
+
+        $address->save();
+
+        return redirect()->back()->with('success', 'Cập nhật địa chỉ thành công.');
+    }
+
+    /**
+     * Xóa địa chỉ (route: DELETE /checkout/address/{id})
+     */
+    public function deleteAddress($id)
+    {
+        $address = UserAddress::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $userId     = auth()->id();
+        $wasDefault = (bool) $address->is_default;
+
+        $address->delete();
+
+        // Nếu xóa địa chỉ mặc định -> gán 1 địa chỉ khác làm mặc định (nếu còn)
+        if ($wasDefault) {
+            $newDefault = UserAddress::where('user_id', $userId)->first();
+            if ($newDefault) {
+                $newDefault->is_default = 1;
+                $newDefault->save();
+            }
+        }
+
+        return redirect()->back()->with('success', 'Xóa địa chỉ thành công.');
+    }
+
+    /**
+     * Route riêng để đặt mặc định nếu bạn dùng:
+     * POST /checkout/address/{id}/set-default
+     */
+    public function setDefaultAddress($id)
+    {
+        $userId = auth()->id();
+
+        $address = UserAddress::where('id', $id)
+            ->where('user_id', $userId)
+            ->firstOrFail();
+
+        UserAddress::where('user_id', $userId)->update(['is_default' => 0]);
+
+        $address->is_default = 1;
+        $address->save();
+
+        return redirect()->back()->with('success', 'Đã đặt địa chỉ mặc định.');
+    }
+
+    // ====================== ĐẶT HÀNG / THANH TOÁN ======================
+
     // đặt hàng
     public function placeOrder(Request $request)
     {
         $validated = $request->validate([
             'shipping_address_id' => 'required|exists:user_addresses,id',
-            'payment_method_id' => 'required|exists:payment_methods,id',
-            'promotion_id' => 'nullable|exists:vouchers,id',
-            'shipping_fee' => 'required|numeric|min:0',
-            'note' => 'nullable|string|max:500'
+            'payment_method_id'   => 'required|exists:payment_methods,id',
+            'promotion_id'        => 'nullable|exists:vouchers,id',
+            'shipping_fee'        => 'required|numeric|min:0',
+            'note'                => 'nullable|string|max:500'
         ]);
 
         try {
@@ -206,16 +312,16 @@ class CheckoutController extends Controller
             else if ($paymentMethodId == 2) {
                 // Lưu thông tin đơn hàng vào session trước
                 session(['pending_order' => [
-                    'user_id' => $user->id,
-                    'cart_id' => $cart->id,
-                    'cart_items' => $cartItems->toArray(),
+                    'user_id'          => $user->id,
+                    'cart_id'          => $cart->id,
+                    'cart_items'       => $cartItems->toArray(),
                     'shipping_address' => $shippingAddress->toArray(),
-                    'validated' => $validated,
-                    'subtotal' => $subtotal,
+                    'validated'        => $validated,
+                    'subtotal'         => $subtotal,
                     'promotion_amount' => $promotionAmount,
-                    'shipping_fee' => $shippingFee,
-                    'total_amount' => $totalAmount,
-                    'order_number' => $orderNumber,
+                    'shipping_fee'     => $shippingFee,
+                    'total_amount'     => $totalAmount,
+                    'order_number'     => $orderNumber,
                 ]]);
 
                 // gọi MoMo
@@ -403,13 +509,11 @@ class CheckoutController extends Controller
         return $result;
     }
 
-    
     public function momoCallback(Request $request)
     {
         $resultCode = $request->query('resultCode');
         $orderId = $request->query('orderId');
         $message = $request->query('message');
-
 
         // Thanh toán thành công
         if ($resultCode == 0) {
@@ -519,7 +623,7 @@ class CheckoutController extends Controller
                 session()->forget('pending_order');
 
                 return redirect()->route('order.success', $order->id)
-                    ->with('success', 'Thanh toán thành công! Đơn hàng đã được xác nhận.');
+                    ->with('success', 'Thanh toán thành công!');
 
             } catch (\Exception $e) {
                 Log::error('Lỗi tạo đơn hàng từ MoMo callback: ' . $e->getMessage());
@@ -535,8 +639,6 @@ class CheckoutController extends Controller
         }
     }
 
-
-    
     public function orderSuccess(Order $order)
     {
         if ($order->user_id !== auth()->id()) {
@@ -555,4 +657,79 @@ class CheckoutController extends Controller
         }
     }
 
+    // Phần của Tuấn Anh
+    /**
+     * Danh sách đơn hàng của user hiện tại.
+     */
+    public function myOrders()
+    {
+        $userId = auth()->id();
+
+        $orders = Order::where('user_id', $userId)
+            ->orderByDesc('created_at')
+            ->get();
+
+        $paymentMethods = PaymentMethod::pluck('name', 'id');
+
+        return view('client.orders.index', [
+            'orders'         => $orders,
+            'paymentMethods' => $paymentMethods,
+        ]);
+    }
+
+    /**
+     * Chi tiết 1 đơn hàng.
+     */
+    public function showOrder(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            return redirect()->route('orders.index')
+                ->with('error', 'Bạn không có quyền xem đơn hàng này.');
+        }
+
+        $orderItems = OrderItem::where('order_id', $order->id)
+            ->with(['product', 'variant'])
+            ->get();
+
+        $paymentMethod = PaymentMethod::find($order->payment_method_id);
+
+        return view('client.orders.show', [
+            'order'         => $order,
+            'orderItems'    => $orderItems,
+            'paymentMethod' => $paymentMethod,
+        ]);
+    }
+
+    /**
+     * Hủy đơn hàng (chỉ khi đang pending).
+     */
+    public function cancelOrder(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            return redirect()->route('orders.index')
+                ->with('error', 'Bạn không có quyền hủy đơn hàng này.');
+        }
+
+        if (!in_array($order->status, ['pending'])) {
+            return redirect()->back()
+                ->with('error', 'Chỉ có thể hủy đơn hàng đang chờ xử lý.');
+        }
+
+        // QUAN TRỌNG: dùng 'cancelled_by_customer' đúng với enum trong DB
+        $order->status = 'cancelled_by_customer';
+        $order->save();
+
+        return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công.');
+    }
+
+    /**
+     * Stub applyCoupon để tránh lỗi route (có thể tự triển khai sau).
+     */
+    public function applyCoupon(Request $request)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => 'Chức năng mã giảm giá đang được phát triển.',
+        ], 400);
+    }
 }
