@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+// Gọi sai ADMIN
 use App\Models\Order;
 use App\Models\UserAddress;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
