@@ -14,11 +14,16 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
+        'address',
+        'date_birth',
+        'gender',
         'image',
         'role',              // enum('admin','customer')
         'status',            // enum('active','locked','banned')
+        'banned_until',
         'google_id',
         'email_verified_at',
+        'phone_verified_at',
         'verification_token',
     ];
 
@@ -30,5 +35,13 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'phone_verified_at' => 'datetime',
+        'banned_until' => 'datetime',
+        'date_birth' => 'date',
     ];
+
+    public function orders()
+    {
+        return $this->hasMany(\App\Models\Admin\Order::class);
+    }
 }

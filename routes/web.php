@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -15,10 +15,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\admin\ReviewController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\PostController as ClientPostController;
+
 
 
 // Trang chủ
@@ -84,7 +87,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Ordet success
     Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
 });
-// MoMo Callback (không cần auth)
+
 Route::get('/momo/callback', [CheckoutController::class, 'momoCallback'])->name('momo.callback');
 
 // Admin routes - tất cả routes
@@ -140,15 +143,30 @@ Route::delete('/comments/{id}', [CommentController::class, 'destroy'])
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
 
-     // XÓA REVIEW + XÓA REPLY
-    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
-
-    Route::resource('posts', PostController::class)->names('admin.posts');
+     // brand
+    Route::get('/brands', [BrandController::class, 'index'])->name('admin.brands.index');
+    Route::get('/brands/create', [BrandController::class, 'create'])->name('admin.brands.create');
+    Route::post('/brands', [BrandController::class, 'store'])->name('admin.brands.store');
+    Route::get('/brands/{id}/edit', [BrandController::class, 'edit'])->name('admin.brands.edit');
+    Route::put('/brands/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
+    Route::delete('/brands/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
 
     
-    
-    // Route riêng để CKEditor gửi file ảnh lên
-     Route::post('/admin/tinymce/upload', [PostController::class, 'tinymceUpload'])
-    ->withoutMiddleware([VerifyCsrfToken::class])
-    ->name('admin.tinymce.upload');
+    // Users
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.list');
+    Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('/users/{id}/toggle-lock', [UserController::class, 'toggleLock'])->name('admin.users.toggleLock');
+
+    //voucher 
+    Route::get('/vouchers', [VoucherController::class, 'index'])->name('admin.vouchers.index');
+    Route::get('/vouchers/create', [VoucherController::class, 'create'])->name('admin.vouchers.create');
+    Route::post('/vouchers', [VoucherController::class, 'store'])->name('admin.vouchers.store');
+    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show'])->name('admin.vouchers.show');
+    Route::get('/vouchers/{voucher}/edit', [VoucherController::class, 'edit'])->name('admin.vouchers.edit');
+    Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('admin.vouchers.update');
+    Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
 });
