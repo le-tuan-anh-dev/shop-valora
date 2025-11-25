@@ -14,8 +14,6 @@ class OrderItem extends Model
     /**
      * Các cột cho phép mass-assign.
      * Dựa trên cấu trúc bảng order_items bạn gửi.
-     *
-     * Lưu ý: giữ lại 'price' nếu code cũ còn dùng.
      */
     protected $fillable = [
         'order_id',
@@ -58,10 +56,11 @@ class OrderItem extends Model
     ];
 
     /**
-     * Item thuộc về 1 order.
+     * Item thuộc về 1 order (model chung App\Models\Order).
      */
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        // Khóa ngoại là order_id, bảng orders
+        return $this->belongsTo(Order::class, 'order_id');
     }
 }

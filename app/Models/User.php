@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Order;
+use App\Models\UserAddress;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory;
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * Các cột cho phép mass-assign.
@@ -47,10 +48,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
-        'banned_until' => 'datetime',
-        'date_birth' => 'date',
+        'banned_until'      => 'datetime',
+        'date_birth'        => 'date',
     ];
-
 
     /* -----------------------------------------------------------------
      |  Quan hệ cho Dashboard
@@ -61,7 +61,8 @@ class User extends Authenticatable
      */
     public function orders()
     {
-        return $this->hasMany(Order::class);
+        // Giả sử khóa ngoại trong bảng orders là user_id
+        return $this->hasMany(Order::class, 'user_id');
     }
 
     /**
@@ -69,7 +70,7 @@ class User extends Authenticatable
      */
     public function addresses()
     {
-        return $this->hasMany(UserAddress::class);
+        return $this->hasMany(UserAddress::class, 'user_id');
     }
 
     /* -----------------------------------------------------------------
@@ -84,10 +85,5 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return $this->role === 'customer';
-
-    public function orders()
-    {
-        return $this->hasMany(\App\Models\Admin\Order::class);
-
     }
 }

@@ -24,12 +24,15 @@ class DashboardController extends Controller
         $defaultAddress = $addresses->firstWhere('is_default', true) ?? $addresses->first();
 
         // Lấy đơn hàng, kèm items + paymentMethod
-        $ordersQuery = $user->orders()
+        $baseOrdersQuery = $user->orders()
             ->with(['items', 'paymentMethod'])
             ->orderByDesc('created_at');
 
-        $orders      = $ordersQuery->take(10)->get();
-        $totalOrders = $ordersQuery->count();
+        // Lấy 10 đơn gần nhất
+        $orders      = (clone $baseOrdersQuery)->take(10)->get();
+        // Đếm tổng số đơn (không bị ảnh hưởng bởi take(10))
+        $totalOrders = (clone $baseOrdersQuery)->count();
+        // Tổng tiền đã chi
         $totalSpent  = $user->orders()->sum('total_amount');
 
         return view('client.dashboard', [
@@ -67,7 +70,7 @@ class DashboardController extends Controller
             }
 
             // Lưu ảnh mới
-            $path       = $request->file('image')->store('avatars', 'public');
+            $path        = $request->file('image')->store('avatars', 'public');
             $user->image = $path;
         }
 
@@ -75,5 +78,4 @@ class DashboardController extends Controller
 
         return back()->with('success', 'Cập nhật thông tin tài khoản thành công.');
     }
-    
 }
