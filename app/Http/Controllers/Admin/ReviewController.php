@@ -13,62 +13,74 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    // -----------------------------
-    // LIST + FILTER (Đã cập nhật)
-    // -----------------------------
-   public function index(Request $request)
-{
-    // 1. Query cơ bản
-    $query = Review::with(['user', 'images', 'replies.user', 'product', 'variant']); // Eager load thêm 'variant'
+    // ==================================================
+    // CẤP 1: DANH SÁCH SẢN PHẨM CÓ ĐÁNH GIÁ
+    // ==================================================
+    public function index(Request $request)
+    {
+        // Lấy danh sách sản phẩm ĐÃ CÓ đánh giá
+        // Kèm theo: Số lượng đánh giá (reviews_count) và Điểm trung bình (reviews_avg_rating)
+        $query = Product::has('reviews')
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating');
 
-    // 2. Lọc theo Product ID (Dropdown)
-    if ($request->filled('product_id')) {
-        $query->where('product_id', $request->product_id);
+        // Tìm kiếm tên sản phẩm (nếu cần)
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $products = $query->latest('created_at')->paginate(10);
+
+        return view('admin.reviews.index', compact('products'));
     }
 
-    // 3. Lọc theo Variant ID (Dropdown)
-    if ($request->filled('variant_id')) {
-        $query->where('variant_id', $request->variant_id);
+    // ==================================================
+    // CẤP 2: XEM CHI TIẾT ĐÁNH GIÁ CỦA 1 SẢN PHẨM
+    // ==================================================
+    public function show($id, Request $request)
+    {
+        $product = Product::findOrFail($id);
+
+        // Query đánh giá của sản phẩm này
+        $query = Review::with(['user', 'images', 'replies.user', 'variant'])
+            ->where('product_id', $id) // Chỉ lấy của sản phẩm này
+            ->whereNull('parent_id'); // Chỉ lấy đánh giá gốc
+
+        // --- BỘ LỌC (Filter) ---
+        
+        // 1. Lọc theo Biến thể
+        if ($request->filled('variant_id')) {
+            $query->where('variant_id', $request->variant_id);
+        }
+
+        // 2. Lọc theo Sao
+        if ($request->filled('rating')) {
+            $query->where('rating', $request->rating);
+        }
+
+        // 3. Lọc theo ngày
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $reviews = $query->latest()->cursorPaginate(10)->withQueryString();
+
+        // Lấy danh sách biến thể để làm dropdown filter
+        $variants = ProductVariant::where('product_id', $id)->select('id', 'title')->get();
+
+        return view('admin.reviews.show', compact('product', 'reviews', 'variants'));
     }
 
-    // 4. Các bộ lọc cũ (Rating, Date)
-    if ($request->filled('rating')) {
-        $query->where('rating', $request->rating);
-    }
-    if ($request->filled('date_from')) {
-        $query->whereDate('created_at', '>=', $request->date_from);
-    }
-    if ($request->filled('date_to')) {
-        $query->whereDate('created_at', '<=', $request->date_to);
-    }
-
-    // 5. Lấy dữ liệu phân trang
-    $reviews = $query->whereNull('parent_id')
-        ->latest()
-        ->cursorPaginate(10)
-        ->withQueryString();
-
-    // --- DỮ LIỆU CHO FILTER FORM ---
+    // ==================================================
+    // CÁC HÀM XỬ LÝ (Store, Update, Destroy) - Giữ nguyên logic
+    // ==================================================
     
-    // Lấy tất cả sản phẩm (chỉ lấy id và name cho nhẹ)
-    $products = Product::select('id', 'name')->get();
-
-    // Lấy biến thể: Chỉ lấy khi người dùng ĐÃ CHỌN một sản phẩm cụ thể
-    $variants = [];
-    if ($request->filled('product_id')) {
-        $variants = ProductVariant::where('product_id', $request->product_id)
-                    ->select('id', 'title') // Giả sử cột tên biến thể là 'title'
-                    ->get();
-    }
-
-    return view('admin.reviews.reviews-list', compact('reviews', 'products', 'variants'));
-}
-
-    // -----------------------------
-    // STORE (Giữ nguyên logic cũ)
-    // -----------------------------
     public function store(Request $request)
     {
+        // Logic giữ nguyên như code cũ của bạn
         $rules = [
             'product_id' => 'required|exists:products,id',
             'content' => 'nullable|string',
@@ -81,9 +93,8 @@ class ReviewController extends Controller
 
         $request->validate($rules);
 
-        // Kiểm từ cấm
         $content = $request->input('content', '');
-        $bannedWords = BannedWord::pluck('word')->toArray(); // Tối ưu query
+        $bannedWords = BannedWord::pluck('word')->toArray();
         foreach ($bannedWords as $bad) {
             if (str_contains(strtolower($content), strtolower($bad))) {
                 return back()->with('error', "Nội dung chứa từ cấm: $bad");
@@ -112,23 +123,17 @@ class ReviewController extends Controller
         return back()->with('success', $request->parent_id ? 'Phản hồi đã được thêm!' : 'Đánh giá đã được thêm!');
     }
 
-    // -----------------------------
-    // UPDATE (Giữ nguyên)
-    // -----------------------------
     public function update(Request $request, $id)
     {
         $reply = Review::findOrFail($id);
         if (!$reply->parent_id) {
-            return back()->with('error', 'Chỉ có thể sửa phản hồi, không sửa đánh giá gốc.');
+            return back()->with('error', 'Chỉ có thể sửa phản hồi.');
         }
         $request->validate(['content' => 'required|string']);
         $reply->update(['content' => $request->input('content')]);
         return back()->with('success', 'Đã cập nhật phản hồi!');
     }
 
-    // -----------------------------
-    // DELETE (Giữ nguyên)
-    // -----------------------------
     public function destroy($id)
     {
         $review = Review::findOrFail($id);
