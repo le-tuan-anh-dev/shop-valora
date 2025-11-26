@@ -40,6 +40,12 @@ Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 // Post
 Route::get('/posts', [ClientPostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{id}', [ClientPostController::class, 'show'])->name('posts.show');
+Route::post('/posts/{id}/comment', [ClientPostController::class, 'storeComment'])
+    ->name('comments.store')
+    ->middleware('auth');
+    Route::delete('/comments/{id}', [ClientPostController::class, 'destroyComment'])
+    ->name('comments.destroy')
+    ->middleware('auth');
 
 // Đăng ký đăng nhập
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -159,10 +165,23 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/comments/banned-words/{id}', [CommentController::class, 'deleteBannedWord'])
         ->name('admin.comments.banned.delete');
 
-    // Reviews
+ // --- Quản lý Đánh giá (Reviews) ---
+    
+    // CẤP 1: Danh sách Sản phẩm có đánh giá (Hàm index)
+    // URI: /admin/reviews
     Route::get('/reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
+
+    // CẤP 2: Xem chi tiết tất cả đánh giá của 1 SẢN PHẨM (Hàm show)
+    // {id} ở đây là ID của PRODUCT
+    // URI: /admin/reviews/{product_id}
+    Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('admin.reviews.show'); // <--- Đã thêm
+
+    // Trả lời (Store) - Tạo Review/Reply mới
+    // URI: /admin/reviews
     Route::post('/reviews', [ReviewController::class, 'store'])->name('admin.reviews.store');
-    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+
+    // Sửa phản hồi (Update) - {id} là ID của REVIEW/REPLY
+    // URI: /admin/reviews/{review_id}
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
 
 

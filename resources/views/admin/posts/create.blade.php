@@ -23,7 +23,7 @@
                 @csrf
 
                 <div class="row">
-                    <!-- Cột bên trái: Tiêu đề, Nội dung, Ảnh Gallery Mới -->
+                    <!-- Cột bên trái: Tiêu đề, Nội dung,  -->
                     <div class="col-md-8">
                         <div class="mb-3">
                             <label for="title" class="form-label">Tiêu đề</label>
@@ -36,11 +36,7 @@
                             <textarea class="form-control" id="content" name="content" rows="15">{{ old('content') }}</textarea>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="gallery_images" class="form-label">Ảnh Gallery</label>
-                            <input class="form-control" type="file" id="gallery_images" name="gallery_images[]" multiple>
-                            <small class="form-text text-muted">Có thể chọn nhiều ảnh.</small>
-                        </div>
+                       
                     </div>
 
                     <!-- Cột bên phải: Ảnh đại diện, Trạng thái -->
