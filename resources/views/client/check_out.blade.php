@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Check Out')
+@section('title', 'Velora - Check Out')
 
 @section('content')
 
@@ -124,6 +124,9 @@
                             {{ implode(', ', array_column($item['attribute_values'], 'value')) }}
                           @endif
                         </span>
+                        <div style="margin-top: 5px; font-size: 0.9rem; color: #666;">
+                          <span>x<strong>{{ $item['quantity'] }}</strong></span>
+                        </div>
                       </div>
                       <p>{{ number_format($item['total'], 0, ',', '.') }} đ</p>
                     </li>
@@ -141,7 +144,7 @@
                   </div>
                   
                   {{-- Available Vouchers List --}}
-                  @if($availableVouchers && count($availableVouchers) > 0)
+                  {{-- @if($availableVouchers && count($availableVouchers) > 0)
                     <div class="mt-3">
                       <p class="text-muted mb-2"><small><strong>Các voucher có sẵn:</strong></small></p>
                       @foreach($availableVouchers as $voucher)
@@ -170,7 +173,7 @@
                         </div>
                       @endforeach
                     </div>
-                  @endif
+                  @endif --}}
                 </div>
                 <div class="total">
                   <h6>Tổng cộng :</h6>

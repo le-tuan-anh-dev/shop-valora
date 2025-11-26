@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Online Fashion Store')
+@section('title', 'Velora - Online Fashion Store')
 
 @section('content')
     {{-- danh mục và banner --}}
@@ -14,7 +14,7 @@
                         <ul class="category-menu flush-left"> 
                             @forelse($categories as $category)
                             <li>
-                                <a href="#" class="category-link">
+                                <a href="{{ route('shop.index') }}" class="category-link">
                                     {{ $category->name }}
                                     
                                 </a>
@@ -27,7 +27,7 @@
 
                             @if($categories->count() > 8)
                             <li class="more-categories-li">
-                                <a href="#" class="category-link view-all-link">
+                                <a href="{{ route('shop.index') }}" class="category-link view-all-link">
                                     Xem thêm <i class="fa-solid fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -168,7 +168,7 @@
                                                 {{-- Icon chỉ còn wishlist --}}
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                       <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -190,6 +190,10 @@
                                                     @if($product->discount_price)
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                         <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        @php
+                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
+                                                        @endphp
+                                                        <span>-{{ $discountPercent }}%</span>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -229,7 +233,7 @@
 
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -249,6 +253,10 @@
                                                     @if($product->discount_price)
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                         <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        @php
+                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
+                                                        @endphp
+                                                        <span>-{{ $discountPercent }}%</span>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -273,7 +281,7 @@
                                             <div class="img-wrapper">
                                                 @if($product->discount_price)
                                                 <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/3.png') }}" alt="label">
+                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
                                                     <span>Giảm <br>giá!</span>
                                                 </div>
                                                 @endif
@@ -288,7 +296,7 @@
 
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -308,6 +316,10 @@
                                                     @if($product->discount_price)
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                         <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        @php
+                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
+                                                        @endphp
+                                                        <span>-{{ $discountPercent }}%</span>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -512,7 +524,12 @@
                 @forelse($diverseProducts as $product)
                 <div class="swiper-slide product-box">
                     <div class="img-wrapper">
-
+                            @if($product->discount_price)
+                                                <div class="label-block">
+                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
+                                                    <span>Giảm <br>giá!</span>
+                                                </div>
+                                                @endif
                         {{-- Ảnh sản phẩm --}}
                         <div class="product-image">
                             <a href="{{ route('products.detail', $product->id) }}">
@@ -525,8 +542,7 @@
                         {{-- Icons --}}
                         <div class="cart-info-icon">
                             <a class="wishlist-icon" href="javascript:void(0)" tabindex="0">
-                                <i class="iconsax" data-icon="heart" aria-hidden="true" 
-                                    data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                             </a>
                         </div>
                     </div>
@@ -550,6 +566,10 @@
                             @if($product->discount_price)
                                 {{ number_format($product->base_price, 0, ',', '.') }}₫ 
                                 <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                @php
+                                    $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
+                                @endphp
+                                <span>-{{ $discountPercent }}%</span>
                             @else
                                 {{ number_format($product->base_price, 0, ',', '.') }}₫
                             @endif

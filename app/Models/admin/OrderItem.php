@@ -38,14 +38,49 @@ class OrderItem extends Model
         'total_price' => 'decimal:2',
     ];
 
+    /**
+     * Lấy đơn hàng
+     */
     public function order()
     {
         return $this->belongsTo(Order::class);
     }
-
+    /**
+     * Lấy sản phẩm
+     */
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
-}
+     /**
+     * Lấy variant sản phẩm
+     */
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id', 'id');
+    }
 
+    
+     /**
+     * Format tiền tệ
+     */
+    public function getFormattedUnitPriceAttribute()
+    {
+        return number_format($this->unit_price, 0, ',', '.');
+    }
+
+    public function getFormattedSubtotalAttribute()
+    {
+        return number_format($this->subtotal, 0, ',', '.');
+    }
+
+    public function getFormattedDiscountAttribute()
+    {
+        return number_format($this->discount_amount, 0, ',', '.');
+    }
+
+    public function getFormattedTotalPriceAttribute()
+    {
+        return number_format($this->total_price, 0, ',', '.');
+    }
+}

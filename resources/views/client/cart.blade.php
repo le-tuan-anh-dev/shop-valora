@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Cart')
+@section('title', 'Velora - Cart')
 
 @section('content')
 
@@ -191,7 +191,7 @@
                         <del>{{ number_format($product['discount_price'], 0, ',', '.') }} đ</del>
                       </span>
                       <span style="color: #e74c3c; font-weight: bold; margin-left: 8px;">
-                        -{{ round((($product['base_price'] - $product['discount_price']) / $product['base_price']) * 100) }}%
+                        {{ round((($product['base_price'] - $product['discount_price']) / $product['base_price']) * 100) }}%
                       </span>
                     @endif
                   </p>
