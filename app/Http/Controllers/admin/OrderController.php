@@ -86,7 +86,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,awaiting_pickup,shipping,delivered,cancelled_by_customer,cancelled_by_admin,delivery_failed'
+            'status' => 'required|in:pending,confirmed,awaiting_pickup,shipping,delivered,cancelled_by_admin,delivery_failed'
         ]);
 
         $order = Order::findOrFail($id);
@@ -115,7 +115,7 @@ class OrderController extends Controller
             $order->delivered_at = Carbon::now();
         }
 
-        if (in_array($newStatus, ['cancelled_by_customer', 'cancelled_by_admin']) && !$order->cancelled_at) {
+        if ($newStatus === 'cancelled_by_admin' && !$order->cancelled_at) {
             $order->cancelled_at = Carbon::now();
         }
 
