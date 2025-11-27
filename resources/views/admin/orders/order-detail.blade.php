@@ -157,7 +157,6 @@
                                                             'shipping' => 'Đang giao',
                                                             'delivered' => 'Đã giao hàng',
                                                             'completed' => 'Đã hoàn thành',
-                                                            'cancelled_by_customer' => 'Khách hủy',
                                                             'cancelled_by_admin' => 'Admin hủy',
                                                             'delivery_failed' => 'Giao thất bại',
                                                         ];
@@ -174,7 +173,6 @@
                                                             $isAllowed = in_array($statusKey, $allowedStatuses);
                                                             $isCurrent = $order->status == $statusKey;
                                                             $isCancelStatus = in_array($statusKey, [
-                                                                'cancelled_by_customer',
                                                                 'cancelled_by_admin',
                                                                 'delivery_failed',
                                                             ]);

@@ -57,9 +57,9 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::with(['user', 'orderItems'])->findOrFail($id);
-        
+
         $allowedStatuses = $this->getAllowedStatuses($order->status);
-        
+
         return view('admin.orders.order-detail', compact('order', 'allowedStatuses'));
     }
 
@@ -69,9 +69,9 @@ class OrderController extends Controller
     private function getAllowedStatuses($currentStatus)
     {
         $allowedTransitions = [
-            'pending' => ['confirmed', 'cancelled_by_customer', 'cancelled_by_admin'],
-            'confirmed' => ['awaiting_pickup', 'cancelled_by_customer', 'cancelled_by_admin'],
-            'awaiting_pickup' => ['shipping', 'cancelled_by_customer', 'cancelled_by_admin'],
+            'pending' => ['confirmed', 'cancelled_by_admin'],
+            'confirmed' => ['awaiting_pickup', 'cancelled_by_admin'],
+            'awaiting_pickup' => ['shipping', 'cancelled_by_admin'],
             'shipping' => ['delivered', 'delivery_failed'],
             'delivered' => [],
             'completed' => [],
@@ -94,7 +94,7 @@ class OrderController extends Controller
         $newStatus = $request->status;
 
         $allowedStatuses = $this->getAllowedStatuses($oldStatus);
-        
+
         if (!in_array($newStatus, $allowedStatuses)) {
             return redirect()->back()
                 ->with('error', 'Không thể chuyển từ trạng thái "' . $this->getStatusLabel($oldStatus) . '" sang "' . $this->getStatusLabel($newStatus) . '". Vui lòng chọn trạng thái hợp lệ.');
