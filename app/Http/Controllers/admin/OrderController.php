@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Order;
+use App\Models\Admin\Product;
+use App\Models\Admin\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -63,9 +65,6 @@ class OrderController extends Controller
         return view('admin.orders.order-detail', compact('order', 'allowedStatuses'));
     }
 
-    /**
-     * Lấy danh sách trạng thái có thể chuyển đến từ trạng thái hiện tại
-     */
     private function getAllowedStatuses($currentStatus)
     {
         $allowedTransitions = [
@@ -89,7 +88,7 @@ class OrderController extends Controller
             'status' => 'required|in:pending,confirmed,awaiting_pickup,shipping,delivered,cancelled_by_admin,delivery_failed'
         ]);
 
-        $order = Order::findOrFail($id);
+        $order = Order::with('orderItems')->findOrFail($id);
         $oldStatus = $order->status;
         $newStatus = $request->status;
 
@@ -103,6 +102,13 @@ class OrderController extends Controller
         if ($oldStatus === $newStatus) {
             return redirect()->back()
                 ->with('error', 'Đơn hàng đã ở trạng thái này.');
+        }
+
+        $shouldRestoreStock = in_array($newStatus, ['cancelled_by_admin', 'delivery_failed'])
+            && !in_array($oldStatus, ['delivered', 'completed', 'cancelled_by_admin', 'cancelled_by_customer', 'delivery_failed']);
+
+        if ($shouldRestoreStock) {
+            $this->restoreProductStock($order);
         }
 
         $order->status = $newStatus;
@@ -125,9 +131,35 @@ class OrderController extends Controller
             ->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
     }
 
-    /**
-     * Lấy nhãn trạng thái
-     */
+    private function restoreProductStock(Order $order)
+    {
+        try {
+            DB::beginTransaction();
+
+            foreach ($order->orderItems as $orderItem) {
+                if ($orderItem->product_id) {
+                    $product = Product::find($orderItem->product_id);
+                    if ($product) {
+                        $product->increment('stock', $orderItem->quantity);
+                    }
+                }
+
+                if ($orderItem->variant_id) {
+                    $variant = ProductVariant::find($orderItem->variant_id);
+                    if ($variant) {
+                        $variant->increment('stock', $orderItem->quantity);
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error restoring product stock for order #' . $order->order_number . ': ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
     private function getStatusLabel($status)
     {
         $labels = [
