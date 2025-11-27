@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 // Khai báo rõ controller cho client vs admin
 use App\Http\Controllers\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BrandController;
@@ -54,9 +54,6 @@ Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('regi
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
-// Google
-Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 // Xác nhận email
 Route::get('/verify-email', [AuthController::class, 'verifyEmail'])->name('auth.verify');
@@ -64,7 +61,7 @@ Route::get('/login-demo', function () {
     return view('client.login');
 });
 
-// Products
+// chi tiết sản phẩm
 Route::prefix('products')->group(function () {
     Route::get('{id}', [ProductDetailController::class, 'show'])->name('products.detail');
     Route::post('{id}/get-available-attributes', [ProductDetailController::class, 'getAvailableAttributes']);
@@ -73,7 +70,7 @@ Route::prefix('products')->group(function () {
     Route::post('add-to-cart', [ProductDetailController::class, 'addToCart'])->name('cart.add');
 });
 
-// Customer routes (gộp chung)
+// Customer routes 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     // Dashboard khách hàng
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])
@@ -113,11 +110,11 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 });
 
 
-// MoMo Callback (không cần auth)
+// MoMo Callback
 
 Route::get('/momo/callback', [CheckoutController::class, 'momoCallback'])->name('momo.callback');
 
-// Admin routes (prefix /admin)
+// Admin routes 
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     // Dashboard admin
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])
@@ -217,12 +214,17 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/users/{id}/toggle-lock', [UserController::class, 'toggleLock'])->name('admin.users.toggleLock');
 
     //voucher 
+    // Danh sách voucher
     Route::get('/vouchers', [VoucherController::class, 'index'])->name('admin.vouchers.index');
+    // Tạo voucher
     Route::get('/vouchers/create', [VoucherController::class, 'create'])->name('admin.vouchers.create');
     Route::post('/vouchers', [VoucherController::class, 'store'])->name('admin.vouchers.store');
-    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show'])->name('admin.vouchers.show');
+    // Chỉnh sửa voucher
     Route::get('/vouchers/{voucher}/edit', [VoucherController::class, 'edit'])->name('admin.vouchers.edit');
     Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('admin.vouchers.update');
+    // Xem chi tiết voucher
+    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show'])->name('admin.vouchers.show');
+    // Xóa voucher
     Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
 
 });

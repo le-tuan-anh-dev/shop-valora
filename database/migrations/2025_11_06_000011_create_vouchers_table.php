@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->integer('max_uses')->default(0);
             $table->integer('used_count')->default(0);
             $table->integer('per_user_limit')->default(1);
-            $table->foreignId('assigned_user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('applicable_variant_id')->nullable()->constrained('product_variants')->nullOnDelete();
+            // $table->foreignId('assigned_user_id')->nullable()->constrained('users')->nullOnDelete();
+            // $table->foreignId('applicable_variant_id')->nullable()->constrained('product_variants')->nullOnDelete();
             $table->dateTime('starts_at')->nullable();
             $table->dateTime('ends_at')->nullable();
             $table->boolean('is_active')->default(true);
