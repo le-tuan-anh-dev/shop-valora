@@ -1,14 +1,14 @@
 <?php
+
 namespace App\Models;
 
 use App\Models\Admin\ProductVariant;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Voucher extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'code',
         'type',
@@ -16,85 +16,132 @@ class Voucher extends Model
         'max_uses',
         'used_count',
         'per_user_limit',
-        'assigned_user_id',
-        'applicable_variant_id',
         'starts_at',
         'ends_at',
         'is_active',
     ];
 
     protected $casts = [
+        'value' => 'decimal:2',
+        'is_active' => 'boolean',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
-        'is_active' => 'boolean',
-        'value' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    // Relationships
-    public function uses()
+    /**
+     * Quan hệ N:N với User (thông qua bảng voucher_users)
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'voucher_users',
+            'voucher_id',
+            'user_id'
+        )->withTimestamps();
+    }
+
+    /**
+     * Quan hệ N:N với ProductVariant (thông qua bảng voucher_variants)
+     */
+    public function variants(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            ProductVariant::class,
+            'voucher_variants',
+            'voucher_id',
+            'product_variant_id'
+        )->withTimestamps();
+    }
+
+    /**
+     * Quan hệ 1:N với VoucherUse
+     */
+    public function uses(): HasMany
     {
         return $this->hasMany(VoucherUse::class);
     }
 
-    public function assignedUser()
+    /**
+     * Quan hệ 1:N với VoucherUser
+     */
+    public function voucherUsers(): HasMany
     {
-        return $this->belongsTo(User::class, 'assigned_user_id');
+        return $this->hasMany(VoucherUser::class);
     }
 
-    public function variant()
+    /**
+     * Quan hệ 1:N với VoucherVariant
+     */
+    public function voucherVariants(): HasMany
     {
-        return $this->belongsTo(ProductVariant::class, 'applicable_variant_id');
+        return $this->hasMany(VoucherVariant::class);
     }
 
-    // Scopes
-    public function scopeActive($query)
+    /**
+     * Kiểm tra voucher còn hạn sử dụng không
+     */
+    public function hasRemainingUses(): bool
     {
-        return $query->where('is_active', true);
+        return $this->used_count < $this->max_uses;
     }
 
-    public function scopeAvailable($query)
+    /**
+     * Kiểm tra voucher còn trong thời gian áp dụng không
+     */
+    public function isValid(): bool
     {
-        return $query->active()
-            ->where('starts_at', '<=', now())
-            ->where('ends_at', '>=', now());
-    }
-
-    // Methods
-    public function isValid()
-    {
+        $now = now();
         return $this->is_active 
-            && $this->used_count < $this->max_uses
-            && now()->between($this->starts_at, $this->ends_at);
+            && $now->between($this->starts_at, $this->ends_at)
+            && $this->hasRemainingUses();
     }
 
-    public function canUseByUser($userId)
+    /**
+     * Kiểm tra user có được phép dùng voucher không
+     */
+    public function canBeUsedByUser(int $userId): bool
     {
-        $userUseCount = $this->uses()
+        // Nếu không có user nào trong danh sách → công khai cho tất cả
+        if ($this->users()->count() === 0) {
+            return true;
+        }
+
+        // Nếu có user trong danh sách → chỉ những user đó được dùng
+        return $this->users()->where('users.id', $userId)->exists();
+    }
+
+    /**
+     * Kiểm tra sản phẩm có được áp dụng voucher không
+     */
+    public function canBeAppliedToVariant(int $variantId): bool
+    {
+        // Nếu không có variant nào trong danh sách → áp dụng cho tất cả
+        if ($this->variants()->count() === 0) {
+            return true;
+        }
+
+        // Nếu có variant trong danh sách → chỉ những variant đó được áp dụng
+        return $this->variants()->where('product_variants.id', $variantId)->exists();
+    }
+
+    /**
+     * Lấy số lần user đã dùng voucher này
+     */
+    public function getUserUsageCount(int $userId): int
+    {
+        return $this->uses()
             ->where('user_id', $userId)
             ->count();
-        
-        return $userUseCount < $this->per_user_limit;
     }
 
-    public function getRemainingUses()
+    /**
+     * Kiểm tra user có vượt giới hạn dùng không
+     */
+    public function hasUserExceededLimit(int $userId): bool
     {
-        return $this->max_uses - $this->used_count;
-    }
-
-    public function calculateDiscount($subtotal, $variantId = null)
-    {
-        if (!$this->isValid()) {
-            return 0;
-        }
-
-        if ($this->applicable_variant_id && $variantId !== $this->applicable_variant_id) {
-            return 0;
-        }
-
-        if ($this->type === 'fixed') {
-            return min($this->value, $subtotal);
-        }
-
-        return $subtotal * $this->value / 100;
+        return $this->getUserUsageCount($userId) >= $this->per_user_limit;
     }
 }

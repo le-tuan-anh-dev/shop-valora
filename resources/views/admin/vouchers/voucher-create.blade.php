@@ -183,40 +183,106 @@
                                 </div>
                             </div>
 
-                            {{-- Áp Dụng Cho Sản Phẩm --}}
+                            {{-- Áp Dụng Cho Sản Phẩm (Nhiều) --}}
                             <div class="mb-3">
-                                <label for="applicable_variant_id" class="form-label">Áp dụng cho sản phẩm (Tùy chọn)</label>
-                                <select class="form-select @error('applicable_variant_id') is-invalid @enderror" 
-                                        id="applicable_variant_id" 
-                                        name="applicable_variant_id">
-                                    <option value="">-- Áp dụng cho tất cả sản phẩm --</option>
-                                    @foreach($variants as $variant)
-                                        <option value="{{ $variant->id }}" {{ old('applicable_variant_id') == $variant->id ? 'selected' : '' }}>
-                                            {{ $variant->product->name ?? 'Sản phẩm' }} - {{ $variant->sku }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('applicable_variant_id')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                <label class="form-label">Áp dụng cho sản phẩm</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           id="variantTypeAll" 
+                                           name="variant_type" 
+                                           value="all"
+                                           {{ old('variant_type', 'all') === 'all' ? 'checked' : '' }}
+                                           onchange="toggleVariantSelection()">
+                                    <label class="form-check-label" for="variantTypeAll">
+                                        Áp dụng cho tất cả sản phẩm
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           id="variantTypeSpecific" 
+                                           name="variant_type" 
+                                           value="specific"
+                                           {{ old('variant_type') === 'specific' ? 'checked' : '' }}
+                                           onchange="toggleVariantSelection()">
+                                    <label class="form-check-label" for="variantTypeSpecific">
+                                        Chỉ áp dụng cho sản phẩm cụ thể
+                                    </label>
+                                </div>
+
+                                <div id="variantSelectionContainer" class="mt-3" style="display: none;">
+                                    <select class="form-select @error('product_variants') is-invalid @enderror" 
+                                            id="product_variants" 
+                                            name="product_variants[]"
+                                            multiple
+                                            size="8">
+                                        @foreach($variants as $variant)
+                                            <option value="{{ $variant->id }}"
+                                                    @if(is_array(old('product_variants')) && in_array($variant->id, old('product_variants'))) selected @endif>
+                                                {{ $variant->product->name ?? 'Sản phẩm' }} - {{ $variant->sku }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <small class="form-text text-muted d-block mt-2">
+                                        <iconify-icon icon="solar:info-circle-bold"></iconify-icon>
+                                        Giữ Ctrl (Cmd trên Mac) + Click để chọn nhiều sản phẩm
+                                    </small>
+                                    @error('product_variants')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
 
-                            {{-- Gán Cho Người Dùng --}}
+                            {{-- Gán Cho Người Dùng (Nhiều) --}}
                             <div class="mb-3">
-                                <label for="assigned_user_id" class="form-label">Gán cho người dùng (Tùy chọn)</label>
-                                <select class="form-select @error('assigned_user_id') is-invalid @enderror" 
-                                        id="assigned_user_id" 
-                                        name="assigned_user_id">
-                                    <option value="">-- Không gán cho ai cả --</option>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}" {{ old('assigned_user_id') == $user->id ? 'selected' : '' }}>
-                                            {{ $user->name }} ({{ $user->email }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('assigned_user_id')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                <label class="form-label">Gán cho người dùng</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           id="userTypeAll" 
+                                           name="user_type" 
+                                           value="all"
+                                           {{ old('user_type', 'all') === 'all' ? 'checked' : '' }}
+                                           onchange="toggleUserSelection()">
+                                    <label class="form-check-label" for="userTypeAll">
+                                        Công khai cho tất cả người dùng
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           id="userTypeSpecific" 
+                                           name="user_type" 
+                                           value="specific"
+                                           {{ old('user_type') === 'specific' ? 'checked' : '' }}
+                                           onchange="toggleUserSelection()">
+                                    <label class="form-check-label" for="userTypeSpecific">
+                                        Chỉ dành cho những người dùng cụ thể
+                                    </label>
+                                </div>
+
+                                <div id="userSelectionContainer" class="mt-3" style="display: none;">
+                                    <select class="form-select @error('users') is-invalid @enderror" 
+                                            id="users" 
+                                            name="users[]"
+                                            multiple
+                                            size="8">
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}"
+                                                    @if(is_array(old('users')) && in_array($user->id, old('users'))) selected @endif>
+                                                {{ $user->name }} ({{ $user->email }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <small class="form-text text-muted d-block mt-2">
+                                        <iconify-icon icon="solar:info-circle-bold"></iconify-icon>
+                                        Giữ Ctrl (Cmd trên Mac) + Click để chọn nhiều người dùng
+                                    </small>
+                                    @error('users')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
 
                             {{-- Trạng Thái --}}
@@ -313,6 +379,10 @@
         border-color: #dc3545;
     }
 
+    .form-select[multiple] {
+        min-height: 200px;
+    }
+
     .invalid-feedback {
         color: #dc3545;
         font-size: 0.875rem;
@@ -365,6 +435,10 @@
         border-color: #0d6efd;
     }
 
+    .form-check {
+        margin-bottom: 1rem;
+    }
+
     .input-group-text {
         background-color: #f8f9fa;
         border-color: #e9ecef;
@@ -415,9 +489,22 @@
         }
     }
 
-    // Khởi tạo label khi load trang
+    function toggleVariantSelection() {
+        const container = document.getElementById('variantSelectionContainer');
+        const typeSpecific = document.getElementById('variantTypeSpecific').checked;
+        container.style.display = typeSpecific ? 'block' : 'none';
+    }
+
+    function toggleUserSelection() {
+        const container = document.getElementById('userSelectionContainer');
+        const typeSpecific = document.getElementById('userTypeSpecific').checked;
+        container.style.display = typeSpecific ? 'block' : 'none';
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         updateValueLabel();
+        toggleVariantSelection();
+        toggleUserSelection();
     });
 </script>
 @endpush

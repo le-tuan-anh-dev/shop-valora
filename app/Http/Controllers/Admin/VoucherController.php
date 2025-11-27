@@ -24,43 +24,47 @@ class VoucherController
         return view('admin.vouchers.voucher-create', compact('variants', 'users'));
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:vouchers',
-            'type' => 'required|in:fixed,percent',
-            'value' => 'required|numeric|min:0',
-            'max_uses' => 'required|integer|min:1',
-            'per_user_limit' => 'required|integer|min:1',
-            'assigned_user_id' => 'nullable|exists:users,id',
-            'applicable_variant_id' => 'nullable|exists:product_variants,id',
-            'starts_at' => 'required|date|before:ends_at',
-            'ends_at' => 'required|date|after:starts_at',
-            'is_active' => 'nullable|boolean',
-        ], [
-            'code.required' => 'Mã voucher là bắt buộc',
-            'code.unique' => 'Mã voucher này đã tồn tại',
-            'type.required' => 'Loại giảm giá là bắt buộc',
-            'value.required' => 'Giá trị giảm giá là bắt buộc',
-            'value.min' => 'Giá trị phải lớn hơn 0',
-            'max_uses.required' => 'Tổng lượt sử dụng là bắt buộc',
-            'max_uses.min' => 'Tối thiểu 1 lượt sử dụng',
-            'per_user_limit.required' => 'Giới hạn/người là bắt buộc',
-            'starts_at.required' => 'Ngày bắt đầu là bắt buộc',
-            'starts_at.before' => 'Ngày bắt đầu phải trước ngày kết thúc',
-            'ends_at.required' => 'Ngày kết thúc là bắt buộc',
-            'ends_at.after' => 'Ngày kết thúc phải sau ngày bắt đầu',
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'code' => 'required|string|unique:vouchers',
+        'type' => 'required|in:fixed,percent',
+        'value' => 'required|numeric|min:0',
+        'max_uses' => 'required|integer|min:1',
+        'per_user_limit' => 'required|integer|min:1',
+        'starts_at' => 'required|date',
+        'ends_at' => 'required|date|after:starts_at',
+        'is_active' => 'boolean',
+        'variant_type' => 'required|in:all,specific',
+        'product_variants' => 'nullable|array|required_if:variant_type,specific',
+        'user_type' => 'required|in:all,specific',
+        'users' => 'nullable|array|required_if:user_type,specific',
+    ]);
 
-        $validated['code'] = strtoupper($validated['code']);
-        $validated['used_count'] = 0;
-        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
+    // Tạo voucher
+    $voucher = Voucher::create([
+        'code' => strtoupper($validated['code']),
+        'type' => $validated['type'],
+        'value' => $validated['value'],
+        'max_uses' => $validated['max_uses'],
+        'per_user_limit' => $validated['per_user_limit'],
+        'starts_at' => $validated['starts_at'],
+        'ends_at' => $validated['ends_at'],
+        'is_active' => $validated['is_active'] ?? true,
+    ]);
 
-        Voucher::create($validated);
-
-        return redirect()->route('admin.vouchers.index')
-            ->with('success', 'Mã giảm giá đã được tạo thành công!');
+    // Thêm user vào bảng voucher_users
+    if ($validated['user_type'] === 'specific' && !empty($validated['users'])) {
+        $voucher->users()->attach($validated['users']);
     }
+
+    // Thêm variant vào bảng voucher_variants
+    if ($validated['variant_type'] === 'specific' && !empty($validated['product_variants'])) {
+        $voucher->variants()->attach($validated['product_variants']);
+    }
+
+    return redirect()->route('admin.vouchers.index')->with('success', 'Tạo voucher thành công!');
+}
 
     public function edit($id)
     {
