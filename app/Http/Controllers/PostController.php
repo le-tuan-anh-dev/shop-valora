@@ -29,8 +29,13 @@ class PostController extends Controller
         $posts = $query->latest()->paginate(9)->appends(['keyword' => $request->keyword]);
 
         // Sidebar data
-        $topPosts = Post::where('is_published', true)->orderBy('views', 'desc')->take(5)->get();
-        $recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
+        $topPosts = Post::where('is_published', true)
+    ->withCount('comments') // Thêm cột đếm comments_count
+    ->orderBy('comments_count', 'desc') // Sắp xếp theo số lượng comment
+    ->take(5)
+    ->get();
+    
+$recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
 
         return view('client.posts.index', compact('posts', 'topPosts', 'recentPosts'));
     }
@@ -55,7 +60,11 @@ class PostController extends Controller
         }
 
         // Data Sidebar
-        $topPosts = Post::where('is_published', true)->orderBy('views', 'desc')->take(5)->get();
+       $topPosts = Post::where('is_published', true)
+    ->withCount('comments') // Thêm cột đếm comments_count
+    ->orderBy('comments_count', 'desc') // Sắp xếp theo số lượng comment
+    ->take(5)
+    ->get();
         
         // Bài viết liên quan
         $relatedPosts = Post::where('is_published', true)
