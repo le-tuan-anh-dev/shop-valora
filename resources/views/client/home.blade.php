@@ -745,54 +745,27 @@
         </div>
     </section>
     {{-- thương hiệu --}}
-    <section class="section-b-space">
-        <div class="custom-container container">
-            <div class="swiper logo-slider">
-                <div class="swiper-wrapper">
+
+{{-- thương hiệu --}}
+<section class="section-b-space">
+    <div class="custom-container container">
+        <div class="swiper logo-slider">
+            <div class="swiper-wrapper">
+
+                @foreach ($brands as $brand)
                     <div class="swiper-slide">
                         <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/1.png') }}" alt="logo">
+                            <img src="{{ asset('storage/'.$brand->logo) }}" alt="{{ $brand->name }}">
                         </a>
                     </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/2.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/3.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/4.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/5.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/6.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/7.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/3.png') }}" alt="logo">
-                        </a>
-                    </div>
-                </div>
+                @endforeach
+
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+
 
 
 @endsection
