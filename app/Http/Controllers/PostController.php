@@ -29,9 +29,9 @@ class PostController extends Controller
         $posts = $query->latest()->paginate(9)->appends(['keyword' => $request->keyword]);
 
         // Sidebar data
-        $topPosts = Post::where('is_published', true)
-    ->withCount('comments') // Thêm cột đếm comments_count
-    ->orderBy('comments_count', 'desc') // Sắp xếp theo số lượng comment
+       $topPosts = Post::where('is_published', true)
+    // PHẢI sắp xếp theo cột 'likes' và GIẢM DẦN ('desc')
+    ->orderBy('likes', 'desc') 
     ->take(5)
     ->get();
     
@@ -59,10 +59,9 @@ $recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
             Session::put($sessionKey, true);
         }
 
-        // Data Sidebar
-       $topPosts = Post::where('is_published', true)
-    ->withCount('comments') // Thêm cột đếm comments_count
-    ->orderBy('comments_count', 'desc') // Sắp xếp theo số lượng comment
+       // Data Sidebar: Bài viết nổi bật (Nhiều Like nhất)
+$topPosts = Post::where('is_published', true)
+    ->orderBy('likes', 'desc') // Sắp xếp theo cột 'likes'
     ->take(5)
     ->get();
         
@@ -135,4 +134,43 @@ $recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
 
         return back()->with('success', 'Đã xóa bình luận.');
     }
+
+    public function toggleLike($postId)
+{
+    // Kiểm tra đăng nhập
+    if (!Auth::check()) {
+        return response()->json(['success' => false, 'message' => 'Vui lòng đăng nhập để yêu thích.'], 401);
+    }
+
+    $post = Post::find($postId);
+    if (!$post) {
+        return response()->json(['success' => false, 'message' => 'Bài viết không tồn tại.'], 404);
+    }
+    
+    // Sử dụng Session để ghi nhớ trạng thái Like (giả lập)
+    $sessionKey = 'post_liked_' . $postId . '_' . Auth::id();
+    $isLiked = Session::has($sessionKey);
+
+    if ($isLiked) {
+        // Đã like -> Bỏ like
+        $post->decrement('likes');
+        Session::forget($sessionKey);
+        $isLiked = false;
+    } else {
+        // Chưa like -> Like
+        $post->increment('likes');
+        Session::put($sessionKey, true);
+        $isLiked = true;
+    }
+    
+    // Lấy lại số like mới nhất
+    $post->refresh(); 
+
+    return response()->json([
+        'success' => true, 
+        'is_liked' => $isLiked, 
+        'likes_count' => number_format($post->likes), 
+        'message' => $isLiked ? 'Đã thích bài viết!' : 'Đã bỏ thích bài viết.'
+    ]);
+}
 }

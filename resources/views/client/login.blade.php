@@ -88,7 +88,7 @@
                     <div class="log-in-button"> 
                         <ul> 
                             <li>
-                                <a href="{{ route('auth.google.redirect') }}">
+                                {{-- <a href="{{ route('auth.google.redirect') }}"> --}}
                                     <i class="fa-brands fa-google me-2"></i>Google
                                 </a>
                             </li>

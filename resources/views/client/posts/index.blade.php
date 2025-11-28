@@ -108,32 +108,33 @@
                             </form>
                         </div>
 
-                       {{-- 2. Bài viết nổi bật (Top Comments) --}}
-<div class="sidebar-box">
-    <div class="sidebar-title">
-        <div class="loader-line"></div>
-        <h5>Nổi bật (Nhiều bình luận)</h5> {{-- Đã thay đổi tiêu đề --}}
+{{-- 2. Bài viết nổi bật (Top Likes) --}}
+<div class="col-12">
+    <div class="sidebar-box">
+        <div class="sidebar-title">
+            <div class="loader-line"></div>
+            <h5>Nổi bật (Nhiều Like)</h5> {{-- Tiêu đề mới --}}
+        </div>
+        
+        {{-- Loop hiển thị Top Posts --}}
+        <ul class="recent-post">
+            @foreach($topPosts as $topPost)
+                <li class="d-flex align-items-center gap-3 mb-3">
+                    {{-- ... (Hình ảnh và Tiêu đề) ... --}}
+                    <div class="recent-content">
+                        <a href="{{ route('posts.show', $topPost->id) }}">
+                            <h6 class="mb-1" style="font-size: 14px; line-height: 1.4;">
+                                {{ Str::limit($topPost->title, 40) }}
+                            </h6>
+                        </a>
+                        <span style="font-size: 12px; color: #888;">
+                            <i class="fa-solid fa-heart"></i> {{ number_format($topPost->likes) }} likes {{-- **Đã thay đổi icon và sử dụng cột $topPost->likes** --}}
+                        </span>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
     </div>
-    
-    {{-- Loop hiển thị Top Posts --}}
-    <ul class="recent-post">
-        @foreach($topPosts as $topPost)
-            <li class="d-flex align-items-center gap-3 mb-3">
-                {{-- ... (Phần hình ảnh) ... --}}
-                <div class="recent-content">
-                    {{-- ... (Phần tiêu đề bài viết) ... --}}
-                    <a href="{{ route('posts.show', $topPost->id) }}">
-                        <h6 class="mb-1" style="font-size: 14px; line-height: 1.4;">
-                            {{ Str::limit($topPost->title, 40) }}
-                        </h6>
-                    </a>
-                    <span style="font-size: 12px; color: #888;">
-                        <i class="fa-regular fa-comment-dots"></i> {{ $topPost->comments_count ?? 0 }} comments {{-- **Đã thay đổi icon và biến hiển thị** --}}
-                    </span>
-                </div>
-            </li>
-        @endforeach
-    </ul>
 </div>
 
                         {{-- Bổ sung: 3. Bài viết mới nhất (Recent Posts) --}}

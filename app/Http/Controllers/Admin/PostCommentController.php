@@ -85,7 +85,7 @@ class PostController extends Controller
         return redirect()->route('admin.posts.index')->with('success', 'Tạo bài viết thành công!');
     }
 
-    /** Xem bài viết chi tiết */
+    /** Xem bài viết chi tiết (ĐÃ SỬA: Load root_comments_count) */
     public function show(Post $post)
     {
         $post->load('author');
@@ -98,7 +98,7 @@ class PostController extends Controller
             $query->whereNull('parent_id');
         }]);
         
-        // SỬA ĐỔI CÁCH LOAD BÌNH LUẬN: Tải tất cả comments, replies và user
+        // Load tất cả comments, replies và user để hiển thị phân cấp
         $post->load([
             'comments.user', 
             'comments.replies.user'
