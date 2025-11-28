@@ -112,6 +112,43 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="min_order_value" class="form-label">
+                                            Đơn hàng tối thiểu (₫)
+                                        </label>
+                                        <input type="number"
+                                            class="form-control @error('min_order_value') is-invalid @enderror"
+                                            id="min_order_value"
+                                            name="min_order_value"
+                                            placeholder="Ví dụ: 500000"
+                                            value="{{ old('min_order_value') }}"
+                                            min="0">
+                                        @error('min_order_value')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="max_discount_value" class="form-label">
+                                            Mức giảm tối đa (₫) - áp dụng với mã giảm %
+                                        </label>
+                                        <input type="number"
+                                            class="form-control @error('max_discount_value') is-invalid @enderror"
+                                            id="max_discount_value"
+                                            name="max_discount_value"
+                                            placeholder="Ví dụ: 30000"
+                                            value="{{ old('max_discount_value') }}"
+                                            min="0">
+                                        @error('max_discount_value')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                </div>
+                            </div>
 
                             {{-- Tổng Lượt Dùng & Giới Hạn/Người --}}
                             <div class="row">
@@ -224,62 +261,7 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <small class="form-text text-muted d-block mt-2">
-                                        <iconify-icon icon="solar:info-circle-bold"></iconify-icon>
-                                        Giữ Ctrl (Cmd trên Mac) + Click để chọn nhiều sản phẩm
-                                    </small>
                                     @error('product_variants')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            {{-- Gán Cho Người Dùng (Nhiều) --}}
-                            <div class="mb-3">
-                                <label class="form-label">Gán cho người dùng</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" 
-                                           type="radio" 
-                                           id="userTypeAll" 
-                                           name="user_type" 
-                                           value="all"
-                                           {{ old('user_type', 'all') === 'all' ? 'checked' : '' }}
-                                           onchange="toggleUserSelection()">
-                                    <label class="form-check-label" for="userTypeAll">
-                                        Công khai cho tất cả người dùng
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" 
-                                           type="radio" 
-                                           id="userTypeSpecific" 
-                                           name="user_type" 
-                                           value="specific"
-                                           {{ old('user_type') === 'specific' ? 'checked' : '' }}
-                                           onchange="toggleUserSelection()">
-                                    <label class="form-check-label" for="userTypeSpecific">
-                                        Chỉ dành cho những người dùng cụ thể
-                                    </label>
-                                </div>
-
-                                <div id="userSelectionContainer" class="mt-3" style="display: none;">
-                                    <select class="form-select @error('users') is-invalid @enderror" 
-                                            id="users" 
-                                            name="users[]"
-                                            multiple
-                                            size="8">
-                                        @foreach($users as $user)
-                                            <option value="{{ $user->id }}"
-                                                    @if(is_array(old('users')) && in_array($user->id, old('users'))) selected @endif>
-                                                {{ $user->name }} ({{ $user->email }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <small class="form-text text-muted d-block mt-2">
-                                        <iconify-icon icon="solar:info-circle-bold"></iconify-icon>
-                                        Giữ Ctrl (Cmd trên Mac) + Click để chọn nhiều người dùng
-                                    </small>
-                                    @error('users')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -494,17 +476,9 @@
         const typeSpecific = document.getElementById('variantTypeSpecific').checked;
         container.style.display = typeSpecific ? 'block' : 'none';
     }
-
-    function toggleUserSelection() {
-        const container = document.getElementById('userSelectionContainer');
-        const typeSpecific = document.getElementById('userTypeSpecific').checked;
-        container.style.display = typeSpecific ? 'block' : 'none';
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
         updateValueLabel();
         toggleVariantSelection();
-        toggleUserSelection();
     });
 </script>
 @endpush

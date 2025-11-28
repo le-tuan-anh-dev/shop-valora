@@ -32,13 +32,14 @@ public function store(Request $request)
         'value' => 'required|numeric|min:0',
         'max_uses' => 'required|integer|min:1',
         'per_user_limit' => 'required|integer|min:1',
-        'starts_at' => 'required|date',
-        'ends_at' => 'required|date|after:starts_at',
         'is_active' => 'boolean',
         'variant_type' => 'required|in:all,specific',
         'product_variants' => 'nullable|array|required_if:variant_type,specific',
-        'user_type' => 'required|in:all,specific',
         'users' => 'nullable|array|required_if:user_type,specific',
+        'apply_all_products' => 'nullable|boolean',
+        'min_order_value' => 'nullable|numeric|min:0',
+        'max_discount_value' => 'nullable|numeric|min:0',
+
     ]);
 
     // Tạo voucher
@@ -48,15 +49,13 @@ public function store(Request $request)
         'value' => $validated['value'],
         'max_uses' => $validated['max_uses'],
         'per_user_limit' => $validated['per_user_limit'],
-        'starts_at' => $validated['starts_at'],
-        'ends_at' => $validated['ends_at'],
+        'starts_at' => $validated['starts_at']?? null,
+        'ends_at' => $validated['ends_at']?? null,
         'is_active' => $validated['is_active'] ?? true,
+        'apply_all_products' => $validated['apply_all_products'] ?? 0,
+        'min_order_value' => $validated['min_order_value'] ?? 0,
+        'max_discount_value' => $validated['max_discount_value'] ?? 0,
     ]);
-
-    // Thêm user vào bảng voucher_users
-    if ($validated['user_type'] === 'specific' && !empty($validated['users'])) {
-        $voucher->users()->attach($validated['users']);
-    }
 
     // Thêm variant vào bảng voucher_variants
     if ($validated['variant_type'] === 'specific' && !empty($validated['product_variants'])) {
