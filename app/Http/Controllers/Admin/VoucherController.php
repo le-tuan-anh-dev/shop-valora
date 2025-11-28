@@ -20,8 +20,7 @@ class VoucherController
     public function create()
     {
         $variants = ProductVariant::select('id', 'product_id', 'sku')->get();
-        $users = User::where('role', 'customer')->select('id', 'name', 'email')->get();
-        return view('admin.vouchers.voucher-create', compact('variants', 'users'));
+        return view('admin.vouchers.voucher-create', compact('variants'));
     }
 
 public function store(Request $request)
@@ -32,15 +31,18 @@ public function store(Request $request)
         'value' => 'required|numeric|min:0',
         'max_uses' => 'required|integer|min:1',
         'per_user_limit' => 'required|integer|min:1',
+        'starts_at' => 'nullable|date',
+        'ends_at' => 'nullable|date|after:starts_at',
         'is_active' => 'boolean',
         'variant_type' => 'required|in:all,specific',
-        'product_variants' => 'nullable|array|required_if:variant_type,specific',
-        'users' => 'nullable|array|required_if:user_type,specific',
-        'apply_all_products' => 'nullable|boolean',
+        'variant_ids' => 'nullable|array|required_if:variant_type,specific',
+        'variant_ids.*' => 'exists:product_variants,id',
         'min_order_value' => 'nullable|numeric|min:0',
         'max_discount_value' => 'nullable|numeric|min:0',
-
     ]);
+
+    // Xác định apply_all_products dựa trên variant_type
+    $applyAllProducts = $request->variant_type === 'all' ? 1 : 0;
 
     // Tạo voucher
     $voucher = Voucher::create([
@@ -49,17 +51,18 @@ public function store(Request $request)
         'value' => $validated['value'],
         'max_uses' => $validated['max_uses'],
         'per_user_limit' => $validated['per_user_limit'],
-        'starts_at' => $validated['starts_at']?? null,
-        'ends_at' => $validated['ends_at']?? null,
-        'is_active' => $validated['is_active'] ?? true,
-        'apply_all_products' => $validated['apply_all_products'] ?? 0,
+        'starts_at' => $validated['starts_at'],
+        'ends_at' => $validated['ends_at'],
+        'is_active' => $request->has('is_active') ? 1 : 0,
+        'apply_all_products' => $applyAllProducts,
         'min_order_value' => $validated['min_order_value'] ?? 0,
         'max_discount_value' => $validated['max_discount_value'] ?? 0,
+        'used_count' => 0, // Khởi tạo số lần đã sử dụng = 0
     ]);
 
-    // Thêm variant vào bảng voucher_variants
-    if ($validated['variant_type'] === 'specific' && !empty($validated['product_variants'])) {
-        $voucher->variants()->attach($validated['product_variants']);
+    // Thêm variant vào bảng voucher_variants nếu chọn specific
+    if ($request->variant_type === 'specific' && !empty($validated['variant_ids'])) {
+        $voucher->variants()->attach($validated['variant_ids']);
     }
 
     return redirect()->route('admin.vouchers.index')->with('success', 'Tạo voucher thành công!');
