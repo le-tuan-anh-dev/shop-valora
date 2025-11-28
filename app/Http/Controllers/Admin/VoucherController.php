@@ -71,7 +71,7 @@ public function store(Request $request)
         $voucher = Voucher::findOrFail($id);
         $variants = ProductVariant::select('id', 'product_id', 'sku')->get();
         $users = User::where('role', 'customer')->select('id', 'name', 'email')->get();
-        return view('admin.vouchers.edit', compact('voucher', 'variants', 'users'));
+        return view('admin.vouchers.voucher-edit', compact('voucher', 'variants', 'users'));
     }
 
     public function update(Request $request, $id)
