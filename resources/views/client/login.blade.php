@@ -81,10 +81,6 @@
                         </form>
                     </div>
 
-                    <div class="other-log-in"> 
-                        <h6>HOẶC</h6>
-                    </div>
-
                     <div class="sign-up-box"> 
                         <p>Chưa có tài khoản?</p>
                         <a href="{{ route('register.show') }}">Đăng Ký</a>

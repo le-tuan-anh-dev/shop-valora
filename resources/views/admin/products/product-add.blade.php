@@ -34,10 +34,30 @@
                     <div class="card mb-3 p-3">
                         <h5 class="fw-semibold">Hình ảnh sản phẩm</h5>
                         <div class="mb-3">
-                            <label class="form-label">Ảnh đại diện</label>
-                            <input type="file" name="image_main" class="form-control @error('image_main') is-invalid @enderror">
+                            <label for="image_main" class="form-label">Ảnh Chính <span class="text-danger">*</span></label>
+                            <input type="file" 
+                                class="form-control @error('image_main') is-invalid @enderror" 
+                                id="image_main" 
+                                name="image_main"
+                                accept="image/*"
+                                >
+                            <div id="previewMainImage" class="mt-3"></div>
                             @error('image_main')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        {{-- Ảnh Phụ --}}
+                        <div class="mb-3">
+                            <label for="product_images" class="form-label">Ảnh Phụ</label>
+                            <input type="file" 
+                                class="form-control @error('product_images.*') is-invalid @enderror" 
+                                id="product_images" 
+                                name="product_images[]"
+                                multiple
+                                accept="image/*">
+                            <div id="previewImages" class="mt-3 d-flex flex-wrap gap-2"></div>
+                            @error('product_images.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
@@ -293,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const basePrice = parseFloat(basePriceInput.value) || 0;
 
-        // ✅ Tạo bảng biến thể
+        //  Tạo bảng biến thể
         combos.forEach((combo, idx) => {
             const values = Array.isArray(combo) ? combo : [combo];
             const label = values.map(v => v.name).join(' / ');
@@ -369,6 +389,37 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
         });
         updateProductStock();
+    }
+});
+document.getElementById('product_images').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('previewImages');
+    previewContainer.innerHTML = '';
+    
+    Array.from(this.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.style.cssText = 'width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;';
+            previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+document.getElementById('image_main').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('previewMainImage');
+    previewContainer.innerHTML = '';
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.style.cssText = 'width: 150px; height: 150px; object-fit: cover; border-radius: 4px; ';
+            previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
     }
 });
 </script>
