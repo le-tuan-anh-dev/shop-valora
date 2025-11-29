@@ -9,9 +9,7 @@ use App\Models\Admin\Brand;
 use Illuminate\Http\Request;
 use App\Models\Admin\Product;
 use App\Models\Admin\Category;
-
-
-
+use App\Models\admin\ProductImage;
 use App\Models\Admin\ProductVariant;
 use App\Models\Admin\VariantAttributeValue;
 use Illuminate\Support\Facades\DB;
@@ -71,7 +69,6 @@ class ProductController extends Controller
         return view('admin.products.product-add', compact('categories', 'brands', 'attributes'));
     }
 
-
     public function store(Request $request)
     {
         $messages = [
@@ -117,6 +114,7 @@ class ProductController extends Controller
             'variants.*.stock' => 'nullable|integer|min:0',
             'image_main' =>'required',
             'description'=>'required|string',
+            'product_images'   => 'nullable|max:5',
         ], $messages);
 
         DB::beginTransaction();
@@ -127,7 +125,7 @@ class ProductController extends Controller
                 $imagePath = $request->file('image_main')->store('products', 'public');
             }
 
-            // ===== STEP 1: Tạo sản phẩm (INSERT INTO products) =====
+            //Tạo sản phẩm
             $product = Product::create([
                 'category_id'    => $validated['category_id'],
                 'brand_id'       => $validated['brand_id'] ?? null,
@@ -141,9 +139,21 @@ class ProductController extends Controller
                 'is_active'      => $request->has('is_active') ? 1 : 0,
             ]);
 
+            if ($request->hasFile('product_images')) {
+                foreach ($request->file('product_images') as $imageFile) {
+                    if ($imageFile) {
+                        $imagePath = $imageFile->store('products', 'public');
+                        ProductImage::create([
+                            'product_id' => $product->id,
+                            'image'      => $imagePath,
+                        ]);
+                    }
+                }
+            }
+
             $totalVariantStock = 0;
 
-            // ===== STEP 2 & 3: Nếu có biến thể, lưu variants và mapping thuộc tính =====
+            //Nếu có biến thể, lưu variants
             if ($request->has('variants') && is_array($request->variants) && count($request->variants) > 0) {
                 // Gom tất cả attribute_value_ids từ variants để query một lần
                 $allAttributeValueIds = collect($request->variants)
@@ -161,7 +171,7 @@ class ProductController extends Controller
                     ->keyBy('id');
 
                 foreach ($request->variants as $idx => $variantData) {
-                    // ===== STEP 2: Tạo product_variant =====
+                    // Tạo product_variant 
                     $variant = ProductVariant::create([
                         'product_id' => $product->id,
                         'sku'        => $variantData['sku'] ?? null,
@@ -172,8 +182,8 @@ class ProductController extends Controller
 
                     $totalVariantStock += $variant->stock;
 
-                    // ===== STEP 3: Liên kết attribute_values với variant (INSERT INTO variant_attribute_values) =====
-                    //  CẬP NHẬT: Liên kết TRỰ TIẾP tới attribute_values, KHÔNG QUEN product_attribute_values
+                    // Liên kết attribute_values với variant
+                    // Liên kết TRỰ TIẾP tới attribute_values,
                     if (!empty($variantData['value_ids'])) {
                         $attributeValueIds = array_filter(explode(',', $variantData['value_ids']));
 
@@ -182,12 +192,9 @@ class ProductController extends Controller
                             if (!$attributeValues->has($avId)) {
                                 continue; // Bỏ qua nếu không tồn tại
                             }
-
-                            // INSERT TRỰC TIẾP vào variant_attribute_values
-                            // Không cần tạo product_attribute_values nữa
                             VariantAttributeValue::firstOrCreate([
                                 'variant_id'           => $variant->id,
-                                'attribute_value_id'   => (int)$avId,  //  Liên kết trực tiếp
+                                'attribute_value_id'   => (int)$avId,  
                             ]);
                         }
                     }
