@@ -1,125 +1,206 @@
-@extends('admin.layouts.main_nav')
+@extends('client.layouts.master')
+
+@section('title', $post->title)
+
+@section('styles')
+<style>
+    .content-body img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .content-body iframe {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+@endsection
 
 @section('content')
 
-<div class="container-fluid">
+<div class="container py-4">
+    <div class="row">
 
-<div class="d-flex justify-content-between mb-4">
-    <h4 class="mb-0">👁 Xem bài viết chi tiết</h4>
-    <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary">← Quay lại danh sách</a>
-</div>
+        {{-- ============================ --}}
+        {{-- LEFT SIDE: CONTENT --}}
+        {{-- ============================ --}}
+        <div class="col-lg-8">
 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fa-solid fa-check-circle me-2"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
+            {{-- SUCCESS / ERROR --}}
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fa-solid fa-check-circle me-2"></i> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
 
-{{-- ============================================== --}}
-{{-- PHẦN NỘI DUNG BÀI VIẾT --}}
-{{-- ============================================== --}}
-<div class="card shadow-sm border-0 mb-5">
-    <div class="card-body px-5 py-4">
+            {{-- MAIN CONTENT --}}
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body px-5 py-4">
 
-        <h2 class="fw-bold text-center mb-3" style="line-height: 1.4;">
-            {{ $post->title }}
-        </h2>
+                    <h2 class="fw-bold text-center mb-3">{{ $post->title }}</h2>
 
-        <p class="text-muted text-center mb-4">
-            Tác giả: <b>{{ $post->author->name ?? 'N/A' }}</b> • 
-            {{ optional($post->created_at)->format('d/m/Y H:i') ?? 'Không rõ ngày' }}
-        </p>
+                    <p class="text-muted text-center mb-4">
+                        Tác giả: <b>{{ $post->author->name ?? 'N/A' }}</b> •
+                        {{ $post->created_at->format('d/m/Y H:i') }}
+                        <span class="ms-3"><i class="fa-solid fa-eye me-1"></i> {{ number_format($post->views) }}</span>
+                        <span class="ms-3"><i class="fa-solid fa-heart me-1 text-danger"></i> {{ number_format($post->likes) }}</span>
+                    </p>
 
-        <hr class="my-4">
+                    <hr>
 
-        <div class="content-body" style="font-size: 1.05rem; line-height: 1.75;">
-            {!! $post->content !!}
+                    <div class="content-body" style="font-size: 1.05rem; line-height: 1.75;">
+                        {!! $post->content !!}
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- COMMENT SECTION --}}
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body px-5 py-4">
+
+                    @php
+                        $rootComments = $post->comments->whereNull('parent_id')->sortByDesc('created_at');
+                    @endphp
+
+                    <h4 class="mb-4">💬 Bình luận ({{ $post->comments_count }})</h4>
+
+                    @auth
+                        <div class="mb-4 p-3 border rounded bg-light">
+                            <h6 class="fw-bold mb-3">Bạn đang bình luận với tên: {{ Auth::user()->name }}</h6>
+                            {{-- <form action="{{ route('client.posts.store_comment', $post->id) }}" method="POST"> --}}
+                                @csrf
+                                <textarea name="content" class="form-control mb-3" rows="3" placeholder="Viết bình luận của bạn..."></textarea>
+                                <button class="btn btn-primary">Gửi bình luận</button>
+                            </form>
+                        </div>
+                    @else
+                        <div class="alert alert-warning text-center mb-4">
+                            Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để bình luận.
+                        </div>
+                    @endauth
+
+                    <hr>
+
+                    @forelse($rootComments as $comment)
+                        <div class="border p-3 mb-4 rounded bg-light">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa-solid fa-user-circle me-2 text-primary"></i>
+                                <h6 class="mb-0 fw-bold me-2">{{ $comment->user->name ?? 'Khách' }}</h6>
+                                <small class="text-muted">({{ $comment->created_at->diffForHumans() }})</small>
+
+                                @auth
+                                    @if(Auth::id() === $comment->user_id)
+                                        {{-- <form action="{{ route('client.posts.destroy_comment', $comment->id) }}" method="POST" class="ms-auto"> --}}
+                                            @csrf @method('DELETE')
+                                            <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i> Xóa</button>
+                                        </form>
+                                    @endif
+                                @endauth
+                            </div>
+
+                            <p>{{ $comment->content }}</p>
+
+                            {{-- Replies --}}
+                            @if($comment->replies->count())
+                                <div class="mt-3 ps-4 border-start border-3 border-primary">
+                                    @foreach($comment->replies as $reply)
+                                        <div class="p-3 mb-2 rounded bg-white border">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fa-solid fa-reply me-2 text-success"></i>
+                                                <h6 class="mb-0 fw-bold me-2">{{ $reply->user->name }} (Phản hồi)</h6>
+                                                <small class="text-muted">{{ $reply->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <p>{{ $reply->content }}</p>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                        </div>
+                    @empty
+                        <p class="alert alert-info text-center">Chưa có bình luận nào.</p>
+                    @endforelse
+
+                </div>
+            </div>
+
+        </div>
+
+        {{-- ============================ --}}
+        {{-- RIGHT SIDE: SIDEBAR --}}
+        {{-- ============================ --}}
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 20px;">
+                @if($topPosts->count())
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">⭐ Bài viết nổi bật</h5>
+                        <ul class="list-unstyled m-0 p-0">
+                            @foreach($topPosts as $topPost)
+                                <li class="mb-3 pb-3 border-bottom">
+                                    <div class="d-flex">
+                                        <img src="{{ asset('storage/' . $topPost->image) }}" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
+                                        <div>
+                                            <h6 class="mb-1 fw-bold">
+                                                <a href="{{ route('posts.show', $topPost->id) }}" class="text-dark text-decoration-none">
+                                                    {{ Str::limit($topPost->title, 45) }}
+                                                </a>
+                                            </h6>
+                                            <small class="text-muted"><i class="fa-solid fa-heart me-1 text-danger"></i>{{ number_format($topPost->likes) }}</small>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                @endif
+            </div>
         </div>
 
     </div>
 </div>
 
-{{-- ============================================== --}}
-{{-- PHẦN QUẢN LÝ BÌNH LUẬN CỦA ADMIN --}}
-{{-- ============================================== --}}
-<div class="card shadow-sm border-0">
-    <div class="card-body px-5 py-4">
-        
-        {{-- Lọc ra chỉ các bình luận gốc (parent_id là NULL) để bắt đầu vòng lặp --}}
-        @php
-            // Lọc bình luận gốc từ collection đã được eager load, sắp xếp giảm dần theo thời gian tạo
-            $rootComments = $post->comments->whereNull('parent_id')->sortByDesc('created_at');
-        @endphp
-        
-        {{-- Dùng comments_count (tổng tất cả) để hiển thị --}}
-        <h4 class="mb-4">💬 Bình luận ({{ $post->comments_count ?? 0 }})</h4>
-        
-        @forelse($rootComments as $comment)
-            <div class="border p-3 mb-4 rounded-3 bg-light">
-                
-                {{-- BẮT ĐẦU HIỂN THỊ BÌNH LUẬN GỐC --}}
-                <div class="d-flex align-items-center mb-2">
-                    <i class="fa-solid fa-user-circle me-2 text-primary" style="font-size: 1.25rem;"></i>
-                    <h6 class="mb-0 fw-bold me-2">{{ $comment->user->name ?? 'Khách' }}</h6>
-                    <small class="text-muted">({{ optional($comment->created_at)->diffForHumans() }})</small>
-                </div>
-                
-                <p class="mb-3">{{ $comment->content }}</p>
-                {{-- KẾT THÚC HIỂN THỊ BÌNH LUẬN GỐC --}}
-                
-                
-                <a class="btn btn-sm btn-primary" data-bs-toggle="collapse" href="#replyForm-{{ $comment->id }}" role="button" aria-expanded="false" aria-controls="replyForm-{{ $comment->id }}">
-                    ✍️ Trả lời
-                </a>
-                
-                {{-- Form trả lời cho Admin --}}
-                <form action="{{ route('admin.post_comments.reply', $comment) }}" method="POST" class="collapse mt-3" id="replyForm-{{ $comment->id }}">
-                     @csrf
-                     <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                     <div class="input-group">
-                         <input type="text" name="content" class="form-control" placeholder="Viết phản hồi...">
-                         <button class="btn btn-success" type="submit">Gửi</button>
-                     </div>
-                </form>
-                
-                
-                @if($comment->replies->count())
-                    <div class="mt-3 ps-4 border-start border-3 border-primary">
-                        <h6 class="mb-2 text-primary">Phản hồi:</h6>
-                        {{-- Lặp qua replies đã được eager load, sắp xếp theo thời gian tạo TĂNG DẦN --}}
-                        @foreach($comment->replies->sortBy('created_at') as $reply)
-                            <div class="p-3 mb-2 rounded-3" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
-                                {{-- BẮT ĐẦU HIỂN THỊ REPLY --}}
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="fa-solid fa-reply me-2 text-success" style="font-size: 1.1rem;"></i>
-                                    <h6 class="mb-0 fw-bold me-2">{{ $reply->user->name ?? 'Khách' }}</h6>
-                                    <small class="text-muted">({{ optional($reply->created_at)->diffForHumans() }})</small>
-                                </div>
-                                <p class="mb-0">{{ $reply->content }}</p>
-                                {{-- KẾT THÚC HIỂN THỊ REPLY --}}
-                            </div>
-                        @endforeach
+{{-- ================================================= --}}
+{{-- RELATED POSTS — TÁCH RA KHỎI LAYOUT & ĐẢM BẢO LUÔN CUỐI --}}
+{{-- ================================================= --}}
+@if ($relatedPosts->count())
+<div class="container mb-5">
+    <h4 class="fw-bold mb-4">🔥 Bài viết liên quan</h4>
+
+    <div class="row">
+        @foreach($relatedPosts as $relatedPost)
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="{{ asset('storage/' . $relatedPost->image) }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="fw-bold">
+                            <a href="{{ route('posts.show', $relatedPost->id) }}" class="text-dark text-decoration-none">
+                                {{ Str::limit($relatedPost->title, 50) }}
+                            </a>
+                        </h6>
+                        <small class="text-muted mt-auto">
+                            <i class="fa-solid fa-clock me-1"></i>
+                            {{ $relatedPost->created_at->diffForHumans() }}
+                        </small>
                     </div>
-                @endif
+                </div>
             </div>
-        @empty
-            {{-- Chỉ hiện khi KHÔNG có bình luận gốc nào --}}
-            <p class="alert alert-info text-center">
-                Bài viết này hiện chưa có **bình luận gốc** nào.
-                (Tổng số bình luận: **{{ $post->comments_count ?? 0 }}**)
-            </p>
-        @endforelse
-        
+        @endforeach
     </div>
 </div>
+@endif
 
-
-</div>
 @endsection

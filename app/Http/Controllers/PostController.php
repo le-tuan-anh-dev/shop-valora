@@ -44,36 +44,35 @@ $recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
      * 2. Chi tiết bài viết (ĐÂY LÀ HÀM BẠN ĐANG BỊ THIẾU)
      */
     public function show($id)
-    {
-        // Tìm bài viết, load kèm comment và user của comment đó
-        $post = Post::with(['author', 'comments.user']) 
-            ->withCount('comments')
-            ->where('is_published', true)
-            ->findOrFail($id);
+{
+    $post = Post::with(['author', 'comments.user'])
+        ->withCount('comments')
+        ->where('is_published', true)
+        ->findOrFail($id);
 
-        // Tăng lượt xem (Check session để không tăng ảo khi F5)
-        $sessionKey = 'post_viewed_' . $id;
-        if (!Session::has($sessionKey)) {
-            $post->views += 1; // Cộng thủ công
-            $post->save();
-            Session::put($sessionKey, true);
-        }
-
-       // Data Sidebar: Bài viết nổi bật (Nhiều Like nhất)
-$topPosts = Post::where('is_published', true)
-    ->orderBy('likes', 'desc') // Sắp xếp theo cột 'likes'
-    ->take(5)
-    ->get();
-        
-        // Bài viết liên quan
-        $relatedPosts = Post::where('is_published', true)
-            ->where('author_id', $post->author_id)
-            ->where('id', '!=', $id)
-            ->take(3)
-            ->get();
-
-        return view('client.posts.show', compact('post', 'topPosts', 'relatedPosts'));
+    // Tăng view
+    $sessionKey = 'post_viewed_' . $id;
+    if (!Session::has($sessionKey)) {
+        $post->increment('views');
+        Session::put($sessionKey, true);
     }
+
+    // Sidebar nổi bật
+    $topPosts = Post::where('is_published', true)
+        ->orderBy('likes', 'desc')
+        ->take(5)
+        ->get();
+
+    // Bài viết liên quan
+    $relatedPosts = Post::where('is_published', true)
+        ->where('author_id', $post->author_id)
+        ->where('id', '!=', $post->id)
+        ->take(3)
+        ->get();
+
+    return view('client.posts.show', compact('post', 'topPosts', 'relatedPosts'));
+}
+
 
     /**
      * 3. Lưu bình luận (Có chặn từ cấm)

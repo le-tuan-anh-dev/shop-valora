@@ -195,6 +195,15 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     // Posts
   Route::resource('posts', PostController::class)->names('admin.posts');
+      Route::post('/post-comments/{comment}/reply', [AdminPostController::class, 'replyComment'])
+        ->name('admin.post_comments.reply');
+         Route::put('/post-comments/{comment}/update', [AdminPostController::class, 'updateComment'])
+        ->name('admin.post_comments.update');
+    
+    Route::delete('/post-comments/{comment}', [AdminPostController::class, 'deleteComment'])
+        ->name('admin.post_comments.delete');
+        
+
 
     // CKEditor / TinyMCE upload
     Route::post('/tinymce/upload', [AdminPostController::class, 'tinymceUpload'])

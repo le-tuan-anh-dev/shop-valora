@@ -21,9 +21,7 @@
         </div>
     @endif
 
-    {{-- ============================================== --}}
     {{-- PHẦN NỘI DUNG BÀI VIẾT --}}
-    {{-- ============================================== --}}
     <div class="card shadow-sm border-0 mb-5">
         <div class="card-body px-5 py-4">
 
@@ -45,72 +43,99 @@
         </div>
     </div>
 
-    {{-- ============================================== --}}
-    {{-- PHẦN QUẢN LÝ BÌNH LUẬN CỦA ADMIN --}}
-    {{-- ============================================== --}}
+    {{-- PHẦN HIỂN THỊ BÌNH LUẬN PHÂN CẤP --}}
     <div class="card shadow-sm border-0">
         <div class="card-body px-5 py-4">
             
-            {{-- Lọc ra chỉ các bình luận gốc (parent_id là NULL) để bắt đầu vòng lặp --}}
+            {{-- Lọc ra CHỈ các bình luận GỐC (parent_id = NULL) --}}
             @php
-                // Lọc bình luận gốc từ collection đã được load, sắp xếp giảm dần theo thời gian tạo
                 $rootComments = $post->comments->whereNull('parent_id')->sortByDesc('created_at');
             @endphp
             
-            {{-- Dùng comments_count (tổng tất cả) để hiển thị --}}
             <h4 class="mb-4">💬 Bình luận ({{ $post->comments_count ?? 0 }})</h4>
             
             @forelse($rootComments as $comment)
                 <div class="border p-3 mb-4 rounded-3 bg-light">
-                    {{-- HIỂN THỊ BÌNH LUẬN GỐC --}}
+                    
+                    {{-- ========== HIỂN THỊ BÌNH LUẬN GỐC ========== --}}
                     <div class="d-flex align-items-center mb-2">
                         <i class="fa-solid fa-user-circle me-2 text-primary" style="font-size: 1.25rem;"></i>
                         <h6 class="mb-0 fw-bold me-2">{{ $comment->user->name ?? 'Khách' }}</h6>
-                        <small class="text-muted">({{ optional($comment->created_at)->diffForHumans() }})</small>
+                        <small class="text-muted">({{ $comment->created_at->diffForHumans() }})</small>
                     </div>
                     
                     <p class="mb-3">{{ $comment->content }}</p>
-                    {{-- END HIỂN THỊ BÌNH LUẬN GỐC --}}
                     
-                    <a class="btn btn-sm btn-primary" data-bs-toggle="collapse" href="#replyForm-{{ $comment->id }}" role="button" aria-expanded="false" aria-controls="replyForm-{{ $comment->id }}">
-                        ✍️ Trả lời
-                    </a>
+                    {{-- Các nút hành động --}}
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-sm btn-primary" data-bs-toggle="collapse" href="#replyForm-{{ $comment->id }}">
+                            ✍️ Trả lời
+                        </a>
+                        
+                        <form action="{{ route('admin.post_comments.delete', $comment) }}" method="POST" class="d-inline" onsubmit="return confirm('Xác nhận xóa bình luận này? Tất cả phản hồi cũng sẽ bị xóa.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                🗑️ Xóa
+                            </button>
+                        </form>
+                    </div>
                     
+                    {{-- Form trả lời --}}
                     <form action="{{ route('admin.post_comments.reply', $comment) }}" method="POST" class="collapse mt-3" id="replyForm-{{ $comment->id }}">
                         @csrf
-                        {{-- THÊM input cho nội dung trả lời, đảm bảo có route `admin.post_comments.reply` và controller xử lý --}}
                         <div class="input-group">
-                            <input type="text" name="content" class="form-control" placeholder="Viết phản hồi...">
+                            <input type="text" name="content" class="form-control" placeholder="Viết phản hồi..." required>
                             <button class="btn btn-success" type="submit">Gửi</button>
                         </div>
                     </form>
                     
+                    {{-- ========== HIỂN THỊ CÁC REPLY CỦA COMMENT NÀY ========== --}}
+                    @php
+                        // Lọc các reply của comment này từ collection đã load
+                        $replies = $post->comments->where('parent_id', $comment->id)->sortBy('created_at');
+                    @endphp
                     
-                    @if($comment->replies->count())
+                    @if($replies->count() > 0)
                         <div class="mt-3 ps-4 border-start border-3 border-primary">
-                            <h6 class="mb-2 text-primary">Phản hồi:</h6>
-                            {{-- Lặp qua replies đã được eager load, sắp xếp theo thời gian tạo tăng dần --}}
-                            @foreach($comment->replies->sortBy('created_at') as $reply)
+                            <h6 class="mb-2 text-primary">
+                                <i class="fa-solid fa-reply me-1"></i> 
+                                Phản hồi ({{ $replies->count() }}):
+                            </h6>
+                            
+                            @foreach($replies as $reply)
                                 <div class="p-3 mb-2 rounded-3" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
-                                    {{-- HIỂN THỊ REPLY --}}
-                                    <div class="d-flex align-items-center mb-2">
-                                        <i class="fa-solid fa-reply me-2 text-success" style="font-size: 1.1rem;"></i>
-                                        <h6 class="mb-0 fw-bold me-2">{{ $reply->user->name ?? 'Khách' }}</h6>
-                                        <small class="text-muted">({{ optional($reply->created_at)->diffForHumans() }})</small>
+                                    
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-solid fa-reply me-2 text-success" style="font-size: 1.1rem;"></i>
+                                            <h6 class="mb-0 fw-bold me-2">{{ $reply->user->name ?? 'Khách' }}</h6>
+                                            <small class="text-muted">({{ $reply->created_at->diffForHumans() }})</small>
+                                        </div>
+                                        
+                                        {{-- Nút xóa reply --}}
+                                        <form action="{{ route('admin.post_comments.delete', $reply) }}" method="POST" class="d-inline" onsubmit="return confirm('Xác nhận xóa phản hồi này?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                🗑️
+                                            </button>
+                                        </form>
                                     </div>
+                                    
                                     <p class="mb-0">{{ $reply->content }}</p>
-                                    {{-- END HIỂN THỊ REPLY --}}
+                                    
                                 </div>
                             @endforeach
                         </div>
                     @endif
+                    
                 </div>
             @empty
-                {{-- Chỉ hiện khi KHÔNG có bình luận gốc nào, sử dụng root_comments_count để kiểm tra chính xác hơn --}}
-                <p class="alert alert-info text-center">
-                    Bài viết này hiện chưa có **bình luận gốc** nào.
-                    (Tổng số bình luận: **{{ $post->comments_count ?? 0 }}**)
-                </p>
+                <div class="alert alert-info text-center">
+                    <i class="fa-solid fa-comment-slash me-2"></i>
+                    Bài viết này hiện chưa có bình luận nào.
+                </div>
             @endforelse
             
         </div>
