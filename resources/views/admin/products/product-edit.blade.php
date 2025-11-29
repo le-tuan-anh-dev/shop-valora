@@ -44,6 +44,27 @@
                             @endif
                             @error('image_main')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
+                        {{-- Ảnh Phụ Hiện Tại --}}
+ {{-- Thêm Ảnh Phụ --}}
+<div class="mb-3">
+    <label for="product_images" class="form-label">Thêm Ảnh Phụ</label>
+    <input type="file" 
+           class="form-control @error('product_images.*') is-invalid @enderror" 
+           id="product_images" 
+           name="product_images[]"
+           multiple
+           accept="image/*">
+    <small class="form-text text-muted d-block mt-2">
+        Chọn tối đa 10 ảnh, mỗi ảnh tối đa 2MB
+    </small>
+    <div id="previewNewImages" class="mt-3 d-flex flex-wrap gap-2"></div>
+    @error('product_images.*')
+        <div class="invalid-feedback d-block">{{ $message }}</div>
+    @enderror
+</div>
+
+{{-- Hidden input để xóa tất cả ảnh cũ --}}
+<input type="hidden" id="deleteAllImages" name="delete_all_images" value="0">
                     </div>
 
                     {{-- Biến thể --}}
@@ -426,6 +447,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // Khởi tạo
     initializeExistingGroups();
     generateVariants();
+});
+document.getElementById('product_images').addEventListener('change', function(e) {
+    if (this.files.length > 0) {
+        // Set flag xóa tất cả ảnh cũ
+        document.getElementById('deleteAllImages').value = '1';
+        
+        // Ẩn ảnh cũ
+        const currentImages = document.getElementById('currentImages');
+        if (currentImages) {
+            currentImages.style.display = 'none';
+        }
+    }
+    
+    // Preview ảnh mới
+    const previewContainer = document.getElementById('previewNewImages');
+    previewContainer.innerHTML = '';
+    
+    Array.from(this.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.style.cssText = 'width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;';
+            previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
 });
 </script>
 @endpush
