@@ -29,9 +29,9 @@ class PostController extends Controller
         $posts = $query->latest()->paginate(9)->appends(['keyword' => $request->keyword]);
 
         // Sidebar data
-        $topPosts = Post::where('is_published', true)
-    ->withCount('comments') // Thêm cột đếm comments_count
-    ->orderBy('comments_count', 'desc') // Sắp xếp theo số lượng comment
+       $topPosts = Post::where('is_published', true)
+    // PHẢI sắp xếp theo cột 'likes' và GIẢM DẦN ('desc')
+    ->orderBy('likes', 'desc') 
     ->take(5)
     ->get();
     
@@ -44,37 +44,35 @@ $recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
      * 2. Chi tiết bài viết (ĐÂY LÀ HÀM BẠN ĐANG BỊ THIẾU)
      */
     public function show($id)
-    {
-        // Tìm bài viết, load kèm comment và user của comment đó
-        $post = Post::with(['author', 'comments.user']) 
-            ->withCount('comments')
-            ->where('is_published', true)
-            ->findOrFail($id);
+{
+    $post = Post::with(['author', 'comments.user'])
+        ->withCount('comments')
+        ->where('is_published', true)
+        ->findOrFail($id);
 
-        // Tăng lượt xem (Check session để không tăng ảo khi F5)
-        $sessionKey = 'post_viewed_' . $id;
-        if (!Session::has($sessionKey)) {
-            $post->views += 1; // Cộng thủ công
-            $post->save();
-            Session::put($sessionKey, true);
-        }
-
-        // Data Sidebar
-       $topPosts = Post::where('is_published', true)
-    ->withCount('comments') // Thêm cột đếm comments_count
-    ->orderBy('comments_count', 'desc') // Sắp xếp theo số lượng comment
-    ->take(5)
-    ->get();
-        
-        // Bài viết liên quan
-        $relatedPosts = Post::where('is_published', true)
-            ->where('author_id', $post->author_id)
-            ->where('id', '!=', $id)
-            ->take(3)
-            ->get();
-
-        return view('client.posts.show', compact('post', 'topPosts', 'relatedPosts'));
+    // Tăng view
+    $sessionKey = 'post_viewed_' . $id;
+    if (!Session::has($sessionKey)) {
+        $post->increment('views');
+        Session::put($sessionKey, true);
     }
+
+    // Sidebar nổi bật
+    $topPosts = Post::where('is_published', true)
+        ->orderBy('likes', 'desc')
+        ->take(5)
+        ->get();
+
+    // Bài viết liên quan
+    $relatedPosts = Post::where('is_published', true)
+        ->where('author_id', $post->author_id)
+        ->where('id', '!=', $post->id)
+        ->take(3)
+        ->get();
+
+    return view('client.posts.show', compact('post', 'topPosts', 'relatedPosts'));
+}
+
 
     /**
      * 3. Lưu bình luận (Có chặn từ cấm)
@@ -135,4 +133,43 @@ $recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
 
         return back()->with('success', 'Đã xóa bình luận.');
     }
+
+    public function toggleLike($postId)
+{
+    // Kiểm tra đăng nhập
+    if (!Auth::check()) {
+        return response()->json(['success' => false, 'message' => 'Vui lòng đăng nhập để yêu thích.'], 401);
+    }
+
+    $post = Post::find($postId);
+    if (!$post) {
+        return response()->json(['success' => false, 'message' => 'Bài viết không tồn tại.'], 404);
+    }
+    
+    // Sử dụng Session để ghi nhớ trạng thái Like (giả lập)
+    $sessionKey = 'post_liked_' . $postId . '_' . Auth::id();
+    $isLiked = Session::has($sessionKey);
+
+    if ($isLiked) {
+        // Đã like -> Bỏ like
+        $post->decrement('likes');
+        Session::forget($sessionKey);
+        $isLiked = false;
+    } else {
+        // Chưa like -> Like
+        $post->increment('likes');
+        Session::put($sessionKey, true);
+        $isLiked = true;
+    }
+    
+    // Lấy lại số like mới nhất
+    $post->refresh(); 
+
+    return response()->json([
+        'success' => true, 
+        'is_liked' => $isLiked, 
+        'likes_count' => number_format($post->likes), 
+        'message' => $isLiked ? 'Đã thích bài viết!' : 'Đã bỏ thích bài viết.'
+    ]);
+}
 }
