@@ -85,44 +85,27 @@ class PostController extends Controller
         return redirect()->route('admin.posts.index')->with('success', 'Tạo bài viết thành công!');
     }
 
-    /** Xem bài viết chi tiết */
-/** Xem bài viết chi tiết */
-public function show($id)
-{
-    // Load giống hệt bên Client - dùng findOrFail như Client
-    $post = Post::with(['author', 'comments.user'])
-        ->withCount('comments')
-        ->findOrFail($id);
-    
-    return view('admin.posts.show', compact('post'));
-}
+    /** Xem bài viết chi tiết (ĐÃ SỬA: Load root_comments_count) */
+    public function show(Post $post)
+    {
+        $post->load('author');
+        
+        // Load tổng số lượng TẤT CẢ comments
+        $post->loadCount('comments'); 
 
-/** Trả lời bình luận */
-public function replyComment(Request $request, PostComment $comment)
-{
-    $request->validate([
-        'content' => 'required|string|max:1000',
-    ]);
-
-    PostComment::create([
-        'post_id' => $comment->post_id,
-        'user_id' => Auth::id(),
-        'content' => $request->content,
-        'parent_id' => $comment->id  // Đây là reply của comment này
-    ]);
-
-    return redirect()->back()->with('success', 'Đã trả lời bình luận!');
-}
-
-/** Xóa bình luận/reply */
-public function deleteComment(PostComment $comment)
-{
-    $comment->delete();
-    
-    return redirect()->back()->with('success', 'Đã xóa bình luận!');
-}
-
-
+        // BỔ SUNG: Load tổng số lượng BÌNH LUẬN GỐC (parent_id IS NULL)
+        $post->loadCount(['comments as root_comments_count' => function ($query) {
+            $query->whereNull('parent_id');
+        }]);
+        
+        // Load tất cả comments, replies và user để hiển thị phân cấp
+        $post->load([
+            'comments.user', 
+            'comments.replies.user'
+        ]);
+        
+        return view('admin.posts.show', compact('post'));
+    }
 
     /** Form sửa */
     public function edit(Post $post)

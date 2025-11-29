@@ -81,9 +81,6 @@
                         </form>
                     </div>
 
-
-
-
                     <div class="sign-up-box"> 
                         <p>Chưa có tài khoản?</p>
                         <a href="{{ route('register.show') }}">Đăng Ký</a>

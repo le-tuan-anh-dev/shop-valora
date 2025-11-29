@@ -440,6 +440,20 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+    <a
+        class="nav-link"
+        href="{{ route('admin.posts.index') }}"
+        role="button"
+        aria-expanded="false"
+        aria-controls="sidebarPosts"
+    >
+        <span class="nav-icon">
+            <iconify-icon icon="solar:document-add-bold-duotone"></iconify-icon>
+        </span>
+        <span class="nav-text"> Bài viết </span>
+    </a>
+</li>
 
                     <li class="nav-item">
                         <a

@@ -108,45 +108,34 @@
                             </form>
                         </div>
 
-                        {{-- 2. Bài viết nổi bật (Top Views) --}}
-                        <div class="col-12">
-                            <div class="sidebar-box">
-                                <div class="sidebar-title">
-                                    <div class="loader-line"></div>
-                                    <h5>Nổi bật (Xem nhiều)</h5>
-                                </div>
-                                
-                                {{-- Loop hiển thị Top Posts --}}
-                                <ul class="recent-post">
-                                    @foreach($topPosts as $topPost)
-                                        <li class="d-flex align-items-center gap-3 mb-3">
-                                            <div class="recent-img" style="width: 80px; height: 80px; flex-shrink: 0; border-radius: 5px; overflow: hidden;">
-                                                <a href="{{ route('posts.show', $topPost->id) }}">
-                                                    @if($topPost->thumbnail)
-                                                         <img src="{{ asset('storage/'.$topPost->thumbnail) }}" 
-                                                               class="img-fluid w-100 h-100" 
-                                                               style="object-fit: cover;" 
-                                                               alt="{{ $topPost->title }}">
-                                                    @else
-                                                         <img src="https://via.placeholder.com/80" class="img-fluid w-100 h-100" alt="thumb">
-                                                    @endif
-                                                </a>
-                                            </div>
-                                            <div class="recent-content">
-                                                <a href="{{ route('posts.show', $topPost->id) }}">
-                                                    <h6 class="mb-1" style="font-size: 14px; line-height: 1.4;">
-                                                        {{ Str::limit($topPost->title, 40) }}
-                                                    </h6>
-                                                </a>
-                                                <span style="font-size: 12px; color: #888;">
-                                                    <i class="fa-regular fa-eye"></i> {{ number_format($topPost->views) }} views
-                                                </span>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
+{{-- 2. Bài viết nổi bật (Top Likes) --}}
+<div class="col-12">
+    <div class="sidebar-box">
+        <div class="sidebar-title">
+            <div class="loader-line"></div>
+            <h5>Nổi bật (Nhiều Like)</h5> {{-- Tiêu đề mới --}}
+        </div>
+        
+        {{-- Loop hiển thị Top Posts --}}
+        <ul class="recent-post">
+            @foreach($topPosts as $topPost)
+                <li class="d-flex align-items-center gap-3 mb-3">
+                    {{-- ... (Hình ảnh và Tiêu đề) ... --}}
+                    <div class="recent-content">
+                        <a href="{{ route('posts.show', $topPost->id) }}">
+                            <h6 class="mb-1" style="font-size: 14px; line-height: 1.4;">
+                                {{ Str::limit($topPost->title, 40) }}
+                            </h6>
+                        </a>
+                        <span style="font-size: 12px; color: #888;">
+                            <i class="fa-solid fa-heart"></i> {{ number_format($topPost->likes) }} likes {{-- **Đã thay đổi icon và sử dụng cột $topPost->likes** --}}
+                        </span>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+</div>
 
                         {{-- Bổ sung: 3. Bài viết mới nhất (Recent Posts) --}}
                         {{-- Hiển thị các bài viết khác từ biến $recentPosts --}}
