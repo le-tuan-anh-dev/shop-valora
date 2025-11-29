@@ -13,6 +13,8 @@ use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use App\Notifications\OrderStatusChanged;
 
 class CheckoutController extends Controller
 {
@@ -619,7 +621,7 @@ class CheckoutController extends Controller
                     Log::error('Lỗi gửi email: ' . $mailException->getMessage());
                 }
 
-                // xóa sestion
+                // xóa session
                 session()->forget('pending_order');
 
                 return redirect()->route('order.success', $order->id)
@@ -657,7 +659,7 @@ class CheckoutController extends Controller
         }
     }
 
-    // Phần của Tuấn Anh
+    // Phần của Dashboard
     /**
      * Danh sách đơn hàng của user hiện tại.
      */
@@ -676,7 +678,6 @@ class CheckoutController extends Controller
             'paymentMethods' => $paymentMethods,
         ]);
     }
-
     /**
      * Chi tiết 1 đơn hàng.
      */
@@ -701,27 +702,46 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Hủy đơn hàng (chỉ khi đang pending).
+     * Hủy đơn hàng (hoàn kho + thông báo).
      */
-    public function cancelOrder(Order $order)
-    {
-        if ($order->user_id !== auth()->id()) {
-            return redirect()->route('orders.index')
-                ->with('error', 'Bạn không có quyền hủy đơn hàng này.');
-        }
-
-        if (!in_array($order->status, ['pending'])) {
-            return redirect()->back()
-                ->with('error', 'Chỉ có thể hủy đơn hàng đang chờ xử lý.');
-        }
-
-        // QUAN TRỌNG: dùng 'cancelled_by_customer' đúng với enum trong DB
-        $order->status = 'cancelled_by_customer';
-        $order->save();
-
-        return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công.');
+  public function cancelOrder(Order $order)
+{
+    if ($order->user_id !== auth()->id()) {
+        return redirect()->route('orders.index')
+            ->with('error', 'Bạn không có quyền hủy đơn hàng này.');
     }
 
+    if ($order->status !== 'pending') {
+        return redirect()->back()
+            ->with('error', 'Đơn đã xác nhận nên không thể hủy.');
+    }
+
+    DB::transaction(function () use ($order) {
+        $items = $order->items()
+            ->with(['product', 'variant'])
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($items as $item) {
+            if ($item->product) {
+                $item->product->increment('stock', $item->quantity);
+            }
+            if ($item->variant) {
+                $item->variant->increment('stock', $item->quantity);
+            }
+        }
+
+        $order->update([
+            'status'         => 'cancelled_by_customer',
+            'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
+            'cancelled_at'   => now(),
+        ]);
+
+        $order->user->notify(new OrderStatusChanged($order));
+    });
+
+    return redirect()->back()->with('success', 'Đã hủy đơn hàng và hoàn lại tồn kho.');
+}
     /**
      * Stub applyCoupon để tránh lỗi route (có thể tự triển khai sau).
      */

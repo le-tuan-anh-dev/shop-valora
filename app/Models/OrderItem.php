@@ -63,4 +63,20 @@ class OrderItem extends Model
         // Khóa ngoại là order_id, bảng orders
         return $this->belongsTo(Order::class, 'order_id');
     }
+
+    /**
+     * Liên kết tới sản phẩm để hoàn kho.
+     */
+    public function product()
+    {
+        return $this->belongsTo(\App\Models\Admin\Product::class, 'product_id');
+    }
+
+    /**
+     * Liên kết tới biến thể để hoàn kho.
+     */
+    public function variant()
+    {
+        return $this->belongsTo(\App\Models\Admin\ProductVariant::class, 'variant_id');
+    }
 }

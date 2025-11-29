@@ -137,7 +137,7 @@
                         </div>
                         <div class="totle-detail"> 
                           <h6>Total Spent</h6>
-                          <h4>${{ number_format($totalSpent, 2) }}</h4>
+                          <h4>\${{ number_format($totalSpent, 2) }}</h4>
                         </div>
                       </div>
                     </div>
@@ -161,7 +161,7 @@
                         </div>
                         <div class="totle-detail"> 
                           <h6>Balance</h6>
-                          <h4>${{ number_format(0, 2) }}</h4>
+                          <h4>\${{ number_format(0, 2) }}</h4>
                         </div>
                       </div>
                     </div>
@@ -209,7 +209,7 @@
             </div>
           </div>
 
-          {{-- Notifications Tab (demo tĩnh) --}}
+          {{-- Notifications Tab --}}
           <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab"> 
             <div class="dashboard-right-box">
               <div class="notification-tab">
@@ -218,24 +218,26 @@
                   <h4>Notifications</h4>
                 </div>
                 <ul class="notification-body">
-                  <li> 
-                    <div class="user-img">
-                      <img src="{{ asset('client/assets/images/notification/1.jpg') }}" alt="">
-                    </div>
-                    <div class="user-contant"> 
-                      <h6>Mint - is your budget ready for spring spending?<span>2:14PM</span></h6>
-                      <p>A quick weekend trip, a staycation in your own town, or a weeklong vacay with the family—it’s your choice if it’s in the budget.</p>
-                    </div>
-                  </li>
-                  <li> 
-                    <div class="user-img">
-                      <img src="{{ asset('client/assets/images/notification/2.jpg') }}" alt="">
-                    </div>
-                    <div class="user-contant"> 
-                      <h6>Flipkart - Confirmed order<span>2:14PM</span></h6>
-                      <p>Thanks for signing up for CodePen! We're happy you're here. Let's get your email address verified.</p>
-                    </div>
-                  </li>
+                  @forelse($notifications as $notification)
+                    @php $data = $notification->data; @endphp
+                    <li> 
+                      <div class="user-img">
+                        <i class="fa-solid fa-bell"></i>
+                      </div>
+                      <div class="user-contant"> 
+                        <h6>
+                          {{ $data['message'] ?? 'Thông báo đơn hàng' }}
+                          <span>{{ $notification->created_at->diffForHumans() }}</span>
+                        </h6>
+                        <p>
+                          Mã đơn: <strong>{{ $data['order_number'] ?? 'N/A' }}</strong><br>
+                          Trạng thái: <strong>{{ $data['status_label'] ?? $data['status'] ?? 'Không xác định' }}</strong>
+                        </p>
+                      </div>
+                    </li>
+                  @empty
+                    <li><p>Bạn chưa có thông báo nào.</p></li>
+                  @endforelse
                 </ul>
               </div>
             </div>
@@ -302,9 +304,9 @@
                                 <h5>{{ $firstItem->product_name }}</h5>
                                 <p>{{ \Illuminate\Support\Str::limit($firstItem->product_description, 120) }}</p>
                                 <ul> 
-                                  <li><p>Price :</p><span>${{ number_format($firstItem->unit_price, 2) }}</span></li>
+                                  <li><p>Price :</p><span>\${{ number_format($firstItem->unit_price, 2) }}</span></li>
                                   <li><p>Qty :</p><span>{{ $firstItem->quantity }}</span></li>
-                                  <li><p>Total order :</p><span>${{ number_format($order->total_amount, 2) }}</span></li>
+                                  <li><p>Total order :</p><span>\${{ number_format($order->total_amount, 2) }}</span></li>
                                 </ul>
                                 @if($order->items->count() > 1)
                                   <small>+ {{ $order->items->count() - 1 }} sản phẩm khác</small>
@@ -319,7 +321,7 @@
                             Xem chi tiết
                           </a>
 
-                          @if($order->status === 'pending')
+                          @if(in_array($order->status, ['pending', 'confirmed', 'awaiting_pickup']))
                             <form action="{{ route('orders.cancel', $order->id) }}" method="POST"
                                   onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?')">
                               @csrf
@@ -436,7 +438,7 @@
             <div class="dashboard-right-box">
               <div class="address-tab">
                 <div class="sidebar-title">
-                  <div class="loader-line"></div>
+                  <div một loader-line"></div>
                   <h4>My Address Details</h4>
                 </div>
 
