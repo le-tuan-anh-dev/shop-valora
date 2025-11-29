@@ -269,12 +269,13 @@
                                     <div id="prd-selected" class="mt-3 d-flex flex-wrap gap-2"></div>
 
                                     {{-- Dữ liệu sản phẩm --}}
+
                                     <ul id="prd-source" class="d-none">
                                         @foreach($variants as $p)
                                             <li data-id="{{ $p->id }}" 
-                                                data-name="{{ $p->name }}" 
+                                                data-name="{{ $p->product->name ?? 'Sản phẩm' }}" 
                                                 data-sku="{{ $p->sku }}">
-                                                {{ $p->name }} — {{ $p->sku }}
+                                                {{ $p->product->name ?? 'Sản phẩm' }} — {{ $p->sku }}
                                             </li>
                                         @endforeach
                                     </ul>
@@ -542,13 +543,14 @@ document.addEventListener('DOMContentLoaded', function () {
             div.innerHTML = `
                 <div class="form-check w-100">
                     <input type="checkbox" 
-                           class="form-check-input prd-checkbox" 
-                           data-id="${id}" 
-                           data-name="${name}" 
-                           data-sku="${sku}"
-                           ${selected.has(id) ? 'checked' : ''}
-                           id="prd-check-${id}">
+                        class="form-check-input prd-checkbox" 
+                        data-id="${id}" 
+                        data-name="${name}" 
+                        data-sku="${sku}"
+                        ${selected.has(id) ? 'checked' : ''}
+                        id="prd-check-${id}">
                     <label class="form-check-label w-100" for="prd-check-${id}" style="cursor: pointer;">
+                        <strong>${name}</strong>
                         <small class="text-muted ms-1">${sku}</small>
                     </label>
                 </div>
