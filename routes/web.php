@@ -29,7 +29,11 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
+
 use App\Http\Controllers\WishlistController;
+
+use App\Http\Controllers\Api\ChatbotController;
+
 
 
 
@@ -37,6 +41,9 @@ use App\Http\Controllers\WishlistController;
 
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+
+Route::post('/chatbot/ask', [ChatbotController::class, 'askAI']);
 
 
 

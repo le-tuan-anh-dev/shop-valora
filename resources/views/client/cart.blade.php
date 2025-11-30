@@ -86,8 +86,10 @@
                         <span class="item-price" data-price="{{ $item['price'] }}">
                           @if($item['variant'] && isset($item['variant']['price']))
                             {{ number_format($item['variant']['price'], 0, ',', '.') }} đ 
+                          @elseif(!empty($item['product']['discount_price']))
+                            {{ number_format($item['product']['discount_price'], 0, ',', '.') }} đ 
                           @else
-                            {{ number_format($item['product']['base_price'], 0, ',', '.') }} đ 
+                          {{ number_format($item['product']['base_price'], 0, ',', '.') }} đ 
                           @endif
                         </span>
                       </td>
@@ -185,14 +187,17 @@
                   <h6>Thương hiệu: <span>{{ $product['brand'] ?? 'Shop' }}</span></h6>
                   
                   <p>
-                    <strong>{{ number_format($product['base_price'], 0, ',', '.') }} đ</strong>
+                    
                     @if($product['discount_price'])
+                    <strong>{{ number_format($product['discount_price'], 0, ',', '.') }} đ</strong>
                       <span>
-                        <del>{{ number_format($product['discount_price'], 0, ',', '.') }} đ</del>
+                        <del>{{ number_format($product['base_price'], 0, ',', '.') }} đ</del>
                       </span>
                       <span style="color: #e74c3c; font-weight: bold; margin-left: 8px;">
-                        {{ round((($product['base_price'] - $product['discount_price']) / $product['base_price']) * 100) }}%
+                        -{{ round((($product['base_price'] - $product['discount_price']) / $product['base_price']) * 100) }}%
                       </span>
+                    @else
+                      <strong>{{ number_format($product['base_price'], 0, ',', '.') }} đ</strong>
                     @endif
                   </p>
                   

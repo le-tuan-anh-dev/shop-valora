@@ -18,34 +18,39 @@
 <section class="section-b-space pt-0 product-thumbnail-page"> 
     <div class="custom-container container">
         <div class="row gy-4">
-            
+
             <!-- LEFT: Product Images -->
             <div class="col-lg-6"> 
                 <div class="row sticky">
-                    <!-- Thumbnails -->
+                    <!-- Thumbnails on LEFT -->
                     <div class="col-sm-2 col-3">
                         <div class="swiper product-slider product-slider-img"> 
                             <div class="swiper-wrapper"> 
                                 @foreach($images as $index => $image)
                                     <div class="swiper-slide"> 
-                                        <img src="{{ $image }}" alt="Product {{ $index }}" onclick="changeImage('{{ $image }}', {{ $index }})">
+                                        <img src="{{ $image }}" 
+                                            alt="Product {{ $index }}" 
+                                            class="thumbnail-img"
+                                            data-index="{{ $index }}"
+                                            onclick="changeImage('{{ $image }}', {{ $index }})"
+                                           >
                                     </div>
                                 @endforeach
                             </div>
                         </div>
                     </div>
 
-                    <!-- Main Image -->
+                    <!-- Main Image on RIGHT -->
                     <div class="col-sm-10 col-9">
                         <div class="swiper product-slider-thumb product-slider-img-1">
                             <div class="swiper-wrapper ratio_square-2">
                                 @foreach($images as $index => $image)
                                     <div class="swiper-slide"> 
-                                        <img class="bg-img" 
-                                             id="mainImage{{ $index }}"
-                                             src="{{ $image }}" 
-                                             alt="Product {{ $index }}"
-                                             style="display: {{ $index === 0 ? 'block' : 'none' }};">
+                                        <img class="bg-img main-image" 
+                                            id="mainImage{{ $index }}"
+                                            src="{{ $image }}" 
+                                            alt="Product {{ $index }}"
+                                            >
                                     </div>
                                 @endforeach
                             </div>
@@ -64,12 +69,15 @@
 
                         <!-- Price -->
                         <p>
-                            <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
+                            
                             @if($product->discount_price)
-                                <del>{{ number_format($product->discount_price, 0, ',', '.') }} đ</del>
+                                <strong>{{ number_format($product->discount_price, 0, ',', '.') }} đ</strong>
+                                <del>{{ number_format($product->base_price, 0, ',', '.') }} đ</del>
                                 <span class="offer-btn">
                                     {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% off
                                 </span>
+                            @else
+                            <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
                             @endif
                         </p>
                         <ul class="rating">      
@@ -233,6 +241,44 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Wishlist & Compare -->
+    <div class="buy-box">
+        <ul> 
+            <li><a href="wishlist.html"><i class="fa-regular fa-heart me-2"></i>Thêm vào sản phẩm yêu thích</a></li>
+            <li><a href="compare.html"><i class="fa-solid fa-arrows-rotate me-2"></i>Add To Compare</a></li>
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#social-box"><i class="fa-solid fa-share-nodes me-2"></i>Chia sẻ</a></li>
+        </ul>
+    </div>
+
+    <!-- Info Box -->
+    <div class="dz-info"> 
+        <ul> 
+            <li>
+                <div class="d-flex align-items-center gap-2"> 
+                    <h6>Mã sản phẩm:</h6>
+                    <span id="skuDisplay">{{ $product->id }}</span>
+                </div>
+            </li>
+            <li> 
+                <div class="d-flex align-items-center gap-2"> 
+                    <h6>Số lượng còn:</h6>
+                    <span id="stockDisplay">{{ $product->stock }}</span>
+                </div>
+            </li>
+            <li> 
+                <div class="d-flex align-items-center gap-2"> 
+                    <h6>Thương hiệu:</h6>
+                    <p>{{  $brand->name ??'' }}</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</form>
+        </div>
+    </div>
+</div>
 </section>
 
 <section class="section-b-space pt-0 product-thumbnail-page"> 
@@ -385,8 +431,8 @@
                             <!-- Price -->
                             <p>
                                 @if($relatedProduct['discount_price'])
-                                    {{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫ 
-                                    <del>{{ number_format($relatedProduct['discount_price'], 0, ',', '.') }}₫</del>
+                                    {{ number_format($relatedProduct['discount_price'], 0, ',', '.') }}₫ 
+                                    <del>{{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫</del>
                                 @else
                                     {{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫
                                 @endif
@@ -401,9 +447,6 @@
                 
             </div>
 
-            {{-- Navigation buttons --}}
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
         </div>
     </div>
 </section>
@@ -420,6 +463,16 @@
         const addToCartBtn = document.getElementById('addToCartBtn');
         const buyNowBtn = document.getElementById('buyNowBtn');
         const variantForm = document.getElementById('variantForm');
+        
+        // Init Swiper cho main image
+        const mainImageSwiper = new Swiper('.product-slider-thumb', {
+            loop: false,
+            spaceBetween: 10,
+            slidesPerView: 1,
+        });
+
+        
+        
 
         // Increase quantity
         increaseBtn?.addEventListener('click', function(e) {
@@ -477,12 +530,27 @@
         });
     });
 
-    // Change main image
+    // Change main image - FIX VERSION
     function changeImage(src, index) {
-        document.querySelectorAll('[id^="mainImage"]').forEach(img => {
-            img.style.display = 'none';
-        });
-        document.getElementById('mainImage' + index).style.display = 'block';
+        // Tìm swiper instance của main image
+        const mainImageSwiper = document.querySelector('.product-slider-thumb').swiper;
+        
+        if (mainImageSwiper) {
+            // Slide to the selected index
+            mainImageSwiper.slideTo(index);
+        } else {
+            // Fallback nếu swiper chưa được init
+            document.querySelectorAll('.product-slider-img-1 .swiper-slide').forEach((slide, i) => {
+                if (i === index) {
+                    slide.style.display = 'block';
+                } else {
+                    slide.style.display = 'none';
+                }
+            });
+        }
+        
+        
+        
     }
 
     // Select attribute
@@ -539,7 +607,7 @@
         .catch(error => console.error('Error:', error));
     }
 
-    // Get exact variant
+    // Get exact variant - UPDATED WITH PRICE
     function getVariant() {
         const selectedIds = Object.values(selectedAttributes).map(a => a.valueId);
         const productId = {{ $product->id }};
@@ -556,9 +624,14 @@
         })
         .then(r => r.json())
         .then(data => {
+            console.log('Variant data:', data); // DEBUG
             if (data.success) {
                 const variant = data.data.variant;
                 const stock = data.data.stock_info;
+                
+                console.log('Variant:', variant); // DEBUG
+                console.log('Base Price:', variant.base_price); // DEBUG
+                console.log('Discount Price:', variant.discount_price); // DEBUG
                 
                 document.getElementById('variantId').value = variant.id;
                 
@@ -570,6 +643,9 @@
                     input.value = id;
                     document.getElementById('variantForm').appendChild(input);
                 });
+                
+                // CẬP NHẬT GIÁ TIỀN
+                updatePrice(variant);
                 
                 document.getElementById('skuDisplay').textContent = variant.sku || '-';
                 document.getElementById('stockDisplay').textContent = stock.stock_status;
@@ -592,5 +668,24 @@
         })
         .catch(error => console.error('Error:', error));
     }
+
+    // HÀM CẬP NHẬT GIÁ
+    function updatePrice(variant) {
+        const priceContainer = document.querySelector('.product-option p');
+        
+        if (!priceContainer) return;
+        
+        // Định dạng số tiền kiểu Việt Nam
+        const price = parseInt(variant.price || 0);
+        
+        const formatPrice = (price) => {
+            return new Intl.NumberFormat('vi-VN').format(price).replace(/\./g, '.');
+        };
+        
+        let priceHTML = `<strong>${formatPrice(price)} đ</strong>`;
+        
+        priceContainer.innerHTML = priceHTML;
+    }
+        
 </script>
 @endsection
