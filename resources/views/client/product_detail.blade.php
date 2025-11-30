@@ -64,12 +64,15 @@
 
                         <!-- Price -->
                         <p>
-                            <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
+                            
                             @if($product->discount_price)
-                                <del>{{ number_format($product->discount_price, 0, ',', '.') }} đ</del>
+                                <strong>{{ number_format($product->discount_price, 0, ',', '.') }} đ</strong>
+                                <del>{{ number_format($product->base_price, 0, ',', '.') }} đ</del>
                                 <span class="offer-btn">
                                     {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% off
                                 </span>
+                            @else
+                            <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
                             @endif
                         </p>
                         <ul class="rating">      
@@ -329,8 +332,8 @@
                             <!-- Price -->
                             <p>
                                 @if($relatedProduct['discount_price'])
-                                    {{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫ 
-                                    <del>{{ number_format($relatedProduct['discount_price'], 0, ',', '.') }}₫</del>
+                                    {{ number_format($relatedProduct['discount_price'], 0, ',', '.') }}₫ 
+                                    <del>{{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫</del>
                                 @else
                                     {{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫
                                 @endif

@@ -188,8 +188,8 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
                                                         @php
                                                             $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
                                                         @endphp
@@ -251,8 +251,8 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
                                                         @php
                                                             $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
                                                         @endphp
@@ -314,8 +314,8 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
                                                         @php
                                                             $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
                                                         @endphp
@@ -564,8 +564,8 @@
                         {{-- Giá sản phẩm --}}
                         <p>
                             @if($product->discount_price)
-                                {{ number_format($product->base_price, 0, ',', '.') }}₫ 
-                                <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                {{ number_format($product->discount_price, 0, ',', '.') }}₫ 
+                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
                                 @php
                                     $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
                                 @endphp
