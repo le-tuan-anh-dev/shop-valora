@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\WishlistController;
 
 
 
@@ -80,6 +81,13 @@ Route::prefix('products')->group(function () {
 // Customer routes 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     // Dashboard khách hàng
+    
+    Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
+        ->name('wishlist.add');
+
+    Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
+        ->name('wishlist.remove');
+    // ============================
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])
         ->name('client.dashboard');
 

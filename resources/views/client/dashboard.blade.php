@@ -137,7 +137,7 @@
                         </div>
                         <div class="totle-detail"> 
                           <h6>Total Spent</h6>
-                          <h4>\${{ number_format($totalSpent, 2) }}</h4>
+                          <h4>${{ number_format($totalSpent, 2) }}</h4>
                         </div>
                       </div>
                     </div>
@@ -161,7 +161,7 @@
                         </div>
                         <div class="totle-detail"> 
                           <h6>Balance</h6>
-                          <h4>\${{ number_format(0, 2) }}</h4>
+                          <h4>${{ number_format(0, 2) }}</h4>
                         </div>
                       </div>
                     </div>
@@ -304,9 +304,9 @@
                                 <h5>{{ $firstItem->product_name }}</h5>
                                 <p>{{ \Illuminate\Support\Str::limit($firstItem->product_description, 120) }}</p>
                                 <ul> 
-                                  <li><p>Price :</p><span>\${{ number_format($firstItem->unit_price, 2) }}</span></li>
+                                  <li><p>Price :</p><span>${{ number_format($firstItem->unit_price, 2) }}</span></li>
                                   <li><p>Qty :</p><span>{{ $firstItem->quantity }}</span></li>
-                                  <li><p>Total order :</p><span>\${{ number_format($order->total_amount, 2) }}</span></li>
+                                  <li><p>Total order :</p><span>${{ number_format($order->total_amount, 2) }}</span></li>
                                 </ul>
                                 @if($order->items->count() > 1)
                                   <small>+ {{ $order->items->count() - 1 }} sản phẩm khác</small>
@@ -344,7 +344,7 @@
             </div>
           </div>
 
-          {{-- Wishlist Tab (demo tĩnh) --}}
+          {{-- Wishlist Tab (dùng dữ liệu thật) --}}
           <div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-tab">
             <div class="dashboard-right-box">
               <div class="wishlist-box ratio1_3"> 
@@ -352,81 +352,96 @@
                   <div class="loader-line"></div>
                   <h4>Wishlist</h4>
                 </div>
-                <div class="row-cols-md-3 row-cols-2 grid-section view-option row gy-4 g-xl-4">
-                  {{-- Demo tĩnh --}}
-                  <div class="col"> 
-                    <div class="product-box-3 product-wishlist">
-                      <div class="img-wrapper">
-                        <div class="label-block">
-                          <a class="label-2 wishlist-icon delete-button" href="javascript:void(0)"
-                             title="Remove from Wishlist" tabindex="0">
-                            <i class="iconsax" data-icon="trash" aria-hidden="true"></i>
-                          </a>
-                        </div>
-                        <div class="product-image">
-                          <a class="pro-first" href="#">
-                            <img class="bg-img" src="{{ asset('client/assets/images/product/product-3/1.jpg') }}" alt="product">
-                          </a>
-                          <a class="pro-sec" href="#">
-                            <img class="bg-img" src="{{ asset('client/assets/images/product/product-3/20.jpg') }}" alt="product">
-                          </a>
-                        </div>
-                        <div class="cart-info-icon">
-                          <a href="#" data-bs-toggle="modal" data-bs-target="#addtocart" title="Add to cart" tabindex="0">
-                            <i class="iconsax" data-icon="basket-2" aria-hidden="true"></i>
-                          </a>
-                        </div>
-                      </div>
-                      <div class="product-detail">
-                        <ul class="rating">      
-                          <li><i class="fa-solid fa-star"></i></li>
-                          <li><i class="fa-solid fa-star"></i></li>
-                          <li><i class="fa-solid fa-star"></i></li>
-                          <li><i class="fa-solid fa-star-half-stroke"></i></li>
-                          <li><i class="fa-regular fa-star"></i></li>
-                        </ul>
-                        <a href="#"><h6>Greciilooks Women's Stylish Top</h6></a>
-                        <p>\$100.00<del>\$140.00</del><span>-20%</span></p>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div class="col"> 
-                    <div class="product-box-3 product-wishlist">
-                      <div class="img-wrapper">
-                        <div class="label-block">
-                          <a class="label-2 wishlist-icon delete-button" href="javascript:void(0)"
-                             title="Remove from Wishlist" tabindex="0">
-                            <i class="iconsax" data-icon="trash" aria-hidden="true"></i>
-                          </a>
+                <div class="row-cols-md-3 row-cols-2 grid-section view-option row gy-4 g-xl-4">
+
+                  @forelse($wishlistProducts as $product)
+                    <div class="col"> 
+                      <div class="product-box-3 product-wishlist">
+                        <div class="img-wrapper">
+                          <div class="label-block">
+                            {{-- Nút xóa khỏi Wishlist --}}
+                            <form action="{{ route('wishlist.remove', $product->id) }}"
+                                  method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Xóa sản phẩm này khỏi danh sách yêu thích?')">
+                              @csrf
+                              @method('DELETE')
+                              <button type="submit" class="label-2 wishlist-icon delete-button"
+                                      title="Remove from Wishlist"
+                                      style="border:none;background:transparent;">
+                                <i class="iconsax" data-icon="trash" aria-hidden="true"></i>
+                              </button>
+                            </form>
+                          </div>
+
+                          <div class="product-image">
+                            @php
+                                $image = $product->image_main
+                                    ? asset('storage/' . ltrim($product->image_main, '/'))
+                                    : asset('client/assets/images/product/product-3/1.jpg');
+                            @endphp
+
+                            <a class="pro-first" href="#">
+                              <img class="bg-img" src="{{ $image }}" alt="{{ $product->name }}">
+                            </a>
+                            <a class="pro-sec" href="#">
+                              <img class="bg-img" src="{{ $image }}" alt="{{ $product->name }}">
+                            </a>
+                          </div>
+
+                          {{-- (Tùy chọn) Nút thêm vào giỏ hàng nếu sau này có route cart.add --}}
+                          {{--
+                          <div class="cart-info-icon">
+                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                              @csrf
+                              <button type="submit" title="Add to cart" tabindex="0"
+                                      style="border:none;background:transparent;">
+                                <i class="iconsax" data-icon="basket-2" aria-hidden="true"></i>
+                              </button>
+                            </form>
+                          </div>
+                          --}}
                         </div>
-                        <div class="product-image">
-                          <a class="pro-first" href="#">
-                            <img class="bg-img" src="{{ asset('client/assets/images/product/product-3/2.jpg') }}" alt="product">
+
+                        <div class="product-detail">
+                          {{-- Rating demo --}}
+                          <ul class="rating">      
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star-half-stroke"></i></li>
+                            <li><i class="fa-regular fa-star"></i></li>
+                          </ul>
+
+                          <a href="#">
+                            <h6>{{ $product->name }}</h6>
                           </a>
-                          <a class="pro-sec" href="#">
-                            <img class="bg-img" src="{{ asset('client/assets/images/product/product-3/19.jpg') }}" alt="product">
-                          </a>
+
+                          @php
+                              $price       = $product->discount_price ?? $product->base_price;
+                              $hasDiscount = $product->discount_price && $product->discount_price < $product->base_price;
+                          @endphp
+
+                          <p>
+                            {{ number_format($price, 0, ',', '.') }}đ
+
+                            @if($hasDiscount)
+                              <del>{{ number_format($product->base_price, 0, ',', '.') }}đ</del>
+                              @php
+                                $percent = round(100 - ($product->discount_price / $product->base_price * 100));
+                              @endphp
+                              <span>-{{ $percent }}%</span>
+                            @endif
+                          </p>
                         </div>
-                        <div class="cart-info-icon">
-                          <a href="#" data-bs-toggle="modal" data-bs-target="#addtocart" title="Add to cart" tabindex="0">
-                            <i class="iconsax" data-icon="basket-2" aria-hidden="true"></i>
-                          </a>
-                        </div>
-                      </div>
-                      <div class="product-detail">
-                        <ul class="rating">      
-                          <li><i class="fa-solid fa-star"></i></li>
-                          <li><i class="fa-solid fa-star"></i></li>
-                          <li><i class="fa-solid fa-star"></i></li>
-                          <li><i class="fa-solid fa-star"></i></li>
-                          <li><i class="fa-regular fa-star"></i></li>
-                        </ul>
-                        <a href="#"><h6>Wide Linen-Blend Trousers</h6></a>
-                        <p>\$100.00<del>\$18.00</del></p>
                       </div>
                     </div>
-                  </div>
+                  @empty
+                    <div class="col-12">
+                      <p>Bạn chưa có sản phẩm yêu thích nào.</p>
+                    </div>
+                  @endforelse
 
                 </div>
               </div>
@@ -437,8 +452,7 @@
           <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab"> 
             <div class="dashboard-right-box">
               <div class="address-tab">
-                <div class="sidebar-title">
-                  <div một loader-line"></div>
+                <div một loader-line"></div>
                   <h4>My Address Details</h4>
                 </div>
 
@@ -621,5 +635,4 @@
     </div>
   </div>
 </div>
-
 @endsection

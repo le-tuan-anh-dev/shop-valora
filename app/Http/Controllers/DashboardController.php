@@ -37,14 +37,21 @@ class DashboardController extends Controller
         // Thông báo mới nhất
         $notifications = $user->notifications()->latest()->take(10)->get();
 
+        // ====== THÊM: danh sách sản phẩm yêu thích ======
+        $wishlistProducts = $user->wishlistProducts()
+            ->orderByDesc('wishlists.created_at') // sản phẩm thích gần đây lên trước
+            ->get();
+        // ===============================================
+
         return view('client.dashboard', [
-            'user'           => $user,
-            'addresses'      => $addresses,
-            'defaultAddress' => $defaultAddress,
-            'orders'         => $orders,
-            'totalOrders'    => $totalOrders,
-            'totalSpent'     => $totalSpent,
-            'notifications'  => $notifications,
+            'user'              => $user,
+            'addresses'         => $addresses,
+            'defaultAddress'    => $defaultAddress,
+            'orders'            => $orders,
+            'totalOrders'       => $totalOrders,
+            'totalSpent'        => $totalSpent,
+            'notifications'     => $notifications,
+            'wishlistProducts'  => $wishlistProducts, // truyền sang view
         ]);
     }
 
