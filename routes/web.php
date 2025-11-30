@@ -37,9 +37,7 @@ use App\Http\Controllers\Api\ChatbotController;
 
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
-// Route::get('/chatbot', function () {
-//     return view('client.chat');
-// });
+
 
 Route::post('/chatbot/ask', [ChatbotController::class, 'askAI']);
 
