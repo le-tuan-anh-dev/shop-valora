@@ -40,7 +40,15 @@ class CheckoutController extends Controller
 
         // sản phẩm 
         $formattedCartItems = $cartItems->map(function($item) {
-            $price = $item->variant ? $item->variant->price : $item->product->base_price;
+            if ($item->variant) {
+                $price = (float)$item->variant->price;
+            } 
+            elseif ($item->product->discount_price) {
+                $price = (float)$item->product->discount_price;
+            }else{
+                $price = (float)$item->product->base_price;
+            }
+            
             return [
                 'id' => $item->id,
                 'product_id' => $item->product_id,
@@ -275,8 +283,16 @@ class CheckoutController extends Controller
 
             // tính tiền
             $subtotal = 0;
-            foreach ($cartItems as $item) {
-                $price = $item->variant ? $item->variant->price : $item->product->base_price;
+                foreach ($cartItems as $item) {
+                    if ($item->variant) {
+                    $price = (float)$item->variant->price;
+                } 
+                elseif ($item->product->discount_price) {
+                    $price = (float)$item->product->discount_price;
+                }else{
+                    $price = (float)$item->product->base_price;
+                }
+               
                 $subtotal += $item->quantity * $price;
             }
 
@@ -374,7 +390,15 @@ class CheckoutController extends Controller
         foreach ($cartItems as $item) {
             $product = $item->product;
             $variant = $item->variant;
-            $price = $variant ? $variant->price : $product->base_price;
+            if ($variant ) {
+                $price = (float)$variant->price;
+            } 
+            elseif ($item->product->discount_price) {
+                $price = (float)$product->discount_price;
+            }else{
+                $price = (float)$product->base_price;
+            }
+            
             $itemSubtotal = $item->quantity * $price;
 
             $itemDiscountAmount = 0;
@@ -556,8 +580,15 @@ class CheckoutController extends Controller
                     
                     $product = \App\Models\Admin\Product::findOrFail($item['product_id']);
                     $variant = $item['variant_id'] ? \App\Models\Admin\ProductVariant::findOrFail($item['variant_id']) : null;
-                    
-                    $price = $variant ? $variant->price : $product->base_price;
+                    if ($variant) {
+                        $price = (float)$variant->price;
+                    } 
+                    elseif ($item->product->discount_price) {
+                        $price = (float)$product->discount_price;
+                    }else{
+                        $price = (float)$product->base_price;
+                    }
+                   
                     $itemSubtotal = $item['quantity'] * $price;
                     $itemDiscountAmount = 0;
 
@@ -742,9 +773,7 @@ class CheckoutController extends Controller
 
     return redirect()->back()->with('success', 'Đã hủy đơn hàng và hoàn lại tồn kho.');
 }
-    /**
-     * Stub applyCoupon để tránh lỗi route (có thể tự triển khai sau).
-     */
+    
     public function applyCoupon(Request $request)
     {
         return response()->json([
