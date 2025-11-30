@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -35,6 +34,9 @@ class DashboardController extends Controller
         // Tổng tiền đã chi
         $totalSpent  = $user->orders()->sum('total_amount');
 
+        // Thông báo mới nhất
+        $notifications = $user->notifications()->latest()->take(10)->get();
+
         return view('client.dashboard', [
             'user'           => $user,
             'addresses'      => $addresses,
@@ -42,6 +44,7 @@ class DashboardController extends Controller
             'orders'         => $orders,
             'totalOrders'    => $totalOrders,
             'totalSpent'     => $totalSpent,
+            'notifications'  => $notifications,
         ]);
     }
 
