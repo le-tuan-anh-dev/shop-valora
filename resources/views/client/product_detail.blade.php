@@ -194,7 +194,7 @@
             <li> 
                 <div class="d-flex align-items-center gap-2"> 
                     <h6>Thương hiệu:</h6>
-                    <p>{{ $brand->name }}</p>
+                    <p>{{  $brand->name ??'' }}</p>
                 </div>
             </li>
         </ul>
