@@ -597,14 +597,12 @@
         })
         .then(r => r.json())
         .then(data => {
-            console.log('Variant data:', data); // DEBUG
+            
             if (data.success) {
                 const variant = data.data.variant;
                 const stock = data.data.stock_info;
                 
-                console.log('Variant:', variant); // DEBUG
-                console.log('Base Price:', variant.base_price); // DEBUG
-                console.log('Discount Price:', variant.discount_price); // DEBUG
+               
                 
                 document.getElementById('variantId').value = variant.id;
                 
