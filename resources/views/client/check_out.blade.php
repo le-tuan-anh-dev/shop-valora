@@ -141,39 +141,10 @@
                   <div class="coupon-code"> 
                     <input type="text" id="coupon-input" name="coupon_code" placeholder="Nhập mã giảm giá">
                     <button class="btn" type="button" id="apply-coupon">Áp dụng</button>
+                    <button type="button" id="remove-voucher-btn" class="btn btn-outline-danger mt-2 w-100" style="display:none;">
+                      Hủy mã giảm giá
+                    </button>
                   </div>
-                  
-                  {{-- Available Vouchers List --}}
-                  {{-- @if($availableVouchers && count($availableVouchers) > 0)
-                    <div class="mt-3">
-                      <p class="text-muted mb-2"><small><strong>Các voucher có sẵn:</strong></small></p>
-                      @foreach($availableVouchers as $voucher)
-                        <div class="voucher-item p-2 mb-2 border rounded" style="cursor: pointer; background: #f9f9f9; transition: all 0.3s;">
-                          <div class="d-flex justify-content-between align-items-start">
-                            <div style="flex: 1;">
-                              <strong style="color: #0066cc;">{{ $voucher['code'] }}</strong>
-                              <br>
-                              <small class="text-success">
-                                @if($voucher['type'] === 'percentage')
-                                  Giảm {{ $voucher['value'] }}% ({{ number_format($voucher['discount'], 0, ',', '.') }} đ)
-                                @else
-                                  Giảm {{ number_format($voucher['value'], 0, ',', '.') }} đ
-                                @endif
-                              </small>
-                              @if($voucher['is_for_user'])
-                                <br>
-                                <span class="badge bg-info" style="font-size: 0.7rem;">Dành riêng cho bạn</span>
-                              @endif
-                            </div>
-                            <button type="button" class="btn btn-sm btn-outline-primary apply-voucher ms-2" 
-                              data-code="{{ $voucher['code'] }}" data-id="{{ $voucher['id'] }}" style="white-space: nowrap;">
-                              Chọn
-                            </button>
-                          </div>
-                        </div>
-                      @endforeach
-                    </div>
-                  @endif --}}
                 </div>
                 <div class="total">
                   <h6>Tổng cộng :</h6>
@@ -254,11 +225,20 @@
     }, 4000);
   }
 
+  function formatCurrency(value) {
+    return new Intl.NumberFormat('vi-VN', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value) + ' đ';
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     const addressModal = document.getElementById('address-modal');
     const addressForm = document.getElementById('addressForm');
     const saveAddressBtn = document.getElementById('saveAddressBtn');
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    // ========== ADDRESS SECTION ==========
 
     // Reset form khi mở modal mới
     addressModal?.addEventListener('show.bs.modal', function(e) {
@@ -274,7 +254,6 @@
       }
 
       const formData = new FormData(addressForm);
-      
       const url = '{{ route("checkout.store-address") }}';
 
       try {
@@ -304,6 +283,124 @@
       }
     });
 
+
+
+    function applyCoupon(code) {
+     
+      
+      const subtotalText = document.getElementById('subtotal').textContent;
+      const subtotal = parseFloat(subtotalText.replace(/\D/g, '')) || 0;
+
+     
+
+      fetch('{{ route("checkout.apply-voucher") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+          code: code,
+          subtotal: subtotal
+        })
+      })
+      .then(response => {
+        
+        return response.json();
+      })
+      .then(data => {
+       
+        
+        if (data.success) {
+         
+          
+          const discountAmount = parseFloat(data.discount_amount) || 0;
+          const shippingFee = 30000;
+          const newTotal = subtotal - discountAmount + shippingFee;
+
+          
+
+          // Update discount row
+          document.getElementById('discount-row').style.display = 'flex';
+          document.getElementById('discount').textContent = '- ' + formatCurrency(discountAmount);
+          
+          // Update total
+          document.getElementById('total-amount').textContent = formatCurrency(newTotal);
+          
+          // Save voucher_id
+          document.getElementById('promotion-id').value = data.voucher_id || '';
+          
+          
+
+          // Disable inputs
+          document.getElementById('coupon-input').disabled = true;
+          document.getElementById('apply-coupon').disabled = true;
+
+          // Show remove button
+          const removeBtn = document.getElementById('remove-voucher-btn');
+          removeBtn.style.display = 'block';
+          removeBtn.addEventListener('click', removeVoucher);
+
+          showNotification('Mã giảm giá áp dụng thành công!', 'success');
+          
+
+        } else {
+          showNotification(  (data.message || 'Mã giảm giá không hợp lệ'), 'error');
+          
+        }
+      })
+      .catch(err => {
+       
+        showNotification(' Lỗi: ' + err.message, 'error');
+      });
+    }
+
+    function removeVoucher() {
+      
+      fetch('{{ route("checkout.remove-voucher") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        
+        if (data.success) {
+          const subtotalText = document.getElementById('subtotal').textContent;
+          const subtotal = parseFloat(subtotalText.replace(/\D/g, '')) || 0;
+          const shippingFee = 30000;
+          const newTotal = subtotal + shippingFee;
+
+          // Reset UI
+          document.getElementById('discount-row').style.display = 'none';
+          document.getElementById('discount').textContent = '- 0 đ';
+          document.getElementById('total-amount').textContent = formatCurrency(newTotal);
+          
+          // Enable inputs
+          document.getElementById('coupon-input').value = '';
+          document.getElementById('coupon-input').disabled = false;
+          document.getElementById('apply-coupon').disabled = false;
+          
+          // Clear promotion ID
+          document.getElementById('promotion-id').value = '';
+
+          // Hide remove button
+          document.getElementById('remove-voucher-btn').style.display = 'none';
+
+          showNotification(' Đã hủy mã giảm giá', 'success');
+  
+        }
+      })
+      .catch(err => {
+        console.error(' Remove Error:', err);
+        showNotification(' Lỗi: ' + err.message, 'error');
+      });
+    }
+
     // Apply Coupon - Manual input
     document.getElementById('apply-coupon')?.addEventListener('click', function() {
       const couponCode = document.getElementById('coupon-input').value.trim();
@@ -316,58 +413,6 @@
       applyCoupon(couponCode);
     });
 
-    // Apply voucher from list
-    document.querySelectorAll('.apply-voucher').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const code = this.dataset.code;
-        const id = this.dataset.id;
-        document.getElementById('coupon-input').value = code;
-        document.getElementById('promotion-id').value = id;
-        applyCoupon(code);
-      });
-    });
-
-    function applyCoupon(code) {
-      fetch('{{ route("apply-coupon") }}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({ coupon_code: code })
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          showNotification('Mã giảm giá áp dụng thành công!', 'success');
-          
-          const formatter = new Intl.NumberFormat('vi-VN', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-          });
-
-          document.getElementById('subtotal').textContent = formatter.format(data.subtotal) + ' đ';
-          document.getElementById('discount').textContent = '- ' + formatter.format(data.discount) + ' đ';
-          document.getElementById('discount-row').style.display = 'flex';
-          document.getElementById('shipping').textContent = formatter.format(data.shipping) + ' đ';
-          document.getElementById('total-amount').textContent = formatter.format(data.total) + ' đ';
-          
-          // Lưu promotion_id vào hidden input
-          document.getElementById('promotion-id').value = data.voucher_id || '';
-          
-          // Disable coupon input after successful apply
-          document.getElementById('coupon-input').disabled = true;
-          document.getElementById('apply-coupon').disabled = true;
-          document.querySelectorAll('.apply-voucher').forEach(btn => btn.disabled = true);
-        } else {
-          showNotification(data.message || 'Mã giảm giá không hợp lệ', 'error');
-        }
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        showNotification('Lỗi khi áp dụng mã giảm giá', 'error');
-      });
-    }
 
     // Handle form submission
     document.getElementById('checkoutForm')?.addEventListener('submit', function(e) {
@@ -385,7 +430,6 @@
         showNotification('Vui lòng chọn phương thức thanh toán', 'error');
         return;
       }
-
       this.submit();
     });
   });

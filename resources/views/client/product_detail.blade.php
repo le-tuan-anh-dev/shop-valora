@@ -235,24 +235,7 @@
                                 </li>
                             </ul>
                         </div>
-
-                    </div> {{-- .product-option --}}
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Wishlist & Compare -->
-    <div class="buy-box">
-        <ul> 
-            <li><a href="wishlist.html"><i class="fa-regular fa-heart me-2"></i>Thêm vào sản phẩm yêu thích</a></li>
-            <li><a href="compare.html"><i class="fa-solid fa-arrows-rotate me-2"></i>Add To Compare</a></li>
-            <li><a href="#" data-bs-toggle="modal" data-bs-target="#social-box"><i class="fa-solid fa-share-nodes me-2"></i>Chia sẻ</a></li>
-        </ul>
-    </div>
-
-    <!-- Info Box -->
+                        <!-- Info Box -->
     <div class="dz-info"> 
         <ul> 
             <li>
@@ -275,6 +258,18 @@
             </li>
         </ul>
     </div>
+
+                    </div> {{-- .product-option --}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+   
+    
+
+    
 </form>
         </div>
     </div>

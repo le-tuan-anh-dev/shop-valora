@@ -34,19 +34,6 @@ class Voucher extends Model
     ];
 
     /**
-     * Quan hệ N:N với User (thông qua bảng voucher_users)
-     */
-    public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            User::class,
-            'voucher_users',
-            'voucher_id',
-            'user_id'
-        )->withTimestamps();
-    }
-
-    /**
      * Quan hệ N:N với ProductVariant (thông qua bảng voucher_variants)
      */
     public function variants(): BelongsToMany
@@ -65,14 +52,6 @@ class Voucher extends Model
     public function uses(): HasMany
     {
         return $this->hasMany(VoucherUse::class);
-    }
-
-    /**
-     * Quan hệ 1:N với VoucherUser
-     */
-    public function voucherUsers(): HasMany
-    {
-        return $this->hasMany(VoucherUser::class);
     }
 
     /**
@@ -100,20 +79,6 @@ class Voucher extends Model
         return $this->is_active 
             && $now->between($this->starts_at, $this->ends_at)
             && $this->hasRemainingUses();
-    }
-
-    /**
-     * Kiểm tra user có được phép dùng voucher không
-     */
-    public function canBeUsedByUser(int $userId): bool
-    {
-        // Nếu không có user nào trong danh sách → công khai cho tất cả
-        if ($this->users()->count() === 0) {
-            return true;
-        }
-
-        // Nếu có user trong danh sách → chỉ những user đó được dùng
-        return $this->users()->where('users.id', $userId)->exists();
     }
 
     /**
