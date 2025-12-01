@@ -192,6 +192,12 @@
                                             <p>{{ $product->name }}</p>
                                         </div>
                                     </li>
+                                    <li>
+                                        <div class="d-flex align-items-center gap-2"> 
+                    <h6>Thương hiệu:</h6>
+                    <p>{{  $brand->name ??'' }}</p>
+                </div>
+                                    </li>
                                 </ul>
                             </div>
                         </form>
@@ -242,39 +248,6 @@
         </div>
     </div>
 
-
-    <!-- Wishlist & Compare -->
-    <div class="buy-box">
-        <ul> 
-            <li><a href="wishlist.html"><i class="fa-regular fa-heart me-2"></i>Thêm vào sản phẩm yêu thích</a></li>
-            <li><a href="compare.html"><i class="fa-solid fa-arrows-rotate me-2"></i>Add To Compare</a></li>
-            <li><a href="#" data-bs-toggle="modal" data-bs-target="#social-box"><i class="fa-solid fa-share-nodes me-2"></i>Chia sẻ</a></li>
-        </ul>
-    </div>
-
-    <!-- Info Box -->
-    <div class="dz-info"> 
-        <ul> 
-            <li>
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Mã sản phẩm:</h6>
-                    <span id="skuDisplay">{{ $product->id }}</span>
-                </div>
-            </li>
-            <li> 
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Số lượng còn:</h6>
-                    <span id="stockDisplay">{{ $product->stock }}</span>
-                </div>
-            </li>
-            <li> 
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Thương hiệu:</h6>
-                    <p>{{  $brand->name ??'' }}</p>
-                </div>
-            </li>
-        </ul>
-    </div>
 </form>
         </div>
     </div>
