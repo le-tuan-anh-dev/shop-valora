@@ -304,9 +304,15 @@
                                 <h5>{{ $firstItem->product_name }}</h5>
                                 <p>{{ \Illuminate\Support\Str::limit($firstItem->product_description, 120) }}</p>
                                 <ul> 
-                                  <li><p>Price :</p><span>${{ number_format($firstItem->unit_price, 2) }}</span></li>
-                                  <li><p>Qty :</p><span>{{ $firstItem->quantity }}</span></li>
-                                  <li><p>Total order :</p><span>${{ number_format($order->total_amount, 2) }}</span></li>
+                                 <li>
+    <p>Giá :</p>
+    <span>{{ number_format($firstItem->unit_price, 0, ',', '.') }} ₫</span>
+</li>
+                                  <li><p>Số lượng :</p><span>{{ $firstItem->quantity }}</span></li>
+                                  <li>
+    <p>Tổng Tiền :</p>
+    <span>{{ number_format($order->total_amount, 0, ',', '.') }} ₫</span>
+</li>
                                 </ul>
                                 @if($order->items->count() > 1)
                                   <small>+ {{ $order->items->count() - 1 }} sản phẩm khác</small>
