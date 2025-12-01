@@ -94,7 +94,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
         ->name('wishlist.remove');
-    // ============================
+    
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])
         ->name('client.dashboard');
 
@@ -114,7 +114,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('place-order');
-    Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply-coupon');
+    Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
+    Route::post('/checkout/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('checkout.remove-voucher');
+Route::get('/debug-voucher', [CheckoutController::class, 'debugVoucher']);
 
     Route::post('/checkout/address', [CheckoutController::class, 'storeAddress'])->name('checkout.store-address');
     Route::put('/checkout/address/{id}', [CheckoutController::class, 'updateAddress'])->name('checkout.update-address');
