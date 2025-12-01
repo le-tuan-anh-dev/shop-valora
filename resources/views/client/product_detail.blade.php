@@ -192,6 +192,12 @@
                                             <p>{{ $product->name }}</p>
                                         </div>
                                     </li>
+                                    <li>
+                                        <div class="d-flex align-items-center gap-2"> 
+                    <h6>Thương hiệu:</h6>
+                    <p>{{  $brand->name ??'' }}</p>
+                </div>
+                                    </li>
                                 </ul>
                             </div>
                         </form>
@@ -235,29 +241,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <!-- Info Box -->
-    <div class="dz-info"> 
-        <ul> 
-            <li>
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Mã sản phẩm:</h6>
-                    <span id="skuDisplay">{{ $product->id }}</span>
-                </div>
-            </li>
-            <li> 
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Số lượng còn:</h6>
-                    <span id="stockDisplay">{{ $product->stock }}</span>
-                </div>
-            </li>
-            <li> 
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Thương hiệu:</h6>
-                    <p>{{  $brand->name ??'' }}</p>
-                </div>
-            </li>
-        </ul>
-    </div>
 
                     </div> {{-- .product-option --}}
                 </div>
@@ -265,11 +248,6 @@
         </div>
     </div>
 
-
-   
-    
-
-    
 </form>
         </div>
     </div>

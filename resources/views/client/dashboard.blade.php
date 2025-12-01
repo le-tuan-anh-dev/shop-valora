@@ -304,9 +304,15 @@
                                 <h5>{{ $firstItem->product_name }}</h5>
                                 <p>{{ \Illuminate\Support\Str::limit($firstItem->product_description, 120) }}</p>
                                 <ul> 
-                                  <li><p>Price :</p><span>${{ number_format($firstItem->unit_price, 2) }}</span></li>
-                                  <li><p>Qty :</p><span>{{ $firstItem->quantity }}</span></li>
-                                  <li><p>Total order :</p><span>${{ number_format($order->total_amount, 2) }}</span></li>
+                                 <li>
+    <p>Giá :</p>
+    <span>{{ number_format($firstItem->unit_price, 0, ',', '.') }} ₫</span>
+</li>
+                                  <li><p>Số lượng :</p><span>{{ $firstItem->quantity }}</span></li>
+                                  <li>
+    <p>Tổng Tiền :</p>
+    <span>{{ number_format($order->total_amount, 0, ',', '.') }} ₫</span>
+</li>
                                 </ul>
                                 @if($order->items->count() > 1)
                                   <small>+ {{ $order->items->count() - 1 }} sản phẩm khác</small>
@@ -345,114 +351,117 @@
           </div>
 
           {{-- Wishlist Tab (dùng dữ liệu thật) --}}
-          <div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-tab">
-            <div class="dashboard-right-box">
-              <div class="wishlist-box ratio1_3"> 
-                <div class="sidebar-title">
-                  <div class="loader-line"></div>
-                  <h4>Wishlist</h4>
+<div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-tab">
+  <div class="dashboard-right-box">
+    <div class="wishlist-box ratio1_3"> 
+      <div class="sidebar-title">
+        <div class="loader-line"></div>
+        <h4>Wishlist</h4>
+      </div>
+
+      <div class="row-cols-md-3 row-cols-2 grid-section view-option row gy-4 g-xl-4">
+
+        @forelse($wishlistProducts as $product)
+          <div class="col"> 
+            <div class="product-box-3 product-wishlist">
+              <div class="img-wrapper">
+                {{-- CHỈ CÒN NÚT THÙNG RÁC Ở GÓC ẢNH --}}
+                <div class="label-block">
+                  <form action="{{ route('wishlist.remove', $product->id) }}"
+                        method="POST"
+                        class="d-inline"
+                        onsubmit="return confirm('Xóa sản phẩm này khỏi danh sách yêu thích?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="label-2 wishlist-icon delete-button"
+                            title="Xóa khỏi danh sách yêu thích"
+                            style="border:none;background:transparent;">
+                      {{-- Dùng icon FontAwesome thùng rác --}}
+                      <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                    </button>
+                  </form>
                 </div>
 
-                <div class="row-cols-md-3 row-cols-2 grid-section view-option row gy-4 g-xl-4">
+                <div class="product-image">
+                  @php
+                      $image = $product->image_main
+                          ? asset('storage/' . ltrim($product->image_main, '/'))
+                          : asset('client/assets/images/product/product-3/1.jpg');
+                  @endphp
 
-                  @forelse($wishlistProducts as $product)
-                    <div class="col"> 
-                      <div class="product-box-3 product-wishlist">
-                        <div class="img-wrapper">
-                          <div class="label-block">
-                            {{-- Nút xóa khỏi Wishlist --}}
-                            <form action="{{ route('wishlist.remove', $product->id) }}"
-                                  method="POST"
-                                  class="d-inline"
-                                  onsubmit="return confirm('Xóa sản phẩm này khỏi danh sách yêu thích?')">
-                              @csrf
-                              @method('DELETE')
-                              <button type="submit" class="label-2 wishlist-icon delete-button"
-                                      title="Remove from Wishlist"
-                                      style="border:none;background:transparent;">
-                                <i class="iconsax" data-icon="trash" aria-hidden="true"></i>
-                              </button>
-                            </form>
-                          </div>
-
-                          <div class="product-image">
-                            @php
-                                $image = $product->image_main
-                                    ? asset('storage/' . ltrim($product->image_main, '/'))
-                                    : asset('client/assets/images/product/product-3/1.jpg');
-                            @endphp
-
-                            <a class="pro-first" href="#">
-                              <img class="bg-img" src="{{ $image }}" alt="{{ $product->name }}">
-                            </a>
-                            <a class="pro-sec" href="#">
-                              <img class="bg-img" src="{{ $image }}" alt="{{ $product->name }}">
-                            </a>
-                          </div>
-
-                          {{-- (Tùy chọn) Nút thêm vào giỏ hàng nếu sau này có route cart.add --}}
-                          {{--
-                          <div class="cart-info-icon">
-                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                              @csrf
-                              <button type="submit" title="Add to cart" tabindex="0"
-                                      style="border:none;background:transparent;">
-                                <i class="iconsax" data-icon="basket-2" aria-hidden="true"></i>
-                              </button>
-                            </form>
-                          </div>
-                          --}}
-                        </div>
-
-                        <div class="product-detail">
-                          {{-- Rating demo --}}
-                          <ul class="rating">      
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star-half-stroke"></i></li>
-                            <li><i class="fa-regular fa-star"></i></li>
-                          </ul>
-
-                          <a href="#">
-                            <h6>{{ $product->name }}</h6>
-                          </a>
-
-                          @php
-                              $price       = $product->discount_price ?? $product->base_price;
-                              $hasDiscount = $product->discount_price && $product->discount_price < $product->base_price;
-                          @endphp
-
-                          <p>
-                            {{ number_format($price, 0, ',', '.') }}đ
-
-                            @if($hasDiscount)
-                              <del>{{ number_format($product->base_price, 0, ',', '.') }}đ</del>
-                              @php
-                                $percent = round(100 - ($product->discount_price / $product->base_price * 100));
-                              @endphp
-                              <span>-{{ $percent }}%</span>
-                            @endif
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  @empty
-                    <div class="col-12">
-                      <p>Bạn chưa có sản phẩm yêu thích nào.</p>
-                    </div>
-                  @endforelse
-
+                  <a class="pro-first" href="{{ route('products.detail', $product->id) }}">
+                    <img class="bg-img" src="{{ $image }}" alt="{{ $product->name }}">
+                  </a>
+                  <a class="pro-sec" href="{{ route('products.detail', $product->id) }}">
+                    <img class="bg-img" src="{{ $image }}" alt="{{ $product->name }}">
+                  </a>
                 </div>
+
+                {{-- (Tùy chọn) Nút thêm vào giỏ --}}
+                <div class="cart-info-icon">
+                  <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" title="Thêm vào giỏ" tabindex="0"
+                            style="border:none;background:transparent;">
+                      <i class="iconsax" data-icon="basket-2" aria-hidden="true"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {{-- Product Detail --}}
+              <div class="product-detail">
+
+                {{-- NÚT XEM CHI TIẾT TO, RÕ --}}
+                <div class="add-button mb-2">
+                  <a href="{{ route('products.detail', $product->id) }}"
+                     class="btn btn_black sm w-100 text-center">
+                    <i class="fa-solid fa-eye me-1"></i> Xem chi tiết
+                  </a>
+                </div>
+
+                <a href="{{ route('products.detail', $product->id) }}">
+                  <h5>{{ \Illuminate\Support\Str::limit($product->name, 40) }}</h5>
+                </a>
+
+                @php
+                    $hasDiscount  = $product->discount_price && $product->discount_price < $product->base_price;
+                    $displayPrice = $hasDiscount ? $product->discount_price : $product->base_price;
+                @endphp
+
+                <p>
+                  {{ number_format($displayPrice, 0, ',', '.') }}đ
+
+                  @if($hasDiscount)
+                    <del>{{ number_format($product->base_price, 0, ',', '.') }}đ</del>
+                    @php
+                      $discountPercent = round(
+                          (($product->base_price - $product->discount_price) / $product->base_price) * 100
+                      );
+                    @endphp
+                    <span>-{{ $discountPercent }}%</span>
+                  @endif
+                </p>
               </div>
             </div>
           </div>
+        @empty
+          <div class="col-12">
+            <p>Bạn chưa có sản phẩm yêu thích nào.</p>
+          </div>
+        @endforelse
+
+      </div>
+    </div>
+  </div>
+</div>
 
           {{-- Address Tab --}}
           <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab"> 
             <div class="dashboard-right-box">
               <div class="address-tab">
-                <div một loader-line"></div>
+                <div class="loader-line"></div>
                   <h4>My Address Details</h4>
                 </div>
 
