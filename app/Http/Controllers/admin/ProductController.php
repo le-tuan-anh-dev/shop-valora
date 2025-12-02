@@ -92,6 +92,7 @@ class ProductController extends Controller
             'variants.*.sku.unique'    => 'SKU biến thể đã tồn tại.',   
             'image_main.required'=>'Ảnh phải dược thêm',
             'description.required'=>'Mô tả không được trống',
+            'product_images.max'   => 'Tối đa 5 ảnh',
         ];
 
         // Validate dữ liệu
