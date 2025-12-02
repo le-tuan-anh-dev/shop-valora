@@ -19,7 +19,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
-
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\PostController as ClientPostController;
 // Admin controllers
@@ -27,7 +27,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CommentController;
-use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController; // ĐẶT ALIAS
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 
 use App\Http\Controllers\WishlistController;
@@ -84,7 +84,7 @@ Route::prefix('products')->group(function () {
 // Customer routes 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     // Dashboard khách hàng
-    
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
         ->name('wishlist.add');
 
@@ -188,25 +188,25 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     
 
  // --- Quản lý Đánh giá (Reviews) ---
-    
-    // CẤP 1: Danh sách Sản phẩm có đánh giá (Hàm index)
-    // URI: /admin/reviews
-    Route::get('/reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
 
-    // CẤP 2: Xem chi tiết tất cả đánh giá của 1 SẢN PHẨM (Hàm show)
-    // {id} ở đây là ID của PRODUCT
-    // URI: /admin/reviews/{product_id}
-    Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('admin.reviews.show'); // <--- Đã thêm
+// CẤP 1: Danh sách Sản phẩm có đánh giá (Hàm index)
+// URI: /admin/reviews
+Route::get('/reviews', [AdminReviewController::class, 'index'])->name('admin.reviews.index');
 
-    // Trả lời (Store) - Tạo Review/Reply mới
-    // URI: /admin/reviews
-    Route::post('/reviews', [ReviewController::class, 'store'])->name('admin.reviews.store');
+// CẤP 2: Xem chi tiết tất cả đánh giá của 1 SẢN PHẨM (Hàm show)
+// {id} ở đây là ID của PRODUCT
+// URI: /admin/reviews/{product_id}
+Route::get('/reviews/{id}', [AdminReviewController::class, 'show'])->name('admin.reviews.show');
 
-    // Sửa phản hồi (Update) - {id} là ID của REVIEW/REPLY
-    // URI: /admin/reviews/{review_id}
-    Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
-      
-    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+// Trả lời (Store) - Tạo Review/Reply mới
+// URI: /admin/reviews
+Route::post('/reviews', [AdminReviewController::class, 'store'])->name('admin.reviews.store');
+
+// Sửa phản hồi (Update) - {id} là ID của REVIEW/REPLY
+// URI: /admin/reviews/{review_id}
+Route::put('/reviews/{id}', [AdminReviewController::class, 'update'])->name('admin.reviews.update');
+  
+Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
 
     // Posts

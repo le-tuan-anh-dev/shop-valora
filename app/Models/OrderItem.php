@@ -13,7 +13,6 @@ class OrderItem extends Model
 
     /**
      * Các cột cho phép mass-assign.
-     * Dựa trên cấu trúc bảng order_items bạn gửi.
      */
     protected $fillable = [
         'order_id',
@@ -65,7 +64,8 @@ class OrderItem extends Model
     }
 
     /**
-     * Liên kết tới sản phẩm để hoàn kho.
+     * Liên kết tới sản phẩm để hoàn kho + hiển thị brand.
+     * Ở đây bạn vẫn dùng Product trong namespace Admin (OK).
      */
     public function product()
     {
@@ -73,7 +73,8 @@ class OrderItem extends Model
     }
 
     /**
-     * Liên kết tới biến thể để hoàn kho.
+     * Liên kết tới biến thể để hoàn kho + thuộc tính (color, size...).
+     * Vẫn dùng ProductVariant trong Admin.
      */
     public function variant()
     {

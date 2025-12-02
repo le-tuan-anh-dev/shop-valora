@@ -330,6 +330,51 @@
                                                                 </a>
                                                                 <div class="order-wrap">
                                                                     <h5>{{ $firstItem->product_name }}</h5>
+
+                                                                    {{-- Thương hiệu --}}
+                                                                    @if($firstItem->product && $firstItem->product->brand)
+                                                                        <div class="text-muted small mb-1">
+                                                                            Thương hiệu:
+                                                                            <strong>{{ $firstItem->product->brand->name }}</strong>
+                                                                        </div>
+                                                                    @endif
+
+                                                                    {{-- ========== BIẾN THỂ / THUỘC TÍNH ========== --}}
+                                                                    @php
+                                                                        // 1. Nếu variant_name đã được lưu trong order_items thì ưu tiên dùng
+                                                                        $variantLabel = $firstItem->variant_name;
+
+                                                                        // 2. Nếu variant_name null => build từ quan hệ variant.attributeValues.attribute
+                                                                        if (
+                                                                            !$variantLabel &&
+                                                                            $firstItem->variant &&
+                                                                            $firstItem->variant->attributeValues?->count()
+                                                                        ) {
+                                                                            $parts = [];
+
+                                                                            foreach ($firstItem->variant->attributeValues as $attrValue) {
+                                                                                $attrName  = $attrValue->attribute->name ?? null; // "Màu sắc", "Kích cỡ"
+                                                                                $valueName = $attrValue->value;                   // "Đỏ", "M", ...
+
+                                                                                if ($attrName) {
+                                                                                    $parts[] = $attrName . ': ' . $valueName;
+                                                                                } else {
+                                                                                    $parts[] = $valueName;
+                                                                                }
+                                                                            }
+
+                                                                            // Ví dụ: "Màu sắc: Đỏ, Kích cỡ: M"
+                                                                            $variantLabel = implode(', ', $parts);
+                                                                        }
+                                                                    @endphp
+
+                                                                    @if($variantLabel)
+                                                                        <div class="text-muted small mb-1">
+                                                                            Phân loại: {{ $variantLabel }}
+                                                                        </div>
+                                                                    @endif
+                                                                    {{-- ======== HẾT BIẾN THỂ / THUỘC TÍNH ======== --}}
+
                                                                     <p>{{ \Illuminate\Support\Str::limit($firstItem->product_description, 120) }}
                                                                     </p>
                                                                     <ul>
@@ -624,7 +669,7 @@
                     </div>
 
                 </div> {{-- end .tab-content --}}
-            </div> {{-- end col-9 --}}
+            </div> {{-- end row --}}
         </div>
         </div>
     </section>

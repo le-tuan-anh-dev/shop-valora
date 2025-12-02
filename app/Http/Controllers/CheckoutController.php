@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Admin\Order;
 use App\Models\Admin\OrderItem;
+
 use App\Models\UserAddress;
 use App\Models\PaymentMethod;
 use App\Models\Voucher;
@@ -812,25 +813,32 @@ class CheckoutController extends Controller
     /**
      * Chi tiết 1 đơn hàng.
      */
-    public function showOrder(Order $order)
-    {
-        if ($order->user_id !== auth()->id()) {
-            return redirect()->route('orders.index')
-                ->with('error', 'Bạn không có quyền xem đơn hàng này.');
-        }
-
-        $orderItems = OrderItem::where('order_id', $order->id)
-            ->with(['product', 'variant'])
-            ->get();
-
-        $paymentMethod = PaymentMethod::find($order->payment_method_id);
-
-        return view('client.orders.show', [
-            'order'         => $order,
-            'orderItems'    => $orderItems,
-            'paymentMethod' => $paymentMethod,
-        ]);
+   /**
+ * Chi tiết 1 đơn hàng.
+ * GIỮ NGUYÊN LUỒNG CŨ, CHỈ THÊM LOAD BRAND + VARIANT.
+ */
+public function showOrder(Order $order)
+{
+    if ($order->user_id !== auth()->id()) {
+        return redirect()->route('orders.index')
+            ->with('error', 'Bạn không có quyền xem đơn hàng này.');
     }
+
+    $orderItems = OrderItem::where('order_id', $order->id)
+        ->with([
+            'product.brand',                     // sản phẩm + thương hiệu
+            'variant.attributeValues.attribute', // biến thể + giá trị thuộc tính + tên thuộc tính
+        ])
+        ->get();
+
+    $paymentMethod = PaymentMethod::find($order->payment_method_id);
+
+    return view('client.orders.show', [
+        'order'         => $order,
+        'orderItems'    => $orderItems,
+        'paymentMethod' => $paymentMethod,
+    ]);
+}
 
     /**
      * Hủy đơn hàng (hoàn kho + thông báo).
