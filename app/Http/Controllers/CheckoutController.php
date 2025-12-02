@@ -19,6 +19,12 @@ use Illuminate\Support\Facades\Http;
 
 class CheckoutController extends Controller
 {
+    protected $voucherService;
+
+    public function __construct(VoucherService $voucherService)
+    {
+        $this->voucherService = $voucherService;
+    }
     public function show()
     {
         $user = auth()->user();
@@ -242,6 +248,117 @@ class CheckoutController extends Controller
 
             return redirect()->back()->with('error', 'Lỗi khi thêm địa chỉ: ' . $e->getMessage());
         }
+    }
+
+    // dùng voucher
+     public function applyVoucher(Request $request)
+    {
+        Log::info('=== APPLY VOUCHER REQUEST ===', $request->all());
+        
+        $request->validate([
+            'code' => 'required|string|max:50',
+            'subtotal' => 'required|numeric|min:0'
+        ]);
+
+        try {
+            $user = auth()->user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn cần đăng nhập'
+                ], 401);
+            }
+            
+            $cart = Cart::where('user_id', $user->id)->first();
+            
+            if (!$cart) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Giỏ hàng không tìm thấy'
+                ]);
+            }
+            
+            $cartItems = CartItem::where('cart_id', $cart->id)
+                ->with(['product', 'variant'])
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Giỏ hàng trống'
+                ]);
+            }
+
+            $subtotal = (float) $request->input('subtotal');
+            
+            Log::info('Cart Items Count:', ['count' => $cartItems->count()]);
+            
+            $result = $this->voucherService->applyVoucher(
+                $cartItems->toArray(),
+                $request->input('code'),
+                $user->id,
+                $subtotal
+            );
+
+            Log::info('=== VOUCHER RESULT ===', $result);
+
+            if ($result['success']) {
+                session([
+                    'applied_voucher' => [
+                        'voucher_id' => $result['voucher_id'],
+                        'code' => $result['code'],
+                        'discount_amount' => $result['discount_amount'],
+                        'discount_type' => $result['discount_type'],
+                        'discount_value' => $result['discount_value']
+                    ]
+                ]);
+                
+                Log::info('Session saved with voucher');
+            }
+
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            Log::error('Apply voucher exception: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function removeVoucher(Request $request)
+    {
+        try {
+            $appliedVoucher = session('applied_voucher');
+            
+            Log::info('Removing voucher', ['voucher' => $appliedVoucher]);
+            
+            if ($appliedVoucher && isset($appliedVoucher['voucher_id'])) {
+                $this->voucherService->removeVoucher($appliedVoucher['voucher_id']);
+            }
+
+            session()->forget('applied_voucher');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa mã voucher'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Remove voucher error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+    public function applyCoupon(Request $request)
+    {
+        return $this->applyVoucher($request);
     }
 
     /**
@@ -880,11 +997,4 @@ class CheckoutController extends Controller
     return redirect()->back()->with('success', 'Đã hủy đơn hàng và hoàn lại tồn kho.');
 }
     
-    public function applyCoupon(Request $request)
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Chức năng mã giảm giá đang được phát triển.',
-        ], 400);
-    }
 }
