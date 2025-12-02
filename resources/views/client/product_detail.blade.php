@@ -18,34 +18,39 @@
 <section class="section-b-space pt-0 product-thumbnail-page"> 
     <div class="custom-container container">
         <div class="row gy-4">
-            
+
             <!-- LEFT: Product Images -->
             <div class="col-lg-6"> 
                 <div class="row sticky">
-                    <!-- Thumbnails -->
+                    <!-- Thumbnails on LEFT -->
                     <div class="col-sm-2 col-3">
                         <div class="swiper product-slider product-slider-img"> 
                             <div class="swiper-wrapper"> 
                                 @foreach($images as $index => $image)
                                     <div class="swiper-slide"> 
-                                        <img src="{{ $image }}" alt="Product {{ $index }}" onclick="changeImage('{{ $image }}', {{ $index }})">
+                                        <img src="{{ $image }}" 
+                                            alt="Product {{ $index }}" 
+                                            class="thumbnail-img"
+                                            data-index="{{ $index }}"
+                                            onclick="changeImage('{{ $image }}', {{ $index }})"
+                                           >
                                     </div>
                                 @endforeach
                             </div>
                         </div>
                     </div>
 
-                    <!-- Main Image -->
+                    <!-- Main Image on RIGHT -->
                     <div class="col-sm-10 col-9">
                         <div class="swiper product-slider-thumb product-slider-img-1">
                             <div class="swiper-wrapper ratio_square-2">
                                 @foreach($images as $index => $image)
                                     <div class="swiper-slide"> 
-                                        <img class="bg-img" 
-                                             id="mainImage{{ $index }}"
-                                             src="{{ $image }}" 
-                                             alt="Product {{ $index }}"
-                                             style="display: {{ $index === 0 ? 'block' : 'none' }};">
+                                        <img class="bg-img main-image" 
+                                            id="mainImage{{ $index }}"
+                                            src="{{ $image }}" 
+                                            alt="Product {{ $index }}"
+                                            >
                                     </div>
                                 @endforeach
                             </div>
@@ -64,12 +69,15 @@
 
                         <!-- Price -->
                         <p>
-                            <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
+                            
                             @if($product->discount_price)
-                                <del>{{ number_format($product->discount_price, 0, ',', '.') }} đ</del>
+                                <strong>{{ number_format($product->discount_price, 0, ',', '.') }} đ</strong>
+                                <del>{{ number_format($product->base_price, 0, ',', '.') }} đ</del>
                                 <span class="offer-btn">
                                     {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% off
                                 </span>
+                            @else
+                            <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
                             @endif
                         </p>
                         <ul class="rating">      
@@ -79,85 +87,161 @@
                             <li><i class="fa-solid fa-star-half-stroke"></i></li>
                             <li><i class="fa-regular fa-star"></i></li>
                             <li>4.5</li>
-                            
                         </ul>
 
-                        <h6 >
+                        <h6>
                             {{ $product->description }}
                         </h6>
 
                         <!-- Quick Links -->
                         <div class="buy-box border-buttom">
                             <ul> 
-                                <li><span data-bs-toggle="modal" data-bs-target="#size-chart" title="Quick View"><i class="iconsax me-2" data-icon="ruler"></i>Bảng Size</span></li>
-                                <li><span data-bs-toggle="modal" data-bs-target="#terms-conditions-modal" title="Quick View"><i class="iconsax me-2" data-icon="truck"></i>Giao hàng và hoàn hàng</span></li>
-                                
+                                <li>
+                                    <span data-bs-toggle="modal" data-bs-target="#size-chart" title="Quick View">
+                                        <i class="iconsax me-2" data-icon="ruler"></i>Bảng Size
+                                    </span>
+                                </li>
+                                <li>
+                                    <span data-bs-toggle="modal" data-bs-target="#terms-conditions-modal" title="Quick View">
+                                        <i class="iconsax me-2" data-icon="truck"></i>Giao hàng và hoàn hàng
+                                    </span>
+                                </li>
                             </ul>
                         </div>
 
-                        <!-- Attributes Selection -->
-<form id="variantForm" action="{{ route('cart.add') }}" method="POST">
-    @csrf
-    <input type="hidden" name="product_id" value="{{ $product->id }}">
-    <input type="hidden" name="variant_id" id="variantId" value="">
-    <input type="hidden" name="attribute_value_ids" id="attributeValueIds">
+                        <!-- Attributes Selection + Cart Form -->
+                        <form id="variantForm" action="{{ route('cart.add') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="variant_id" id="variantId" value="">
+                            <input type="hidden" name="attribute_value_ids" id="attributeValueIds">
 
-    <!-- Nếu có attributes, hiển thị -->
-    @if(count($attributes) > 0)
-        @foreach($attributes as $attribute)
-            <div class="d-flex mb-4">
-                <div style="flex: 1;"> 
-                    <h5>{{ $attribute['name'] }}:</h5>
-                    <div class="size-box">
-                        <ul class="selected" id="attr_{{ $attribute['id'] }}">
-                            @foreach($attribute['values'] as $value)
+                            <!-- Nếu có attributes, hiển thị -->
+                            @if(count($attributes) > 0)
+                                @foreach($attributes as $attribute)
+                                    <div class="d-flex mb-4">
+                                        <div style="flex: 1;"> 
+                                            <h5>{{ $attribute['name'] }}:</h5>
+                                            <div class="size-box">
+                                                <ul class="selected" id="attr_{{ $attribute['id'] }}">
+                                                    @foreach($attribute['values'] as $value)
+                                                        <li>
+                                                            <a href="#" 
+                                                               class="attribute-btn"
+                                                               data-attr-id="{{ $attribute['id'] }}"
+                                                               data-attr-name="{{ $attribute['name'] }}"
+                                                               data-value-id="{{ $value['id'] }}"
+                                                               data-value="{{ $value['value'] }}"
+                                                               onclick="selectAttribute(event)">
+                                                                {{ $value['value'] }}
+                                                            </a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+
+                            <!-- Quantity & Add to Cart -->
+                            <div class="quantity-box d-flex align-items-center gap-3" style="margin: 20px 0;">
+                                <div class="quantity">
+                                    <button class="" type="button" id="decreaseBtn">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </button>
+                                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="20" readonly>
+                                    <button class="" type="button" id="increaseBtn">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 w-100">   
+                                    <button type="submit" 
+                                            id="addToCartBtn"
+                                            class="btn btn_black sm" 
+                                            {{ count($attributes) > 0 ? 'disabled' : '' }}>
+                                        Thêm vào giỏ hàng
+                                    </button>
+                                    <button type="button" 
+                                            id="buyNowBtn"
+                                            class="btn btn_outline sm" 
+                                            {{ count($attributes) > 0 ? 'disabled' : '' }}>
+                                        Mua ngay
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Info Box -->
+                            <div class="dz-info"> 
+                                <ul> 
+                                    <li>
+                                        <div class="d-flex align-items-center gap-2"> 
+                                            <h6>Mã sản phẩm:</h6>
+                                            <span id="skuDisplay">{{ $product->id }}</span>
+                                        </div>
+                                    </li>
+                                    <li> 
+                                        <div class="d-flex align-items-center gap-2"> 
+                                            <h6>Số lượng còn:</h6>
+                                            <span id="stockDisplay">{{ $product->stock }}</span>
+                                        </div>
+                                    </li>
+                                    <li> 
+                                        <div class="d-flex align-items-center gap-2"> 
+                                            <h6>Thẻ:</h6>
+                                            <p>{{ $product->name }}</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+
+                        <!-- Wishlist & Compare (tách riêng, không lồng trong form) -->
+                        <div class="buy-box">
+                            <ul> 
+                                {{-- Wishlist cho sản phẩm chính --}}
+                                @auth
+                                    <li>
+                                        <form action="{{ route('wishlist.add', $product->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="btn btn-link p-0 text-start"
+                                                    style="text-decoration: none;">
+                                                <i class="fa-regular fa-heart me-2"></i>
+                                                Thêm vào sản phẩm yêu thích
+                                            </button>
+                                        </form>
+                                    </li>
+                                @else
+                                    <li>
+                                        <a href="{{ route('login') }}">
+                                            <i class="fa-regular fa-heart me-2"></i>
+                                            Đăng nhập để thêm vào sản phẩm yêu thích
+                                        </a>
+                                    </li>
+                                @endauth
+
                                 <li>
-                                    <a href="#" 
-                                       class="attribute-btn"
-                                       data-attr-id="{{ $attribute['id'] }}"
-                                       data-attr-name="{{ $attribute['name'] }}"
-                                       data-value-id="{{ $value['id'] }}"
-                                       data-value="{{ $value['value'] }}"
-                                       onclick="selectAttribute(event)">
-                                        {{ $value['value'] }}
+                                    <a href="compare.html">
+                                        <i class="fa-solid fa-arrows-rotate me-2"></i>
+                                        Add To Compare
                                     </a>
                                 </li>
-                            @endforeach
-                        </ul>
-                    </div>
+                                <li>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#social-box">
+                                        <i class="fa-solid fa-share-nodes me-2"></i>
+                                        Chia sẻ
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div> {{-- .product-option --}}
                 </div>
             </div>
-        @endforeach
-    @else
-       
-    @endif
-
-    <!-- Quantity & Add to Cart -->
-    <div class="quantity-box d-flex align-items-center gap-3" style="margin: 20px 0;">
-        <div class="quantity">
-            <button class="" type="button" id="decreaseBtn">
-             <i class="fa-solid fa-minus"></i>
-             </button>
-            <input type="number" id="quantity" name="quantity" value="1" min="1" max="20" readonly>
-            <button class="" type="button" id="increaseBtn">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-        </div>
-        <div class="d-flex align-items-center gap-3 w-100">   
-            <button type="submit" 
-                    id="addToCartBtn"
-                    class="btn btn_black sm" 
-                    {{ count($attributes) > 0 ? 'disabled' : '' }}>
-                Thêm vào giỏ hàng
-            </button>
-            <button type="button" 
-                id="buyNowBtn"
-                class="btn btn_outline sm" 
-                {{ count($attributes) > 0 ? 'disabled' : '' }}>
-            Mua ngay
-            </button>
         </div>
     </div>
+
 
     <!-- Wishlist & Compare -->
     <div class="buy-box">
@@ -185,8 +269,8 @@
             </li>
             <li> 
                 <div class="d-flex align-items-center gap-2"> 
-                    <h6>Thẻ:</h6>
-                    <p>{{ $product->name }}</p>
+                    <h6>Thương hiệu:</h6>
+                    <p>{{  $brand->name ??'' }}</p>
                 </div>
             </li>
         </ul>
@@ -196,9 +280,6 @@
     </div>
 </div>
 </section>
-
-
-
 
 <section class="section-b-space pt-0 product-thumbnail-page"> 
 
@@ -239,7 +320,9 @@
                                                 </li>
                                                 <!-- Other ratings follow a similar structure -->
                                             </ul>
-                                            <button class="btn reviews-modal" data-bs-toggle="modal" data-bs-target="#Reviews-modal" title="Quick View" tabindex="0">Write a review</button>
+                                            <button class="btn reviews-modal" data-bs-toggle="modal" data-bs-target="#Reviews-modal" title="Quick View" tabindex="0">
+                                                Write a review
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -249,7 +332,9 @@
                                         <ul class="theme-scrollbar"> 
                                             <li> 
                                                 <div class="comment-items"> 
-                                                    <div class="user-img"> <img src="{{ asset('client/assets/images/user/1.jpg') }}" alt=""></div>
+                                                    <div class="user-img"> 
+                                                        <img src="{{ asset('client/assets/images/user/1.jpg') }}" alt="">
+                                                    </div>
                                                     <div class="user-content"> 
                                                         <div class="user-info"> 
                                                             <div class="d-flex justify-content-between gap-3"> 
@@ -264,7 +349,10 @@
                                                                 <li><i class="fa-regular fa-star"></i></li>
                                                             </ul>
                                                         </div>
-                                                        <p>Khaki cotton blend military jacket flattering fit mock horn buttons and patch pockets.</p><a href="#"> <span><i class="iconsax" data-icon="undo"></i> Replay</span></a>
+                                                        <p>Khaki cotton blend military jacket flattering fit mock horn buttons and patch pockets.</p>
+                                                        <a href="#">
+                                                            <span><i class="iconsax" data-icon="undo"></i> Replay</span>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </li>
@@ -272,7 +360,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                            </div>
+                            </div>{{-- .row --}}
                         </div>
                     </div>
                 </div>
@@ -291,82 +379,77 @@
             </svg>
         </div>
         <div class="swiper special-offer-slide-2">
-            <div class="swiper-wrapper ratio1_3">
+            <div class="swiper-wrapper trending-products ratio_square">
                 
                 @forelse($relatedProducts as $relatedProduct)
-                    <div class="swiper-slide">
-                        <div class="product-box-3">
-                            <div class="img-wrapper">
-                                <div class="label-block">
-                                    <span class="lable-1">NEW</span>
-                                    <a class="label-2 wishlist-icon" href="javascript:void(0)" tabindex="0">
-                                        <i class="iconsax" data-icon="heart" aria-hidden="true" data-bs-toggle="tooltip" data-bs-title="Add to Wishlist"></i>
-                                    </a>
-                                </div>
-                                
-                                <!-- Product Image -->
-                                <div class="product-image">
-                                    <a class="pro-first" href="{{ route('products.detail', $relatedProduct['id']) }}">
-                                        <img class="bg-img" src="{{ $relatedProduct['image_main'] }}" alt="{{ $relatedProduct['name'] }}">
-                                    </a>
-                                    <a class="pro-sec" href="{{ route('products.detail', $relatedProduct['id']) }}">
-                                        <img class="bg-img" src="{{ $relatedProduct['image_main'] }}" alt="{{ $relatedProduct['name'] }}">
-                                    </a>
-                                </div>
-                                
-                                <!-- Cart Actions -->
-                                <div class="cart-info-icon">
-                                    <a href="{{ route('products.detail', $relatedProduct['id']) }}" data-bs-toggle="tooltip" data-bs-title="Quick View" tabindex="0">
-                                        <i class="iconsax" data-icon="basket-2" aria-hidden="true"></i>
-                                    </a>
-                                    <a href="{{ route('products.detail', $relatedProduct['id']) }}" tabindex="0">
-                                        <i class="iconsax" data-icon="arrow-up-down" aria-hidden="true" data-bs-toggle="tooltip" data-bs-title="Compare"></i>
-                                    </a>
-                                    <a href="{{ route('products.detail', $relatedProduct['id']) }}" data-bs-toggle="tooltip" data-bs-title="Quick View" tabindex="0">
-                                        <i class="iconsax" data-icon="eye" aria-hidden="true"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            
-                            <!-- Product Detail -->
-                            <div class="product-detail">
-                                <!-- Rating -->
-                                <ul class="rating">      
-                                    <li><i class="fa-solid fa-star"></i></li>
-                                    <li><i class="fa-solid fa-star"></i></li>
-                                    <li><i class="fa-solid fa-star"></i></li>
-                                    <li><i class="fa-solid fa-star-half-stroke"></i></li>
-                                    <li><i class="fa-regular fa-star"></i></li>
-                                    
-                                </ul>
-                                
-                                <!-- Product Name -->
+                    <div class="swiper-slide product-box">
+                        <div class="img-wrapper">
+                            <!-- Product Image -->
+                            <div class="product-image">
                                 <a href="{{ route('products.detail', $relatedProduct['id']) }}">
-                                    <h6>{{ $relatedProduct['name'] }}</h6>
+                                    <img class="bg-img" 
+                                         src="{{ $relatedProduct['image_main']}}" 
+                                         alt="{{ $relatedProduct['name'] }}">
                                 </a>
-                                
-                                <!-- Price -->
-                                <p>
-                                    <strong>{{ $relatedProduct['base_price'] }}</strong>
-                                    @if($relatedProduct['discount_price'])
-                                        <del>${{ $relatedProduct['discount_price'] }}</del>
-                                        
-                                    @endif
-                                </p>
                             </div>
+
+                            <!-- Icons -->
+                            <div class="cart-info-icon">
+                                @auth
+                                    <form action="{{ route('wishlist.add', $relatedProduct['id']) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit"
+                                                class="wishlist-icon"
+                                                style="background: none; border: none; padding: 0;"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-title="Thêm vào yêu thích">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <a class="wishlist-icon" href="{{ route('login') }}" data-bs-toggle="tooltip"
+                                       data-bs-title="Đăng nhập để thêm vào yêu thích">
+                                        <i class="far fa-heart"></i>
+                                    </a>
+                                @endauth
+                            </div>
+                        </div>
+
+                        <!-- Product Detail -->
+                        <div class="product-detail">
+                            <div class="add-button">
+                                <a href="{{ route('products.detail', $relatedProduct['id']) }}"
+                                    title="Xem chi tiết" tabindex="0">
+                                    <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                </a>
+                            </div>
+
+                            <a href="{{ route('products.detail', $relatedProduct['id']) }}">
+                                <h5>{{ Str::limit($relatedProduct['name'], 40) }}</h5>
+                            </a>
+
+                            <!-- Price -->
+                            <p>
+                                @if($relatedProduct['discount_price'])
+                                    {{ number_format($relatedProduct['discount_price'], 0, ',', '.') }}₫ 
+                                    <del>{{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫</del>
+                                @else
+                                    {{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫
+                                @endif
+                            </p>
                         </div>
                     </div>
                 @empty
-                    <div class="swiper-slide" style="text-align: center; padding: 40px;">
-                        <p>No related products found</p>
+                    <div class="swiper-slide">
+                        <p class="text-center"></p>
                     </div>
                 @endforelse
                 
             </div>
+
         </div>
     </div>
 </section>
-
 
 <script>
     let selectedAttributes = {};
@@ -380,6 +463,16 @@
         const addToCartBtn = document.getElementById('addToCartBtn');
         const buyNowBtn = document.getElementById('buyNowBtn');
         const variantForm = document.getElementById('variantForm');
+        
+        // Init Swiper cho main image
+        const mainImageSwiper = new Swiper('.product-slider-thumb', {
+            loop: false,
+            spaceBetween: 10,
+            slidesPerView: 1,
+        });
+
+        
+        
 
         // Increase quantity
         increaseBtn?.addEventListener('click', function(e) {
@@ -437,12 +530,27 @@
         });
     });
 
-    // Change main image
+    // Change main image - FIX VERSION
     function changeImage(src, index) {
-        document.querySelectorAll('[id^="mainImage"]').forEach(img => {
-            img.style.display = 'none';
-        });
-        document.getElementById('mainImage' + index).style.display = 'block';
+        // Tìm swiper instance của main image
+        const mainImageSwiper = document.querySelector('.product-slider-thumb').swiper;
+        
+        if (mainImageSwiper) {
+            // Slide to the selected index
+            mainImageSwiper.slideTo(index);
+        } else {
+            // Fallback nếu swiper chưa được init
+            document.querySelectorAll('.product-slider-img-1 .swiper-slide').forEach((slide, i) => {
+                if (i === index) {
+                    slide.style.display = 'block';
+                } else {
+                    slide.style.display = 'none';
+                }
+            });
+        }
+        
+        
+        
     }
 
     // Select attribute
@@ -499,7 +607,7 @@
         .catch(error => console.error('Error:', error));
     }
 
-    // Get exact variant
+    // Get exact variant - UPDATED WITH PRICE
     function getVariant() {
         const selectedIds = Object.values(selectedAttributes).map(a => a.valueId);
         const productId = {{ $product->id }};
@@ -516,9 +624,14 @@
         })
         .then(r => r.json())
         .then(data => {
+            console.log('Variant data:', data); // DEBUG
             if (data.success) {
                 const variant = data.data.variant;
                 const stock = data.data.stock_info;
+                
+                console.log('Variant:', variant); // DEBUG
+                console.log('Base Price:', variant.base_price); // DEBUG
+                console.log('Discount Price:', variant.discount_price); // DEBUG
                 
                 document.getElementById('variantId').value = variant.id;
                 
@@ -530,6 +643,9 @@
                     input.value = id;
                     document.getElementById('variantForm').appendChild(input);
                 });
+                
+                // CẬP NHẬT GIÁ TIỀN
+                updatePrice(variant);
                 
                 document.getElementById('skuDisplay').textContent = variant.sku || '-';
                 document.getElementById('stockDisplay').textContent = stock.stock_status;
@@ -552,5 +668,24 @@
         })
         .catch(error => console.error('Error:', error));
     }
+
+    // HÀM CẬP NHẬT GIÁ
+    function updatePrice(variant) {
+        const priceContainer = document.querySelector('.product-option p');
+        
+        if (!priceContainer) return;
+        
+        // Định dạng số tiền kiểu Việt Nam
+        const price = parseInt(variant.price || 0);
+        
+        const formatPrice = (price) => {
+            return new Intl.NumberFormat('vi-VN').format(price).replace(/\./g, '.');
+        };
+        
+        let priceHTML = `<strong>${formatPrice(price)} đ</strong>`;
+        
+        priceContainer.innerHTML = priceHTML;
+    }
+        
 </script>
-    @endsection
+@endsection

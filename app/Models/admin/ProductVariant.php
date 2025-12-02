@@ -6,6 +6,7 @@ use App\Models\Admin\Attributes;
 use App\Models\admin\AttributeValue;
 use App\Models\Admin\Product;
 use App\Models\Admin\VariantAttributeValue;
+use App\Models\Voucher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -87,6 +88,16 @@ class ProductVariant extends Model
         }
 
         return $details;
+    }
+
+    public function vouchers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Voucher::class,
+            'voucher_variants',
+            'product_variant_id',
+            'voucher_id'
+        )->withTimestamps();
     }
 }
 ?>

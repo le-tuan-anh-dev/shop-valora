@@ -81,21 +81,6 @@
                         </form>
                     </div>
 
-                    <div class="other-log-in"> 
-                        <h6>HOẶC</h6>
-                    </div>
-
-                    <div class="log-in-button"> 
-                        <ul> 
-                            <li>
-                                <a href="{{ route('auth.google.redirect') }}">
-                                    <i class="fa-brands fa-google me-2"></i>Google
-                                </a>
-                            </li>
-                            
-                        </ul>
-                    </div>
-
                     <div class="sign-up-box"> 
                         <p>Chưa có tài khoản?</p>
                         <a href="{{ route('register.show') }}">Đăng Ký</a>

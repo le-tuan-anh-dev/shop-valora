@@ -1,16 +1,28 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Order Success')
+@section('title', 'Velora - Order Success')
 
 @section('content')
+
+<!-- Flash Messages -->
+@if (session('success'))
+    <div class="alert alert-success position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        {{ session('success') }}
+    </div>
+@endif
+@if (session('error'))
+    <div class="alert alert-danger position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        {{ session('error') }}
+    </div>
+@endif
 <section class="section-b-space py-0">
   <div class="container-fluid">
     <div class="row">
       <div class="col-12 px-0"> 
         <div class="order-box-1">
           <img src="{{ asset('client/assets/images/gif/success.gif') }}" alt="Success">
-          <h4>Order Success</h4>
-          <p>Payment Is Successfully Processed And Your Order Is On The Way</p>
+          <h4>Đơn Hàng Thành Công</h4>
+          <p>Thanh toán đã được xử lý thành công và đơn hàng của bạn đang được vận chuyển</p>
         </div>
       </div>
     </div>
@@ -22,82 +34,68 @@
     <div class="row gy-4">
       <div class="col-xl-8"> 
         <div class="order-items sticky"> 
-          <h4>Order Information</h4>
-          <p>Order invoice has been sent to your registered email account. Double check your order details.</p>
+          <h4>Thông Tin Đơn Hàng</h4>
+          <p>Hóa đơn đã được gửi đến email <strong>{{ $order->customer_email }}</strong> của bạn. Vui lòng kiểm tra chi tiết đơn hàng.</p>
+          
+          <div class="order-summary mb-4">
+            <p><strong>Mã đơn hàng:</strong> {{ $order->order_number }}</p>
+            <p><strong>Ngày đặt:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
+            <p><strong>Trạng thái:</strong> 
+              <span class="badge bg-warning">{{ ucfirst($order->status)? "Chờ xác nhận":"" }}</span>
+            </p>
+          </div>
+
           <div class="order-table"> 
             <div class="table-responsive theme-scrollbar">  
               <table class="table">
                 <thead>
                   <tr> 
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
+                    <th>Sản Phẩm</th>
+                    <th>Giá</th>
+                    <th>Số Lượng</th>
+                    <th>Tổng Cộng</th>
                   </tr>
                 </thead>
                 <tbody> 
-                  <tr> 
-                    <td> 
-                      <div class="cart-box">
-                        <a href="#">
-                          <img src="{{ asset('client/assets/images/cart/category/1.jpg') }}" alt="Product Image">
-                        </a>
-                        <div>
-                          <a href="#"> 
-                            <h5>Concrete Jungle Pack</h5>
+                  @forelse($orderItems as $item)
+                    <tr> 
+                      <td> 
+                        <div class="cart-box">
+                          <a href="#">
+                            <img src="{{ asset('storage/' . $item->product_image) }}" alt="{{ $item->product_name }}" style="width: 60px; height: 60px; object-fit: cover;">
                           </a>
-                          <p>Sold By: <span>Roger Group</span></p>
-                          <p>Size: <span>Small</span></p>
+                          <div>
+                            <a href="#"> 
+                              <h5>{{ $item->product_name }}</h5>
+                            </a>
+                            @if($item->product_options)
+                              <p>
+                                @php
+                                  $options = json_decode($item->product_options, true);
+                                @endphp
+                                @foreach($options as $option)
+                                  <span>{{ $option['attribute'] }}: {{ $option['value'] }}</span><br>
+                                @endforeach
+                              </p>
+                            @endif
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>\$20.00</td>
-                    <td>01</td>
-                    <td>\$195.00</td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div class="cart-box">
-                        <a href="#">
-                          <img src="{{ asset('client/assets/images/cart/category/2.jpg') }}" alt="Product Image">
-                        </a>
-                        <div>
-                          <a href="#"> 
-                            <h5>Mini dress with ruffled straps</h5>
-                          </a>
-                          <p>Sold By: <span>luisa Shop</span></p>
-                          <p>Size: <span>Medium</span></p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>\$20.00</td>
-                    <td>02</td>
-                    <td>\$150.00</td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div class="cart-box">
-                        <a href="#">
-                          <img src="{{ asset('client/assets/images/cart/category/3.jpg') }}" alt="Product Image">
-                        </a>
-                        <div>
-                          <a href="#"> 
-                            <h5>Long Sleeve Asymmetric</h5>
-                          </a>
-                          <p>Sold By: <span>Brown Shop</span></p>
-                          <p>Size: <span>Large</span></p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>\$25.00</td>
-                    <td>05</td>
-                    <td>\$120.00</td>
-                  </tr>
+                      </td>
+                      <td>{{ number_format($item->unit_price, 0, ',', '.') }} đ</td>
+                      <td>{{ $item->quantity }}</td>
+                      <td>{{ number_format($item->total_price, 0, ',', '.') }} đ</td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="4" class="text-center">Không có sản phẩm trong đơn hàng</td>
+                    </tr>
+                  @endforelse
+                  
                   <tr> 
                     <td></td>
                     <td></td>
-                    <td class="total fw-bold">Total :</td>
-                    <td class="total fw-bold">\$465.00</td>
+                    <td class="total fw-bold">Tạm tính:</td>
+                    <td class="total fw-bold">{{ number_format($order->subtotal, 0, ',', '.') }} đ</td>
                   </tr>
                 </tbody>
               </table>
@@ -105,67 +103,70 @@
           </div>
         </div>
       </div>
+
       <div class="col-xl-4">
         <div class="summery-box">
           <div class="sidebar-title">
             <div class="loader-line"></div>
-            <h4>Order Details</h4>
+            <h4>Chi Tiết Đơn Hàng</h4>
           </div>
           <div class="summery-content"> 
             <ul> 
               <li> 
-                <p class="fw-semibold">Product total (3)</p>
-                <h6>\$230.00</h6>
+                <p class="fw-semibold">Tổng sản phẩm ({{ $orderItems->count() }})</p>
+                <h6>{{ number_format($order->subtotal, 0, ',', '.') }} đ</h6>
               </li>
               <li> 
-                <p>Shipping to</p>
-                <span>United Kingdom</span>
+                <p>Giao đến</p>
+                <span>{{ $order->receiver_name }}, {{ $order->shipping_address }}</span>
               </li>
             </ul>
             <ul> 
               <li> 
-                <p>Shipping Costs</p>
-                <span>\$0.00</span>
+                <p>Phí vận chuyển</p>
+                <span>{{ number_format($order->shipping_fee, 0, ',', '.') }} đ</span>
               </li>
-              <li> 
-                <p>Total without VAT</p>
-                <span>\$250.00</span>
-              </li>
-              <li> 
-                <p>Including 10% VAT</p>
-                <span>\$25.00</span>
-              </li>
-              <li> 
-                <p>Discount Code</p>
-                <span>$-10.00</span>
-              </li>
+              @if($order->promotion_amount > 0)
+                <li> 
+                  <p>Giảm giá</p>
+                  <span style="color: #28a745;">-{{ number_format($order->promotion_amount, 0, ',', '.') }} đ</span>
+                </li>
+              @endif
             </ul>
-            <div class="d-flex align-items-center justify-content-between">
-              <h6>Total (USD)</h6>
-              <h5>\$265.00</h5>
+            <div class="d-flex align-items-center justify-content-between border-top pt-3">
+              <h6>Tổng Cộng (VND)</h6>
+              <h5 style="color: #e91e63;">{{ number_format($order->total_amount, 0, ',', '.') }} đ</h5>
             </div>
-            <div class="note-box"> 
-              <p>I'm hoping the store can work with me to get it delivered as soon as possible because I really need it to gift to my friend for her party next week. Many thanks for it.</p>
-            </div>
+            
+            @if($order->note)
+              <div class="note-box mt-3"> 
+                <p><strong>Ghi chú:</strong> {{ $order->note }}</p>
+              </div>
+            @endif
           </div>
         </div>
-        <div class="summery-footer"> 
+
+        <div class="summery-footer mt-3">
           <div class="sidebar-title">
             <div class="loader-line"></div>
-            <h4>Shipping Address</h4>
+            <h4>Địa Chỉ Giao Hàng</h4>
           </div>
           <ul> 
             <li> 
-              <h6>8424 James Lane South</h6>
-              <h6>San Francisco, CA 94080</h6>
+              <h6><strong>{{ $order->receiver_name }}</strong></h6>
+              <h6>{{ $order->shipping_address }}</h6>
             </li>
             <li> 
-              <h6>Expected Date Of Delivery: <span>Track Order</span></h6>
+              <h6>Điện thoại: <span>{{ $order->receiver_phone }}</span></h6>
             </li>
             <li> 
-              <h5>Oct 21, 2021</h5>
+              <h6>Email: <span>{{ $order->receiver_email }}</span></h6>
             </li>
           </ul>
+        </div>
+
+        <div class="order-button mt-3">
+          <a href="{{ route('home') }}" class="btn btn_black sm w-100 rounded">Tiếp Tục Mua Sắm</a>
         </div>
       </div>
     </div>

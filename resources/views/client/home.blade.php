@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Katie - Online Fashion Store')
+@section('title', 'Velora - Online Fashion Store')
 
 @section('content')
     {{-- danh mục và banner --}}
@@ -14,7 +14,7 @@
                         <ul class="category-menu flush-left"> 
                             @forelse($categories as $category)
                             <li>
-                                <a href="#" class="category-link">
+                                <a href="{{ route('shop.index') }}" class="category-link">
                                     {{ $category->name }}
                                     
                                 </a>
@@ -27,7 +27,7 @@
 
                             @if($categories->count() > 8)
                             <li class="more-categories-li">
-                                <a href="#" class="category-link view-all-link">
+                                <a href="{{ route('shop.index') }}" class="category-link view-all-link">
                                     Xem thêm <i class="fa-solid fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -168,7 +168,7 @@
                                                 {{-- Icon chỉ còn wishlist --}}
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                       <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -188,8 +188,12 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                        @php
+                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
+                                                        @endphp
+                                                        <span>-{{ $discountPercent }}%</span>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -229,7 +233,7 @@
 
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -247,8 +251,12 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                        @php
+                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
+                                                        @endphp
+                                                        <span>-{{ $discountPercent }}%</span>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -273,7 +281,7 @@
                                             <div class="img-wrapper">
                                                 @if($product->discount_price)
                                                 <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/3.png') }}" alt="label">
+                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
                                                     <span>Giảm <br>giá!</span>
                                                 </div>
                                                 @endif
@@ -288,7 +296,7 @@
 
                                                 <div class="cart-info-icon">
                                                     <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="iconsax" data-icon="heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -306,8 +314,12 @@
 
                                                 <p>
                                                     @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                        @php
+                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
+                                                        @endphp
+                                                        <span>-{{ $discountPercent }}%</span>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif
@@ -512,7 +524,12 @@
                 @forelse($diverseProducts as $product)
                 <div class="swiper-slide product-box">
                     <div class="img-wrapper">
-
+                            @if($product->discount_price)
+                                                <div class="label-block">
+                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
+                                                    <span>Giảm <br>giá!</span>
+                                                </div>
+                                                @endif
                         {{-- Ảnh sản phẩm --}}
                         <div class="product-image">
                             <a href="{{ route('products.detail', $product->id) }}">
@@ -525,8 +542,7 @@
                         {{-- Icons --}}
                         <div class="cart-info-icon">
                             <a class="wishlist-icon" href="javascript:void(0)" tabindex="0">
-                                <i class="iconsax" data-icon="heart" aria-hidden="true" 
-                                    data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
                             </a>
                         </div>
                     </div>
@@ -548,8 +564,12 @@
                         {{-- Giá sản phẩm --}}
                         <p>
                             @if($product->discount_price)
-                                {{ number_format($product->base_price, 0, ',', '.') }}₫ 
-                                <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
+                                {{ number_format($product->discount_price, 0, ',', '.') }}₫ 
+                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                @php
+                                    $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
+                                @endphp
+                                <span>-{{ $discountPercent }}%</span>
                             @else
                                 {{ number_format($product->base_price, 0, ',', '.') }}₫
                             @endif
@@ -725,54 +745,308 @@
         </div>
     </section>
     {{-- thương hiệu --}}
-    <section class="section-b-space">
-        <div class="custom-container container">
-            <div class="swiper logo-slider">
-                <div class="swiper-wrapper">
+
+{{-- thương hiệu --}}
+<section class="section-b-space">
+    <div class="custom-container container">
+        <div class="swiper logo-slider">
+            <div class="swiper-wrapper">
+
+                @foreach ($brands as $brand)
                     <div class="swiper-slide">
                         <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/1.png') }}" alt="logo">
+                            <img src="{{ asset('storage/'.$brand->logo) }}" alt="{{ $brand->name }}">
                         </a>
                     </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/2.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/3.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/4.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/5.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/6.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/7.png') }}" alt="logo">
-                        </a>
-                    </div>
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('client/assets/images/logos/3.png') }}" alt="logo">
-                        </a>
-                    </div>
-                </div>
+                @endforeach
+
             </div>
         </div>
-    </section>
+    </div>
+</section>
+{{-- ========================================================= --}}
+    {{-- PHẦN CHATBOT (ĐÃ CẬP NHẬT GIAO DIỆN & SỬA LỖI)            --}}
+    {{-- ========================================================= --}}
+
+    <style>
+        /* Nút tròn chat (Icon Robot) */
+        #chat-circle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px; /* To hơn chút */
+            height: 65px;
+            background: #007bff; /* Màu xanh chủ đạo */
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px; /* Icon to hơn */
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #chat-circle:hover {
+            transform: scale(1.1);
+            background: #0056b3;
+            box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Khung chat Box */
+        .chat-box {
+            display: none; /* Ẩn mặc định */
+            position: fixed;
+            bottom: 110px; /* Cách nút tròn một chút */
+            right: 30px;
+            
+            /* --- [FIX QUAN TRỌNG: KÍCH THƯỚC] --- */
+            width: 450px;          /* Chiều rộng to hơn (cũ là 380px) */
+            max-width: 90vw;       /* Không quá 90% chiều rộng màn hình (cho mobile) */
+            
+            height: 70vh;          /* Cao bằng 70% chiều cao màn hình -> Không bị tràn lên trên */
+            max-height: 600px;     /* Giới hạn cao nhất là 600px */
+            /* ------------------------------------ */
+
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            overflow: hidden;
+            font-family: sans-serif;
+            border: 1px solid #ddd;
+            flex-direction: column; /* Để xếp dọc Header - Body - Input */
+        }
+
+        /* Header Chat */
+        .chat-box-header {
+            background: linear-gradient(135deg, #007bff, #0056b3); /* Màu gradient đẹp hơn */
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0; /* Không bị co lại */
+        }
+        .chat-close { cursor: pointer; font-size: 24px; transition: 0.2s; }
+        .chat-close:hover { color: #ffdddd; }
+
+        /* Vùng hiển thị tin nhắn */
+        #messages {
+            flex-grow: 1; /* Tự động chiếm hết khoảng trống còn lại */
+            overflow-y: auto; /* Chỉ cuộn nội dung bên trong, không cuộn cả web */
+            padding: 20px;
+            background: #f4f6f9;
+        }
+
+        /* Tùy chỉnh thanh cuộn cho đẹp */
+        #messages::-webkit-scrollbar { width: 6px; }
+        #messages::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+            line-height: 1.5;
+            font-size: 15px; /* Chữ to hơn chút cho dễ đọc */
+            position: relative;
+        }
+
+        .user {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+            border-bottom-right-radius: 2px;
+        }
+
+        .ai {
+            background: #ffffff;
+            color: #333;
+            border: 1px solid #e1e1e1;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* Input Area */
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+            flex-shrink: 0; /* Không bị co lại */
+        }
+
+        #msg {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 15px;
+            background: #f9f9f9;
+        }
+        #msg:focus { border-color: #007bff; background: #fff; }
+
+        #btn-send {
+            margin-left: 10px;
+            padding: 0 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        #btn-send:hover { background: #0056b3; }
+
+        /* Card Sản Phẩm trong chat */
+        .product-container {
+            margin-top: 12px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .product-container:hover { transform: translateY(-3px); }
+        .product-img {
+            width: 100%;
+            height: 140px; /* Ảnh to hơn */
+            object-fit: cover;
+            border-radius: 6px;
+            background: #f0f0f0;
+        }
+        .product-caption {
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 8px;
+            color: #007bff;
+            text-transform: uppercase;
+        }
+        .product-link { text-decoration: none; display: block; }
+    </style>
+
+    <div id="chat-circle" onclick="toggleChat()">
+        <i class="fa-solid fa-robot"></i>
+    </div>
+
+    <div class="chat-box" id="chat-box" style="display: none;">
+        <div class="chat-box-header">
+            <span><i class="fa-solid fa-robot" style="margin-right: 8px;"></i> AI Trợ Lý</span>
+            <span class="chat-close" onclick="toggleChat()">&times;</span>
+        </div>
+        
+        <div id="messages">
+            <div class="message ai">Xin chào! Tôi là AI hỗ trợ. Bạn cần tìm sản phẩm gì không?</div>
+        </div>
+
+        <div class="input-area">
+            <input id="msg" type="text" placeholder="Nhập câu hỏi..." onkeydown="if(event.keyCode===13) sendMsg()">
+            <button id="btn-send" onclick="sendMsg()">Gửi</button>
+        </div>
+    </div>
+
+    <script>
+        // Hàm bật/tắt khung chat
+        function toggleChat() {
+            var chatBox = document.getElementById('chat-box');
+            if (chatBox.style.display === 'none' || chatBox.style.display === '') {
+                chatBox.style.display = 'flex';
+                // Focus vào ô nhập liệu khi mở
+                setTimeout(() => document.getElementById("msg").focus(), 100);
+            } else {
+                chatBox.style.display = 'none';
+            }
+        }
+
+        // Hàm gửi tin nhắn (Logic cũ của bạn)
+        function sendMsg() {
+            let text = document.getElementById("msg").value;
+            if (!text) return;
+
+            // Hiển thị tin nhắn User
+            let msgDiv = document.createElement('div');
+            msgDiv.className = 'message user';
+            msgDiv.textContent = text;
+            let messagesArea = document.getElementById("messages");
+            messagesArea.appendChild(msgDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight; // Auto scroll
+
+            document.getElementById("msg").value = '';
+
+            // Gọi API
+            fetch("/chatbot/ask", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}" // Laravel Token
+                },
+                body: JSON.stringify({ message: text })
+            })
+            .then(res => res.json())
+            .then(data => {
+                let replyDiv = document.createElement('div');
+                replyDiv.className = 'message ai';
+                let messageHtml = data.message;
+                
+                // Lấy danh sách link từ Backend
+                const PRODUCT_LINKS = data.product_links || {};
+
+                // --- [FIX LỖI HIỂN THỊ ẢNH] ---
+                // Sắp xếp tên dài lên trước để ưu tiên hiển thị (tránh nhầm tên con)
+                let productNames = Object.keys(PRODUCT_LINKS).sort((a, b) => b.length - a.length);
+
+                productNames.forEach(name => {
+                    const product = PRODUCT_LINKS[name];
+                    
+                    // Xử lý ký tự đặc biệt trong tên để không lỗi Regex
+                    let safeName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    
+                    // Regex tìm tên sản phẩm (không phân biệt hoa thường)
+                    const regex = new RegExp(`(${safeName})`, 'gi'); 
+
+                    if (messageHtml.match(regex)) {
+                        // In đậm tên sản phẩm
+                        messageHtml = messageHtml.replace(regex, "<b>$1</b>");
+
+                        // Tạo thẻ Ảnh (có fallback nếu ảnh lỗi)
+                        const imageHtml = `
+                            <div class="product-container">
+                                <a href="${product.product_url}" target="_blank" class="product-link">
+                                    <img src="${product.image_url}" class="product-img" 
+                                         alt="${name}"
+                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'; this.onerror=null;">
+                                    <div class="product-caption">Xem chi tiết</div>
+                                </a>
+                            </div><br>`;
+                        
+                        // Chèn ảnh xuống cuối câu trả lời
+                        messageHtml += imageHtml;
+                    }
+                });
+
+                replyDiv.innerHTML = messageHtml;
+                messagesArea.appendChild(replyDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Lỗi kết nối Server");
+            });
+        }
+    </script>
+
 
 
 @endsection

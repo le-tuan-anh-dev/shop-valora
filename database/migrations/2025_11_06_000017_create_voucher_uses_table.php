@@ -12,6 +12,8 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete();
             $table->timestamp('used_at')->useCurrent();
+            
+            $table->unique(['voucher_id', 'user_id', 'order_id']);
         });
     }
     public function down(): void {

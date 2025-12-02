@@ -41,15 +41,15 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'payment_details' => 'array',
-        'total_amount' => 'decimal:2',
-        'subtotal' => 'decimal:2',
-        'promotion_amount' => 'decimal:2',
-        'shipping_fee' => 'decimal:2',
-        'confirmed_at' => 'datetime',
-        'delivered_at' => 'datetime',
-        'completed_at' => 'datetime',
-        'cancelled_at' => 'datetime',
+        'payment_details'   => 'array',
+        'total_amount'      => 'decimal:2',
+        'subtotal'          => 'decimal:2',
+        'promotion_amount'  => 'decimal:2',
+        'shipping_fee'      => 'decimal:2',
+        'confirmed_at'      => 'datetime',
+        'delivered_at'      => 'datetime',
+        'completed_at'      => 'datetime',
+        'cancelled_at'      => 'datetime',
     ];
 
     public function user()
@@ -57,9 +57,25 @@ class Order extends Model
         return $this->belongsTo(\App\Models\User::class);
     }
 
+    // Quan hệ cũ giữ nguyên
     public function orderItems()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'order_id');
+    }
+     // doashboard
+    // Alias mới cho CheckoutController (để gọi $order->items())
+    public function items()
+    {
+        return $this->orderItems();
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(\App\Models\PaymentMethod::class, 'payment_method_id');
+    }
+
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
     }
 }
-

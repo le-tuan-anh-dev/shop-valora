@@ -9,6 +9,7 @@ use App\Models\Admin\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -59,12 +60,10 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::with(['user', 'orderItems'])->findOrFail($id);
-
         $allowedStatuses = $this->getAllowedStatuses($order->status);
 
         return view('admin.orders.order-detail', compact('order', 'allowedStatuses'));
     }
-
     private function getAllowedStatuses($currentStatus)
     {
         $allowedTransitions = [
