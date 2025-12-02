@@ -118,6 +118,9 @@ class OrderController extends Controller
 
         if ($newStatus === 'delivered' && !$order->delivered_at) {
             $order->delivered_at = Carbon::now();
+            if ($order->payment_status === 'unpaid') {
+                $order->payment_status = 'paid';
+            }
         }
 
         if ($newStatus === 'cancelled_by_admin' && !$order->cancelled_at) {
@@ -154,7 +157,7 @@ class OrderController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error restoring product stock for order #' . $order->order_number . ': ' . $e->getMessage());
+            Log::error('Error restoring product stock for order #' . $order->order_number . ': ' . $e->getMessage());
             throw $e;
         }
     }
