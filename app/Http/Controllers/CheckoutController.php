@@ -196,6 +196,9 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'name'       => 'required|string|max:255',
             'phone'      => 'required|string|max:20',
+            'province_id' => 'required|numeric',
+            'district_id' => 'required|numeric',
+            'ward_code'   => 'required|string',
             'address'    => 'required|string|max:500',
             'is_default' => 'nullable|boolean',
         ]);
@@ -212,6 +215,9 @@ class CheckoutController extends Controller
             $address = UserAddress::create([
                 'user_id'    => $userId,
                 'name'       => $validated['name'],
+                'province_id'  => $validated['province_id'],
+                'district_id'  => $validated['district_id'],
+                'ward_code'    => $validated['ward_code'],
                 'phone'      => $validated['phone'],
                 'address'    => $validated['address'],
                 'is_default' => $isDefault ? 1 : 0,
