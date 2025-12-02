@@ -61,12 +61,14 @@
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 60px;">STT</th>
-                                    <th style="width: 120px;">Mã code</th>
-                                    <th style="width: 100px;">Loại</th>
-                                    <th style="width: 100px;">Giá trị</th>
-                                    <th style="width: 120px;">Lượt dùng</th>
-                                    <th style="width: 150px;">Thời gian</th>
-                                    <th style="width: 100px;">Trạng thái</th>
+                                    <th style="width: 80px;">Mã code</th>
+                                    <th style="width: 80px;">Loại</th>
+                                    <th style="width: 80px;">Giảm</th>
+                                    <th style="width: 80px;">Đơn tối thiểu</th>
+                                    <th style="width: 80px;">Giảm tối đa</th>
+                                    <th style="width: 80px;">Lượt dùng</th>
+                                    <th style="width: 80px;">Thời gian</th>
+                                    <th style="width: 80px;">Trạng thái</th>
                                     <th style="width: 160px;">Hành động</th>
                                 </tr>
                             </thead>
@@ -83,13 +85,13 @@
                                         </td>
                                         <td>
                                             @if($voucher->type === 'fixed')
-                                                <span class="badge bg-light-warning text-warning">
-                                                    <iconify-icon icon="solar:wallet-money-bold-duotone" class="me-1"></iconify-icon>
+                                                <span class=" bg-light-warning text-warning">
+                                                    
                                                     Cố định
                                                 </span>
                                             @else
-                                                <span class="badge bg-light-success text-success">
-                                                    <iconify-icon icon="solar:percent-bold-duotone" class="me-1"></iconify-icon>
+                                                <span class=" bg-light-success text-success">
+                                                    
                                                     Phần trăm
                                                 </span>
                                             @endif
@@ -104,45 +106,27 @@
                                             </span>
                                         </td>
                                         <td>
+                                            <span>{{$voucher->min_order_value ? number_format($voucher->min_order_value,0,',','.') : 0}}₫</span>
+                                        </td>
+                                        <td>
+                                            <span>{{$voucher->max_discount_value ? number_format($voucher->max_discount_value,0,',','.') : 0}}₫</span>
+                                        </td>
+                                        <td>
                                             <div class="d-flex align-items-center gap-2">
-                                                <div class="progress" style="width: 100px; height: 20px;">
-                                                    @php
-                                                        $percentage = $voucher->max_uses > 0 
-                                                            ? ($voucher->used_count / $voucher->max_uses) * 100 
-                                                            : 0;
-                                                    @endphp
-                                                    <div class="progress-bar {{ $percentage >= 80 ? 'bg-danger' : ($percentage >= 50 ? 'bg-warning' : 'bg-success') }}" 
-                                                         role="progressbar" 
-                                                         style="width: {{ $percentage }}%"
-                                                         aria-valuenow="{{ $percentage }}" 
-                                                         aria-valuemin="0" 
-                                                         aria-valuemax="100">
-                                                    </div>
-                                                </div>
-                                                <small class="text-muted">{{ $voucher->used_count }}/{{ $voucher->max_uses }}</small>
+                                                <span class="text-muted">{{ $voucher->used_count }}/{{ $voucher->max_uses }}</span>
                                             </div>
                                         </td>
                                         <td>
                                             <small class="text-muted">
-                                                {{ $voucher->starts_at->format('d/m/Y') }} - 
-                                                {{ $voucher->ends_at->format('d/m/Y') }}
+                                                {{ $voucher->starts_at ? $voucher->starts_at->format('d/m/Y') : '' }} - 
+                                                {{$voucher->ends_at ? $voucher->ends_at->format('d/m/Y') : '' }}
                                             </small>
                                         </td>
                                         <td>
-                                            @if($voucher->is_active && now()->between($voucher->starts_at, $voucher->ends_at))
+                                            @if($voucher->is_active == 1        )
                                                 <span class="badge bg-light-success text-success">
                                                     <iconify-icon icon="solar:check-circle-bold-duotone" class="me-1"></iconify-icon>
                                                     Hoạt động
-                                                </span>
-                                            @elseif($voucher->is_active && now()->isBefore($voucher->starts_at))
-                                                <span class="badge bg-light-info text-info">
-                                                    <iconify-icon icon="solar:clock-circle-bold-duotone" class="me-1"></iconify-icon>
-                                                    Sắp tới
-                                                </span>
-                                            @elseif($voucher->is_active && now()->isAfter($voucher->ends_at))
-                                                <span class="badge bg-light-secondary text-secondary">
-                                                    <iconify-icon icon="solar:close-circle-bold-duotone" class="me-1"></iconify-icon>
-                                                    Hết hạn
                                                 </span>
                                             @else
                                                 <span class="badge bg-light-danger text-danger">
