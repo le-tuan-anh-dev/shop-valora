@@ -33,11 +33,7 @@ use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\WishlistController;
 
 use App\Http\Controllers\Api\ChatbotController;
-
-
-
-
-
+use App\Http\Controllers\GHNController;
 
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -94,7 +90,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
         ->name('wishlist.remove');
-    
+    // ============================
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])
         ->name('client.dashboard');
 
@@ -116,13 +112,16 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('place-order');
     Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
     Route::post('/checkout/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('checkout.remove-voucher');
-Route::get('/debug-voucher', [CheckoutController::class, 'debugVoucher']);
 
     Route::post('/checkout/address', [CheckoutController::class, 'storeAddress'])->name('checkout.store-address');
     Route::put('/checkout/address/{id}', [CheckoutController::class, 'updateAddress'])->name('checkout.update-address');
     Route::delete('/checkout/address/{id}', [CheckoutController::class, 'deleteAddress'])->name('checkout.delete-address');
     Route::post('/checkout/address/{id}/set-default', [CheckoutController::class, 'setDefaultAddress'])
         ->name('checkout.set-default-address');
+
+    Route::get('/checkout/get-districts', [CheckoutController::class, 'getDistricts'])->name('checkout.get-districts');
+    Route::get('/checkout/get-wards', [CheckoutController::class, 'getWards'])->name('checkout.get-wards');
+
 
     // Orders (customer)
     Route::get('/orders', [CheckoutController::class, 'myOrders'])->name('orders.index');

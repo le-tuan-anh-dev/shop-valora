@@ -56,7 +56,7 @@
                                 multiple
                                 accept="image/*">
                             <div id="previewImages" class="mt-3 d-flex flex-wrap gap-2"></div>
-                            @error('product_images.*')
+                            @error('product_images')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
@@ -180,15 +180,56 @@ document.addEventListener('DOMContentLoaded', function () {
     const productStockInput = document.querySelector('#product-stock-input');
     const basePriceInput = document.querySelector('#base-price-input');
 
+    // ========== Lấy danh sách attr_id đã được chọn ==========
+    function getSelectedAttrIds() {
+        const selectedIds = [];
+        variantGroupList.querySelectorAll('.attr-select').forEach(select => {
+            if (select.value) {
+                selectedIds.push(select.value);
+            }
+        });
+        return selectedIds;
+    }
+
+    // ========== Tạo options cho select (loại bỏ đã chọn) ==========
+    function createAttrOptions(excludeIds = []) {
+        return attributes
+            .filter(a => !excludeIds.includes(a.id.toString()))
+            .map(a => `<option value="${a.id}" data-attr-name="${a.name}">${a.name}</option>`)
+            .join('');
+    }
+
+    // ========== Cập nhật tất cả select (refresh options) ==========
+    function refreshAllSelects() {
+        const selectedIds = getSelectedAttrIds();
+        
+        variantGroupList.querySelectorAll('.border').forEach(group => {
+            const select = group.querySelector('.attr-select');
+            const currentValue = select.value;
+            
+            // Tạo lại options (loại bỏ các attr đã chọn, trừ attr hiện tại)
+            const excludeList = selectedIds.filter(id => id !== currentValue);
+            select.innerHTML = `
+                <option value="">-- Chọn phân loại --</option>
+                ${attributes
+                    .filter(a => !excludeList.includes(a.id.toString()))
+                    .map(a => `<option value="${a.id}" data-attr-name="${a.name}" ${a.id == currentValue ? 'selected' : ''}>${a.name}</option>`)
+                    .join('')}
+            `;
+        });
+    }
+
     // ========== Thêm nhóm thuộc tính ==========
     addVariantGroupBtn.addEventListener('click', () => {
+        const selectedIds = getSelectedAttrIds();
+        
         const groupDiv = document.createElement('div');
         groupDiv.classList.add('border', 'p-3', 'rounded', 'mb-3', 'bg-light');
         groupDiv.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <select class="form-select attr-select">
                     <option value="">-- Chọn phân loại --</option>
-                    ${attributes.map(a => `<option value="${a.id}" data-attr-name="${a.name}">${a.name}</option>`).join('')}
+                    ${createAttrOptions(selectedIds)}
                 </select>
                 <button type="button" class="btn btn-danger btn-sm remove-group ms-2">X</button>
             </div>
@@ -203,6 +244,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const selectedAttrId = e.target.value;
             const selectedAttr = attributes.find(a => a.id == selectedAttrId);
             const container = e.target.closest('.border').querySelector('.value-container');
+            
+            // Refresh tất cả select để loại bỏ attr vừa chọn
+            refreshAllSelects();
             
             if (selectedAttr && selectedAttr.values.length > 0) {
                 container.innerHTML = `
@@ -231,6 +275,10 @@ document.addEventListener('DOMContentLoaded', function () {
     variantGroupList.addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-group')) {
             e.target.closest('.border').remove();
+            
+            // Refresh lại tất cả select sau khi xóa
+            refreshAllSelects();
+            
             generateVariants();
         }
     });
@@ -263,21 +311,22 @@ document.addEventListener('DOMContentLoaded', function () {
             return ret;
         });
     }
+
+    // ========== Tạo SKU ngẫu nhiên ==========
     function generateSKU() {
-        // Tạo 2-3 chữ cái ngẫu nhiên in hoa
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const lettersLength = Math.random() < 0.5 ? 2 : 3; // Random 2 hoặc 3 chữ
+        const lettersLength = Math.random() < 0.5 ? 2 : 3;
         let randomLetters = '';
         
         for (let i = 0; i < lettersLength; i++) {
             randomLetters += letters.charAt(Math.floor(Math.random() * letters.length));
         }
         
-        // Tạo số ngẫu nhiên (6 chữ số)
         const randomNumbers = Math.floor(Math.random() * 900) + 100;
         
         return `${randomLetters}-${randomNumbers}`;
     }
+
     // ========== Sinh biến thể từ nhóm thuộc tính ==========
     function generateVariants() {
         const selectedGroups = [];
@@ -313,12 +362,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const basePrice = parseFloat(basePriceInput.value) || 0;
 
-        //  Tạo bảng biến thể
+        // Tạo bảng biến thể
         combos.forEach((combo, idx) => {
             const values = Array.isArray(combo) ? combo : [combo];
             const label = values.map(v => v.name).join(' / ');
             const ids = values.map(v => v.id).join(',');
-             const autoSKU = generateSKU();
+            const autoSKU = generateSKU();
 
             variantTableBody.innerHTML += `
                 <tr>
@@ -367,6 +416,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const oldVariants = @json(old('variants', []));
     if (oldVariants && oldVariants.length > 0) {
         oldVariants.forEach((variant, idx) => {
+            const autoSKU = generateSKU();
             variantTableBody.innerHTML += `
                 <tr>
                     <td>
@@ -374,13 +424,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         <span class="text-muted">${variant.value_ids || 'N/A'}</span>
                     </td>
                     <td>
-                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" placeholder="SKU" value="${autoSKU}">
+                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" placeholder="SKU" value="${variant.sku || autoSKU}">
                     </td>
                     <td>
-                        <input type="number" step="1" name="variants[${idx}][price]" class="form-control form-control-sm" value="${variant.price || 0}">
+                        <input type="number" step="1" name="variants[${idx}][price]" class="form-control form-control-sm" value="${variant.price || ''}">
                     </td>
                     <td>
-                        <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="${variant.stock || 0}">
+                        <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="${variant.stock || ''}">
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
@@ -391,6 +441,8 @@ document.addEventListener('DOMContentLoaded', function () {
         updateProductStock();
     }
 });
+
+// ========== Preview ảnh phụ ==========
 document.getElementById('product_images').addEventListener('change', function(e) {
     const previewContainer = document.getElementById('previewImages');
     previewContainer.innerHTML = '';
@@ -406,6 +458,8 @@ document.getElementById('product_images').addEventListener('change', function(e)
         reader.readAsDataURL(file);
     });
 });
+
+// ========== Preview ảnh chính ==========
 document.getElementById('image_main').addEventListener('change', function(e) {
     const previewContainer = document.getElementById('previewMainImage');
     previewContainer.innerHTML = '';
@@ -416,7 +470,7 @@ document.getElementById('image_main').addEventListener('change', function(e) {
         reader.onload = function(event) {
             const img = document.createElement('img');
             img.src = event.target.result;
-            img.style.cssText = 'width: 150px; height: 150px; object-fit: cover; border-radius: 4px; ';
+            img.style.cssText = 'width: 150px; height: 150px; object-fit: cover; border-radius: 4px;';
             previewContainer.appendChild(img);
         };
         reader.readAsDataURL(file);

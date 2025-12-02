@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="page-content">
-    <div class="container-xxl">
+    <div class="container-fluid">
 
         {{-- Header Section --}}
         <div class="row">
