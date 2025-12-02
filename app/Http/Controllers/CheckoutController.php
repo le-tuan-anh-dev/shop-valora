@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use App\Notifications\OrderStatusChanged;
+use Illuminate\Support\Facades\Http;
 
 class CheckoutController extends Controller
 {
@@ -69,6 +70,8 @@ class CheckoutController extends Controller
         $shipping = 30000;
         $total = $subtotal + $shipping ;
 
+        // tỉnh
+        $provinces = $this->getProvinces();
         // lấy địa chỉ: ưu tiên mặc định
         $shippingAddresses = UserAddress::where('user_id', $user->id)
             ->orderByDesc('is_default')
@@ -85,10 +88,107 @@ class CheckoutController extends Controller
             'shipping'          => $shipping,
             'total'             => $total,
             'paymentMethods'    => $paymentMethods,
+            'provinces'    => $provinces,
+            
         ]);
     }
 
-  
+    // lấy tỉnh
+    public function getProvinces()
+    {
+        try {
+            $response = Http::withHeaders([
+                'Token' => env('GHN_TOKEN'),
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province');
+
+            if ($response->ok() && isset($response->json()['data'])) {
+                return $response->json()['data'];
+            }
+        } catch (\Exception $e) {
+            Log::error('GHN getProvinces error: ' . $e->getMessage());
+        }
+
+        return [];
+    }
+
+    // láy quận huyện
+    public function getDistricts(Request $request)
+    {
+        $provinceId = $request->query('province_id');
+        
+        if (!$provinceId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng chọn tỉnh'
+            ], 400);
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Token' => env('GHN_TOKEN'),
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district', [
+                'province_id' => $provinceId
+            ]);
+
+            if ($response->ok() && isset($response->json()['data'])) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $response->json()['data']
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy quận/huyện'
+            ], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi kết nối dữ liệu'
+            ], 500);
+        }
+    }
+
+    //lấy phường xã
+    public function getWards(Request $request)
+    {
+        $districtId = $request->query('district_id');
+        
+        if (!$districtId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng chọn quận/huyện'
+            ], 400);
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Token' => env('GHN_TOKEN'),
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward', [
+                'district_id' => $districtId
+            ]);
+
+            if ($response->ok() && isset($response->json()['data'])) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $response->json()['data']
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy phường/xã'
+            ], 400);
+
+        } catch (\Exception $e) {
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi kết nối dữ liệu'
+            ], 500);
+        }
+    }
 
     // lưu địa chỉ 
     public function storeAddress(Request $request)

@@ -175,7 +175,7 @@
 
 <!-- Modal thêm địa chỉ -->
 <div class="modal fade" id="address-modal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog  modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addressModalLabel">Thêm địa chỉ mới</h5>
@@ -184,20 +184,49 @@
       <div class="modal-body">
         <form id="addressForm">
           @csrf
+          <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="addressName" class="form-label">Tên địa chỉ (VD: Nhà riêng, Văn phòng)</label>
+                  <input type="text" class="form-control" id="addressName" name="name" placeholder="VD: Nhà riêng" required>
+                </div>
 
-          <div class="mb-3">
-            <label for="addressName" class="form-label">Tên địa chỉ (VD: Nhà riêng, Văn phòng)</label>
-            <input type="text" class="form-control" id="addressName" name="name" placeholder="VD: Nhà riêng" required>
-          </div>
+                <div class="mb-3">
+                  <label for="addressPhone" class="form-label">Số điện thoại</label>
+                  <input type="tel" class="form-control" id="addressPhone" name="phone" placeholder="Nhập số điện thoại" required>
+                </div>
 
-          <div class="mb-3">
-            <label for="addressPhone" class="form-label">Số điện thoại</label>
-            <input type="tel" class="form-control" id="addressPhone" name="phone" placeholder="Nhập số điện thoại" required>
-          </div>
+                <div class="mb-3">
+                  <label for="addressText" class="form-label">Địa chỉ</label>
+                  <textarea class="form-control" id="addressText" name="address" rows="3" placeholder="Nhập địa chỉ đầy đủ" required></textarea>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="province" class="form-label">Tỉnh / Thành</label>
+                    <select name="province_id" id="province" class="form-control" required>
+                        <option value="">-- Chọn tỉnh --</option>
+                        @foreach($provinces as $province)
+                            <option value="{{ $province['ProvinceID'] }}">{{ $province['ProvinceName'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-          <div class="mb-3">
-            <label for="addressText" class="form-label">Địa chỉ</label>
-            <textarea class="form-control" id="addressText" name="address" rows="3" placeholder="Nhập địa chỉ đầy đủ" required></textarea>
+                <div class="mb-3">
+                    <label for="district" class="form-label">Quận / Huyện</label>
+                    <select id="district" name="district_id" class="form-control" required disabled>
+                        <option value="">-- Chọn quận / huyện --</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="ward" class="form-label">Phường / Xã</label>
+                    <select id="ward" name="ward_code" class="form-control" required disabled>
+                        <option value="">-- Chọn phường / xã --</option>
+                    </select>
+                </div>
+              </div>
+              
           </div>
 
         </form>
@@ -433,6 +462,80 @@
       this.submit();
     });
   });
+
+  const provinceSelect = document.getElementById('province');
+const districtSelect = document.getElementById('district');
+const wardSelect = document.getElementById('ward');
+
+// Khi chọn tỉnh
+provinceSelect?.addEventListener('change', async function() {
+  const provinceId = this.value;
+  
+  // Reset district và ward
+  districtSelect.innerHTML = '<option value="">-- Chọn quận / huyện --</option>';
+  wardSelect.innerHTML = '<option value="">-- Chọn phường / xã --</option>';
+  districtSelect.disabled = true;
+  wardSelect.disabled = true;
+
+  if (!provinceId) return;
+
+  try {
+    const response = await fetch(`{{ route('checkout.get-districts') }}?province_id=${provinceId}`);
+    const data = await response.json();
+
+    if (data.success && data.data.length > 0) {
+      districtSelect.innerHTML = '<option value="">-- Chọn quận / huyện --</option>';
+      
+      data.data.forEach(district => {
+        const option = document.createElement('option');
+        option.value = district.DistrictID;
+        option.textContent = district.DistrictName;
+        districtSelect.appendChild(option);
+      });
+
+      districtSelect.disabled = false;
+    } else {
+      showNotification('Không tìm thấy quận/huyện', 'error');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showNotification('Lỗi khi lấy danh sách quận/huyện', 'error');
+  }
+});
+
+// Khi chọn quận/huyện
+districtSelect?.addEventListener('change', async function() {
+  const districtId = this.value;
+  
+  // Reset ward
+  wardSelect.innerHTML = '<option value="">-- Chọn phường / xã --</option>';
+  wardSelect.disabled = true;
+
+  if (!districtId) return;
+
+  try {
+    const response = await fetch(`{{ route('checkout.get-wards') }}?district_id=${districtId}`);
+    const data = await response.json();
+
+    if (data.success && data.data.length > 0) {
+      wardSelect.innerHTML = '<option value="">-- Chọn phường / xã --</option>';
+      
+      data.data.forEach(ward => {
+        const option = document.createElement('option');
+        option.value = ward.WardCode;
+        option.textContent = ward.WardName;
+        wardSelect.appendChild(option);
+      });
+
+      wardSelect.disabled = false;
+    } else {
+      showNotification('Không tìm thấy phường/xã', 'error');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showNotification('Lỗi khi lấy danh sách phường/xã', 'error');
+  }
+});
 </script>
 @endpush
 
