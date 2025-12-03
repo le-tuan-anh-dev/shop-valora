@@ -146,10 +146,11 @@ class VoucherService
      */
     public function calculateDiscount(float $subtotal, Voucher $voucher): float
     {
-        if ($voucher->type === 'percentage') {
-            return round(($subtotal * $voucher->value) / 100, 2);
+        if ($voucher->type === 'percent') {
+            $discount = ($subtotal * $voucher->value) / 100;
+            return round($discount, 2);
         } else { 
-            return min($voucher->value, $subtotal);
+            return min((float)$voucher->value, $subtotal);
         }
     }
 

@@ -20,6 +20,12 @@ use Illuminate\Support\Facades\Http;
 
 class CheckoutController extends Controller
 {
+    protected $voucherService;
+
+    public function __construct(VoucherService $voucherService)
+    {
+        $this->voucherService = $voucherService;
+    }
     public function show()
     {
         $user = auth()->user();
@@ -245,6 +251,111 @@ class CheckoutController extends Controller
         }
     }
 
+    // dùng voucher
+     public function applyVoucher(Request $request)
+    {
+        
+        $request->validate([
+            'code' => 'required|string|max:50',
+            'subtotal' => 'required|numeric|min:0'
+        ]);
+
+        try {
+            $user = auth()->user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn cần đăng nhập'
+                ], 401);
+            }
+            
+            $cart = Cart::where('user_id', $user->id)->first();
+            
+            if (!$cart) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Giỏ hàng không tìm thấy'
+                ]);
+            }
+            
+            $cartItems = CartItem::where('cart_id', $cart->id)
+                ->with(['product', 'variant'])
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Giỏ hàng trống'
+                ]);
+            }
+
+            $subtotal = (float) $request->input('subtotal');
+            
+            $result = $this->voucherService->applyVoucher(
+                $cartItems->toArray(),
+                $request->input('code'),
+                $user->id,
+                $subtotal
+            );
+
+
+            if ($result['success']) {
+                session([
+                    'applied_voucher' => [
+                        'voucher_id' => $result['voucher_id'],
+                        'code' => $result['code'],
+                        'discount_amount' => $result['discount_amount'],
+                        'discount_type' => $result['discount_type'],
+                        'discount_value' => $result['discount_value']
+                    ]
+                ]);
+            }
+
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            Log::error('Apply voucher exception: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function removeVoucher(Request $request)
+    {
+        try {
+            $appliedVoucher = session('applied_voucher');
+            
+            Log::info('Removing voucher', ['voucher' => $appliedVoucher]);
+            
+            if ($appliedVoucher && isset($appliedVoucher['voucher_id'])) {
+                $this->voucherService->removeVoucher($appliedVoucher['voucher_id']);
+            }
+
+            session()->forget('applied_voucher');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa mã voucher'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Remove voucher error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+    public function applyCoupon(Request $request)
+    {
+        return $this->applyVoucher($request);
+    }
+
     /**
      * Cập nhật / đặt mặc định địa chỉ (route: PUT /checkout/address/{id})
      * Dùng cho form trong Dashboard.
@@ -406,6 +517,12 @@ class CheckoutController extends Controller
             $promotionAmount = 0;
             $promotionId = null;
 
+            if (session()->has('applied_voucher')) {
+                $appliedVoucher = session('applied_voucher');
+                $promotionAmount = (float) $appliedVoucher['discount_amount'];
+                $promotionId = $appliedVoucher['voucher_id'];
+            }
+
             $shippingFee = (float) $validated['shipping_fee'];
             $totalAmount = $subtotal - $promotionAmount + $shippingFee;
             $orderNumber = 'ORD-' . time() . '-' . $user->id;
@@ -429,7 +546,7 @@ class CheckoutController extends Controller
 
                 CartItem::where('cart_id', $cart->id)->delete();
                 $this->sendOrderEmail($order);
-
+                session()->forget('applied_voucher'); 
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Đơn hàng đã được tạo! Vui lòng thanh toán khi nhận hàng.');
             } 
@@ -447,6 +564,8 @@ class CheckoutController extends Controller
                     'shipping_fee'     => $shippingFee,
                     'total_amount'     => $totalAmount,
                     'order_number'     => $orderNumber,
+                    'promotion_amount' => $promotionAmount,
+                    'promotion_id' => $promotionId,
                 ]]);
 
                 // gọi MoMo
@@ -456,7 +575,7 @@ class CheckoutController extends Controller
                     return redirect()->away($payUrl);
                 } else {
                     session()->forget('pending_order');
-                    return redirect()->back()->with('error', 'Lỗi kết nối MoMo. Vui lòng thử lại.');
+                    return redirect()->back()->with('error', 'Lỗi kết nối MoMo. Vui lòng thử sau.');
                 }
             }
             else {
@@ -761,6 +880,7 @@ class CheckoutController extends Controller
 
                 // xóa session
                 session()->forget('pending_order');
+                session()->forget('applied_voucher');
 
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Thanh toán thành công!');
@@ -773,6 +893,7 @@ class CheckoutController extends Controller
         } 
         //  Thanh toán thất bại
         else {
+            session()->forget('pending_order');
             session()->forget('pending_order');
             return redirect()->route('checkout')
                 ->with('error', "Thanh toán thất bại: $message");
@@ -888,11 +1009,4 @@ public function showOrder(Order $order)
     return redirect()->back()->with('success', 'Đã hủy đơn hàng và hoàn lại tồn kho.');
 }
     
-    public function applyCoupon(Request $request)
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Chức năng mã giảm giá đang được phát triển.',
-        ], 400);
-    }
 }

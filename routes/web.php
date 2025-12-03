@@ -110,6 +110,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('place-order');
+
     Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
     Route::post('/checkout/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('checkout.remove-voucher');
 
@@ -127,7 +128,6 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/orders', [CheckoutController::class, 'myOrders'])->name('orders.index');
     Route::get('/orders/{order}', [CheckoutController::class, 'showOrder'])->name('orders.show');
     Route::post('/orders/{order}/cancel', [CheckoutController::class, 'cancelOrder'])->name('orders.cancel');
-
     // Order success
     Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
 });
