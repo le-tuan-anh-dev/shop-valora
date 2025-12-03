@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Order;
+use App\Models\Admin\Product;
+use App\Models\Admin\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -58,30 +60,16 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::with(['user', 'orderItems'])->findOrFail($id);
-        
-        // Debug: Log product_options data
-        foreach ($order->orderItems as $item) {
-            Log::info('OrderItem Debug', [
-                'product_name' => $item->product_name,
-                'product_options_type' => gettype($item->product_options),
-                'product_options_raw' => $item->product_options,
-                'product_options_json' => json_encode($item->product_options),
-            ]);
-        }
-        
         $allowedStatuses = $this->getAllowedStatuses($order->status);
-        
+
         return view('admin.orders.order-detail', compact('order', 'allowedStatuses'));
     }
-    /**
-     * Lấy danh sách trạng thái có thể chuyển đến từ trạng thái hiện tại
-     */
     private function getAllowedStatuses($currentStatus)
     {
         $allowedTransitions = [
-            'pending' => ['confirmed', 'cancelled_by_customer', 'cancelled_by_admin'],
-            'confirmed' => ['awaiting_pickup', 'cancelled_by_customer', 'cancelled_by_admin'],
-            'awaiting_pickup' => ['shipping', 'cancelled_by_customer', 'cancelled_by_admin'],
+            'pending' => ['confirmed', 'cancelled_by_admin'],
+            'confirmed' => ['awaiting_pickup', 'cancelled_by_admin'],
+            'awaiting_pickup' => ['shipping', 'cancelled_by_admin'],
             'shipping' => ['delivered', 'delivery_failed'],
             'delivered' => [],
             'completed' => [],
@@ -96,15 +84,15 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,awaiting_pickup,shipping,delivered,cancelled_by_customer,cancelled_by_admin,delivery_failed'
+            'status' => 'required|in:pending,confirmed,awaiting_pickup,shipping,delivered,cancelled_by_admin,delivery_failed'
         ]);
 
-        $order = Order::findOrFail($id);
+        $order = Order::with('orderItems')->findOrFail($id);
         $oldStatus = $order->status;
         $newStatus = $request->status;
 
         $allowedStatuses = $this->getAllowedStatuses($oldStatus);
-        
+
         if (!in_array($newStatus, $allowedStatuses)) {
             return redirect()->back()
                 ->with('error', 'Không thể chuyển từ trạng thái "' . $this->getStatusLabel($oldStatus) . '" sang "' . $this->getStatusLabel($newStatus) . '". Vui lòng chọn trạng thái hợp lệ.');
@@ -115,6 +103,13 @@ class OrderController extends Controller
                 ->with('error', 'Đơn hàng đã ở trạng thái này.');
         }
 
+        $shouldRestoreStock = in_array($newStatus, ['cancelled_by_admin', 'delivery_failed'])
+            && !in_array($oldStatus, ['delivered', 'completed', 'cancelled_by_admin', 'cancelled_by_customer', 'delivery_failed']);
+
+        if ($shouldRestoreStock) {
+            $this->restoreProductStock($order);
+        }
+
         $order->status = $newStatus;
 
         if (in_array($newStatus, ['confirmed', 'awaiting_pickup', 'shipping', 'delivered']) && !$order->confirmed_at) {
@@ -123,9 +118,12 @@ class OrderController extends Controller
 
         if ($newStatus === 'delivered' && !$order->delivered_at) {
             $order->delivered_at = Carbon::now();
+            if ($order->payment_status === 'unpaid') {
+                $order->payment_status = 'paid';
+            }
         }
 
-        if (in_array($newStatus, ['cancelled_by_customer', 'cancelled_by_admin']) && !$order->cancelled_at) {
+        if ($newStatus === 'cancelled_by_admin' && !$order->cancelled_at) {
             $order->cancelled_at = Carbon::now();
         }
 
@@ -135,9 +133,35 @@ class OrderController extends Controller
             ->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
     }
 
-    /**
-     * Lấy nhãn trạng thái
-     */
+    private function restoreProductStock(Order $order)
+    {
+        try {
+            DB::beginTransaction();
+
+            foreach ($order->orderItems as $orderItem) {
+                if ($orderItem->product_id) {
+                    $product = Product::find($orderItem->product_id);
+                    if ($product) {
+                        $product->increment('stock', $orderItem->quantity);
+                    }
+                }
+
+                if ($orderItem->variant_id) {
+                    $variant = ProductVariant::find($orderItem->variant_id);
+                    if ($variant) {
+                        $variant->increment('stock', $orderItem->quantity);
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error restoring product stock for order #' . $order->order_number . ': ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
     private function getStatusLabel($status)
     {
         $labels = [
