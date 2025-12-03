@@ -61,32 +61,7 @@
                             @enderror
                         </div>
                     </div>
-
-                    {{-- Biến thể sản phẩm --}}
-                    <div class="card mb-3 p-3">
-                        <h5 class="fw-semibold">Biến thể sản phẩm</h5>
-                        <button type="button" class="btn btn-sm btn-warning mb-2" id="add-variant-group">+ Thêm nhóm thuộc tính</button>
-
-                        {{-- Nơi hiển thị nhóm thuộc tính --}}
-                        <div class="variant-group-list mb-3"></div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="variant-table">
-                                <thead>
-                                    <tr>
-                                        <th>Tên biến thể</th>
-                                        <th>SKU</th>
-                                        <th>Giá bán (đ)</th>
-                                        <th>Tồn kho</th>
-                                        <th>Xóa</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- Dữ liệu biến thể sẽ được sinh ở đây --}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    
                 </div>
 
                 {{-- Bên phải: giá & danh mục --}}
@@ -160,6 +135,96 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-12">
+
+                    <div class="card mb-3 p-3 dimensions-card">
+    <h5 class="fw-semibold">Kích thước & Cân nặng sản phẩm</h5>
+    <p class="text-muted small">Dành cho sản phẩm không cos biến thể</p>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Chiều dài</label>
+            <div class="input-group">
+                <input type="number" step="0.01" min="0" name="length" 
+                    class="form-control @error('length') is-invalid @enderror" 
+                    value="{{ old('length') }}" placeholder="0.00">
+                <span class="input-group-text">cm</span>
+            </div>
+            @error('length')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Chiều rộng</label>
+            <div class="input-group">
+                <input type="number" step="0.01" min="0" name="width" 
+                    class="form-control @error('width') is-invalid @enderror" 
+                    value="{{ old('width') }}" placeholder="0.00">
+                <span class="input-group-text">cm</span>
+            </div>
+            @error('width')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Chiều cao</label>
+            <div class="input-group">
+                <input type="number" step="0.01" min="0" name="height" 
+                    class="form-control @error('height') is-invalid @enderror" 
+                    value="{{ old('height') }}" placeholder="0.00">
+                <span class="input-group-text">cm</span>
+            </div>
+            @error('height')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Cân nặng</label>
+            <div class="input-group">
+                <input type="number" step="0.01" min="0" name="weight" 
+                    class="form-control @error('weight') is-invalid @enderror" 
+                    value="{{ old('weight') }}" placeholder="0.00">
+                <span class="input-group-text">gr</span>
+            </div>
+            @error('weight')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+</div>
+                    {{-- Biến thể sản phẩm --}}
+                    <div class="card mb-3 p-3">
+                        <h5 class="fw-semibold">Biến thể sản phẩm</h5>
+                        <button type="button" class="btn btn-sm btn-warning mb-2" id="add-variant-group">+ Thêm nhóm thuộc tính</button>
+
+                        {{-- Nơi hiển thị nhóm thuộc tính --}}
+                        <div class="variant-group-list mb-3"></div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="variant-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên biến thể</th>
+                                        <th>SKU</th>
+                                        <th>Giá bán (đ)</th>
+                                        <th>Tồn kho</th>
+                                        <th>Chiều dài (cm)</th>
+                                        <th>Chiều rộng (cm)</th>
+                                        <th>Chiều cao (cm)</th>
+                                        <th>Cân nặng (gr)</th>
+                                        <th>Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{-- Dữ liệu biến thể sẽ được sinh ở đây --}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="text-end">
@@ -179,6 +244,71 @@ document.addEventListener('DOMContentLoaded', function () {
     const addVariantGroupBtn = document.querySelector('#add-variant-group');
     const productStockInput = document.querySelector('#product-stock-input');
     const basePriceInput = document.querySelector('#base-price-input');
+
+    // ========== Ẩn/Hiện phần Kích thước & Cân nặng ==========
+    function toggleDimensionsSection() {
+        const variantGroups = document.querySelectorAll('.variant-group-list .border').length;
+        const dimensionsCard = document.querySelector('.dimensions-card');
+        
+        if (dimensionsCard) {
+            dimensionsCard.style.display = variantGroups > 0 ? 'none' : 'block';
+        }
+    }
+
+    // ========== Hiển thị lỗi validation tổng quát ==========
+    function displayValidationErrors(errors) {
+        document.querySelectorAll('.alert-danger.variant-error-alert').forEach(el => el.remove());
+        
+        if (!errors || Object.keys(errors).length === 0) return;
+
+        const errorContainer = document.createElement('div');
+        errorContainer.className = 'alert alert-danger alert-dismissible fade show variant-error-alert';
+        errorContainer.role = 'alert';
+        errorContainer.innerHTML = '<strong>❌ Lỗi nhập liệu:</strong><ul class="mb-0 mt-2">';
+
+        for (const [field, messages] of Object.entries(errors)) {
+            messages.forEach(message => {
+                errorContainer.innerHTML += `<li>${message}</li>`;
+            });
+        }
+        
+        errorContainer.innerHTML += `
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const form = document.querySelector('form');
+        form.insertBefore(errorContainer, form.firstChild);
+        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ========== Highlight input có lỗi ==========
+    function highlightErrorFields(errors) {
+        document.querySelectorAll('input.is-invalid').forEach(el => {
+            el.classList.remove('is-invalid');
+        });
+
+        if (!errors || Object.keys(errors).length === 0) return;
+
+        for (const [field, messages] of Object.entries(errors)) {
+            if (field.startsWith('variants.')) {
+                const match = field.match(/variants\.(\d+)\.(\w+)/);
+                if (match) {
+                    const [, idx, fieldName] = match;
+                    const input = document.querySelector(`input[name="variants[${idx}][${fieldName}]"]`);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        input.title = messages.join('; ');
+                    }
+                }
+            } else {
+                const input = document.querySelector(`input[name="${field}"], select[name="${field}"], textarea[name="${field}"]`);
+                if (input) {
+                    input.classList.add('is-invalid');
+                }
+            }
+        }
+    }
 
     // ========== Lấy danh sách attr_id đã được chọn ==========
     function getSelectedAttrIds() {
@@ -207,7 +337,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const select = group.querySelector('.attr-select');
             const currentValue = select.value;
             
-            // Tạo lại options (loại bỏ các attr đã chọn, trừ attr hiện tại)
             const excludeList = selectedIds.filter(id => id !== currentValue);
             select.innerHTML = `
                 <option value="">-- Chọn phân loại --</option>
@@ -236,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="value-container"></div>
         `;
         variantGroupList.appendChild(groupDiv);
+        toggleDimensionsSection();
     });
 
     // ========== Xử lý chọn thuộc tính và checkbox ==========
@@ -245,7 +375,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const selectedAttr = attributes.find(a => a.id == selectedAttrId);
             const container = e.target.closest('.border').querySelector('.value-container');
             
-            // Refresh tất cả select để loại bỏ attr vừa chọn
             refreshAllSelects();
             
             if (selectedAttr && selectedAttr.values.length > 0) {
@@ -275,11 +404,9 @@ document.addEventListener('DOMContentLoaded', function () {
     variantGroupList.addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-group')) {
             e.target.closest('.border').remove();
-            
-            // Refresh lại tất cả select sau khi xóa
             refreshAllSelects();
-            
             generateVariants();
+            toggleDimensionsSection();
         }
     });
 
@@ -352,7 +479,6 @@ document.addEventListener('DOMContentLoaded', function () {
             combos = cartesian(selectedGroups.map(g => g.values));
         }
 
-        // Xóa tất cả dòng cũ
         variantTableBody.innerHTML = '';
 
         if (combos.length === 0) {
@@ -362,7 +488,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const basePrice = parseFloat(basePriceInput.value) || 0;
 
-        // Tạo bảng biến thể
         combos.forEach((combo, idx) => {
             const values = Array.isArray(combo) ? combo : [combo];
             const label = values.map(v => v.name).join(' / ');
@@ -383,6 +508,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     </td>
                     <td>
                         <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="0">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm" placeholder="Để trống = mặc định">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][width]" class="form-control form-control-sm" placeholder="Để trống = mặc định">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm" placeholder="Để trống = mặc định">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][weight]" class="form-control form-control-sm" placeholder="Để trống = mặc định">
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
@@ -414,6 +551,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ========== Restore old variants khi có lỗi validation ==========
     const oldVariants = @json(old('variants', []));
+    const validationErrors = @json($errors->getMessages() ?? []);
+
     if (oldVariants && oldVariants.length > 0) {
         oldVariants.forEach((variant, idx) => {
             const autoSKU = generateSKU();
@@ -433,6 +572,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="${variant.stock || ''}">
                     </td>
                     <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm" value="${variant.length || ''}" placeholder="Để trống = mặc định">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][width]" class="form-control form-control-sm" value="${variant.width || ''}" placeholder="Để trống = mặc định">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm" value="${variant.height || ''}" placeholder="Để trống = mặc định">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][weight]" class="form-control form-control-sm" value="${variant.weight || ''}" placeholder="Để trống = mặc định">
+                    </td>
+                    <td>
                         <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
                     </td>
                 </tr>
@@ -440,6 +591,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         updateProductStock();
     }
+
+    // Hiển thị lỗi validation
+    displayValidationErrors(validationErrors);
+    highlightErrorFields(validationErrors);
+    toggleDimensionsSection();
 });
 
 // ========== Preview ảnh phụ ==========
