@@ -253,7 +253,6 @@ class CheckoutController extends Controller
     // dùng voucher
      public function applyVoucher(Request $request)
     {
-        Log::info('=== APPLY VOUCHER REQUEST ===', $request->all());
         
         $request->validate([
             'code' => 'required|string|max:50',
@@ -292,8 +291,6 @@ class CheckoutController extends Controller
 
             $subtotal = (float) $request->input('subtotal');
             
-            Log::info('Cart Items Count:', ['count' => $cartItems->count()]);
-            
             $result = $this->voucherService->applyVoucher(
                 $cartItems->toArray(),
                 $request->input('code'),
@@ -301,7 +298,6 @@ class CheckoutController extends Controller
                 $subtotal
             );
 
-            Log::info('=== VOUCHER RESULT ===', $result);
 
             if ($result['success']) {
                 session([
@@ -313,8 +309,6 @@ class CheckoutController extends Controller
                         'discount_value' => $result['discount_value']
                     ]
                 ]);
-                
-                Log::info('Session saved with voucher');
             }
 
             return response()->json($result);
@@ -522,6 +516,12 @@ class CheckoutController extends Controller
             $promotionAmount = 0;
             $promotionId = null;
 
+            if (session()->has('applied_voucher')) {
+                $appliedVoucher = session('applied_voucher');
+                $promotionAmount = (float) $appliedVoucher['discount_amount'];
+                $promotionId = $appliedVoucher['voucher_id'];
+            }
+
             $shippingFee = (float) $validated['shipping_fee'];
             $totalAmount = $subtotal - $promotionAmount + $shippingFee;
             $orderNumber = 'ORD-' . time() . '-' . $user->id;
@@ -545,7 +545,7 @@ class CheckoutController extends Controller
 
                 CartItem::where('cart_id', $cart->id)->delete();
                 $this->sendOrderEmail($order);
-
+                session()->forget('applied_voucher'); 
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Đơn hàng đã được tạo! Vui lòng thanh toán khi nhận hàng.');
             } 
@@ -563,6 +563,8 @@ class CheckoutController extends Controller
                     'shipping_fee'     => $shippingFee,
                     'total_amount'     => $totalAmount,
                     'order_number'     => $orderNumber,
+                    'promotion_amount' => $promotionAmount,
+                    'promotion_id' => $promotionId,
                 ]]);
 
                 // gọi MoMo
@@ -572,7 +574,7 @@ class CheckoutController extends Controller
                     return redirect()->away($payUrl);
                 } else {
                     session()->forget('pending_order');
-                    return redirect()->back()->with('error', 'Lỗi kết nối MoMo. Vui lòng thử lại.');
+                    return redirect()->back()->with('error', 'Lỗi kết nối MoMo. Vui lòng thử sau.');
                 }
             }
             else {
@@ -877,6 +879,7 @@ class CheckoutController extends Controller
 
                 // xóa session
                 session()->forget('pending_order');
+                session()->forget('applied_voucher');
 
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Thanh toán thành công!');
@@ -889,6 +892,7 @@ class CheckoutController extends Controller
         } 
         //  Thanh toán thất bại
         else {
+            session()->forget('pending_order');
             session()->forget('pending_order');
             return redirect()->route('checkout')
                 ->with('error', "Thanh toán thất bại: $message");
