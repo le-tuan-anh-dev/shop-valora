@@ -113,6 +113,15 @@ class ProductController extends Controller
             'image_main' =>'required',
             'description'=>'required|string',
             'product_images'   => 'nullable|max:5',
+            'length'                    => 'nullable|numeric|min:0',
+            'width'                     => 'nullable|numeric|min:0',
+            'height'                    => 'nullable|numeric|min:0',
+            'weight'                    => 'nullable|numeric|min:0',
+            'variants'                  => 'nullable|array',
+            'variants.*.length'         => 'nullable|numeric|min:0',
+            'variants.*.width'          => 'nullable|numeric|min:0',
+            'variants.*.height'         => 'nullable|numeric|min:0',
+            'variants.*.weight'         => 'nullable|numeric|min:0',
         ], $messages);
 
         DB::beginTransaction();
@@ -132,6 +141,11 @@ class ProductController extends Controller
                 'cost_price'     => $validated['cost_price'],
                 'base_price'     => $validated['base_price'],
                 'discount_price' => $validated['discount_price'] ?? null,
+                'is_active'        => $request->has('is_active') ? 1 : 0,
+                'length'           => $validated['length'] ?? null,
+                'width'            => $validated['width'] ?? null,
+                'height'           => $validated['height'] ?? null,
+                'weight'           => $validated['weight'] ?? null,
                 'stock'          => $validated['stock'],    
                 'image_main'     => $imagePath,
                 'is_active'      => $request->has('is_active') ? 1 : 0,
@@ -176,12 +190,15 @@ class ProductController extends Controller
                         'price'      => isset($variantData['price']) ? (float)$variantData['price'] : (float)$validated['base_price'],
                         'stock'      => isset($variantData['stock']) ? (int)$variantData['stock'] : 0,
                         'is_active'  => 1,
+                        'length'     => isset($variantData['length']) ? (float)$variantData['length'] : null,
+                        'width'      => isset($variantData['width']) ? (float)$variantData['width'] : null,
+                        'height'     => isset($variantData['height']) ? (float)$variantData['height'] : null,
+                        'weight'     => isset($variantData['weight']) ? (float)$variantData['weight'] : null,
                     ]);
 
                     $totalVariantStock += $variant->stock;
 
                     // Liên kết attribute_values với variant
-                    // Liên kết TRỰ TIẾP tới attribute_values,
                     if (!empty($variantData['value_ids'])) {
                         $attributeValueIds = array_filter(explode(',', $variantData['value_ids']));
 

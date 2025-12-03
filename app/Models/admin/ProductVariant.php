@@ -21,6 +21,10 @@ class ProductVariant extends Model
         'sku',
         'price',
         'stock',
+        'length',     
+        'width',    
+        'height',
+        'weight',
         'image_url',
         'is_active',
     ];
@@ -46,7 +50,6 @@ class ProductVariant extends Model
             'variant_id',
             'attribute_value_id'
         )
-        // SỬA: load luôn attribute để lên view dùng
         ->with(['attribute'])
         ->withPivot(['variant_id', 'attribute_value_id']);
     }
@@ -102,5 +105,16 @@ class ProductVariant extends Model
             'product_variant_id',
             'voucher_id'
         )->withTimestamps();
+    }
+
+    // Lấy kích thước biến thể, nếu không có thì dùng kích thước sản phẩm
+    public function getDimensions()
+    {
+        return [
+            'length' => $this->length ?? $this->product->length,
+            'width' => $this->width ?? $this->product->width,
+            'height' => $this->height ?? $this->product->height,
+            'weight' => $this->weight ?? $this->product->weight,
+        ];
     }
 }
