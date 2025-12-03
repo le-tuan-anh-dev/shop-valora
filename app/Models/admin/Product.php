@@ -21,6 +21,10 @@ class Product extends Model
         'cost_price',
         'base_price',
         'discount_price',
+        'length',      
+        'width',       
+        'height',
+        'weight',
         'stock',
         'image_main',
         'is_active'
@@ -78,4 +82,22 @@ class Product extends Model
             'user_id'
         )->withTimestamps();
     }
+
+    public function getEffectiveDimensions()
+    {
+        return [
+            'length' => $this->length,
+            'width' => $this->width,
+            'height' => $this->height,
+            'weight' => $this->weight,
+        ];
+    }
+
+    public function getDimensionsString()
+{
+    if (!$this->length || !$this->width || !$this->height) {
+        return 'N/A';
+    }
+    return "{$this->length} x {$this->width} x {$this->height}";
+}
 }

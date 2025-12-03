@@ -11,6 +11,7 @@ return new class extends Migration
             $table->integer('length')->nullable()->after('base_price');
             $table->integer('width')->nullable()->after('length');
             $table->integer('height')->nullable()->after('width');
+            $table->integer('weight')->nullable()->after('height');
         });
 
 
@@ -18,17 +19,18 @@ return new class extends Migration
             $table->integer('length')->nullable()->after('price');
             $table->integer('width')->nullable()->after('length');
             $table->integer('height')->nullable()->after('width');
+            $table->integer('weight')->nullable()->after('height');
         });
     }
 
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['length', 'width', 'height']);
+            $table->dropColumn(['length', 'width', 'height', 'weight']);
         });
 
         Schema::table('product_variants', function (Blueprint $table) {
-            $table->dropColumn(['length', 'width', 'height']);
+            $table->dropColumn(['length', 'width', 'height', 'weight']);
         });
     }
 };
