@@ -999,7 +999,7 @@ public function showOrder(Order $order)
 
         $order->update([
             'status'         => 'cancelled_by_customer',
-            'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
+            // 'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
             'cancelled_at'   => now(),
         ]);
 
