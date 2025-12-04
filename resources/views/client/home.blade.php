@@ -4,63 +4,63 @@
 
 @section('content')
     {{-- danh mục và banner --}}
-<section class="pt-0 home-section-3">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            
-            <div class="col-2 d-none d-xl-block">
-                <div class="category-sidebar">
-                    <div class="category-list">
-                        <ul class="category-menu flush-left"> 
-                            @forelse($categories as $category)
-                            <li>
-                                <a href="{{ route('shop.index') }}" class="category-link">
-                                    {{ $category->name }}
-                                    
-                                </a>
-                            </li>
-                            @empty
-                            <li>
-                                <p class="text-muted text-left flush-left-text">Chưa có danh mục</p>
-                            </li>
-                            @endforelse
+    <section class="pt-0 home-section-3">
+        <div class="container-fluid">
+            <div class="row align-items-center">
 
-                            @if($categories->count() > 8)
-                            <li class="more-categories-li">
-                                <a href="{{ route('shop.index') }}" class="category-link view-all-link">
-                                    Xem thêm <i class="fa-solid fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            @endif
-                        </ul>
+                <div class="col-2 d-none d-xl-block">
+                    <div class="category-sidebar">
+                        <div class="category-list">
+                            <ul class="category-menu flush-left">
+                                @forelse($categories as $category)
+                                    <li>
+                                        <a href="{{ route('shop.index') }}" class="category-link">
+                                            {{ $category->name }}
+
+                                        </a>
+                                    </li>
+                                @empty
+                                    <li>
+                                        <p class="text-muted text-left flush-left-text">Chưa có danh mục</p>
+                                    </li>
+                                @endforelse
+
+                                @if ($categories->count() > 8)
+                                    <li class="more-categories-li">
+                                        <a href="{{ route('shop.index') }}" class="category-link view-all-link">
+                                            Xem thêm <i class="fa-solid fa-arrow-right"></i>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Nội dung banner chính (bên PHẢI) -->
-            <div class="col pe-0">
-                <div class="home-banner p-right">
-                    <img class="img-fluid" src="{{ asset('client/assets/images/layout-3/1.jpg') }}" alt="" />
-                    <div class="contain-banner">
-                        <div>
-                            <h4>Hot Offer <span>START TODAY</span></h4>
-                            <h1>Explore Your True Creative Fashion.</h1>
-                            <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.</p>
-                            <div class="link-hover-anim underline">
-                                <a class="btn btn_underline link-strong" href="#">
-                                    Show Now
-                                    <svg>
-                                        <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                    </svg>
-                                </a>
+                <!-- Nội dung banner chính (bên PHẢI) -->
+                <div class="col pe-0">
+                    <div class="home-banner p-right">
+                        <img class="img-fluid" src="{{ asset('client/assets/images/layout-3/1.jpg') }}" alt="" />
+                        <div class="contain-banner">
+                            <div>
+                                <h4>Hot Offer <span>START TODAY</span></h4>
+                                <h1>Explore Your True Creative Fashion.</h1>
+                                <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.</p>
+                                <div class="link-hover-anim underline">
+                                    <a class="btn btn_underline link-strong" href="#">
+                                        Show Now
+                                        <svg>
+                                            <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
+                                        </svg>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
     {{-- chính sách --}}
     <section class="section-t-space">
         <div class="custom-container container service">
@@ -105,243 +105,341 @@
         </div>
     </section>
     {{-- sản phẩm --}}
-<section class="section-t-space">
-    <div class="custom-container container product-contain">
-        <div class="title">
-            <h3>Sản phẩm đặc biệt</h3>
-            <svg>
-                <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
-            </svg>
-        </div>
+    <section class="section-t-space">
+        <div class="custom-container container product-contain">
+            <div class="title">
+                <h3>Sản phẩm đặc biệt</h3>
+                <svg>
+                    <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
+                </svg>
+            </div>
 
-        <div class="row trending-products">
-            <div class="col-12">
-                <div class="theme-tab-1">
-                    <!-- NAV TABS -->
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" data-bs-target="#features-products" role="tab">
-                                <h6>Sản phẩm giảm giá</h6>
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#latest-products" role="tab">
-                                <h6>Sản phẩm mới nhất</h6>
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#seller-products" role="tab">
-                                <h6>Bán chạy nhất</h6>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="row trending-products">
+                <div class="col-12">
+                    <div class="theme-tab-1">
+                        <!-- NAV TABS -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" data-bs-toggle="tab" data-bs-target="#features-products"
+                                    role="tab">
+                                    <h6>Sản phẩm giảm giá</h6>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#latest-products" role="tab">
+                                    <h6>Sản phẩm mới nhất</h6>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#seller-products" role="tab">
+                                    <h6>Bán chạy nhất</h6>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                <div class="row">
-                    <div class="col-12 ratio_square">
-                        <div class="tab-content">
+                    <div class="row">
+                        <div class="col-12 ratio_square">
+                            <div class="tab-content">
 
-                            {{-- FEATURED PRODUCTS --}}
-                            <div class="tab-pane fade show active" id="features-products" role="tabpanel">
-                                <div class="row g-4">
-                                    @forelse($featuredProducts as $product)
-                                    <div class="col-xxl-3 col-md-4 col-6">
-                                        <div class="product-box">
-                                            <div class="img-wrapper">
-                                                {{-- Label Sale --}}
-                                                @if($product->discount_price)
-                                                <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
-                                                    <span>Giảm <br>giá!</span>
-                                                </div>
-                                                @endif
+                                {{-- FEATURED PRODUCTS --}}
+                                <div class="tab-pane fade show active" id="features-products" role="tabpanel">
+                                    <div class="row g-4">
+                                        @forelse($featuredProducts as $product)
+                                            <div class="col-xxl-3 col-md-4 col-6">
+                                                <div class="product-box">
+                                                    <div class="img-wrapper">
+                                                        {{-- Label Sale --}}
+                                                        @if ($product->discount_price)
+                                                            <div class="label-block">
+                                                                <img src="{{ asset('client/assets/images/product/2.png') }}"
+                                                                    alt="label">
+                                                                <span>Giảm <br>giá!</span>
+                                                            </div>
+                                                        @endif
 
-                                                {{-- Product Image --}}
-                                                <div class="product-image">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <img class="bg-img" 
-                                                            src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}" 
-                                                            alt="{{ $product->name }}">
-                                                    </a>
-                                                </div>
+                                                        {{-- Product Image --}}
+                                                        <div class="product-image">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <img class="bg-img"
+                                                                    src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
+                                                                    alt="{{ $product->name }}">
+                                                            </a>
+                                                        </div>
 
-                                                {{-- Icon chỉ còn wishlist --}}
-                                                <div class="cart-info-icon">
-                                                    <a class="wishlist-icon" href="javascript:void(0)">
-                                                       <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
-                                                    </a>
+                                                        {{-- Icon chỉ còn wishlist --}}
+                                                        <style>
+                                                            .cart-info-icon i {
+                                                                font-size: 30px;
+                                                                color: #777;
+                                                                /* màu mặc định */
+                                                                cursor: pointer;
+                                                                transition: color 0.2s;
+                                                            }
+
+                                                            .cart-info-icon i:hover {
+                                                                color: red;
+                                                                /* di vào thì đỏ */
+                                                            }
+
+                                                            /* Toast thông báo */
+                                                            .wishlist-toast {
+                                                                position: fixed;
+                                                                top: 50%;
+                                                                left: 50%;
+                                                                transform: translate(-50%, -50%);
+                                                                /* căn giữa theo cả 2 trục */
+                                                                background: rgba(0, 0, 0, 0.85);
+                                                                color: #fff;
+                                                                padding: 10px 16px;
+                                                                border-radius: 6px;
+                                                                font-size: 14px;
+                                                                opacity: 0;
+                                                                visibility: hidden;
+                                                                transition: all 0.3s ease;
+                                                                z-index: 9999;
+                                                            }
+
+                                                            .wishlist-toast.show {
+                                                                opacity: 1;
+                                                                visibility: visible;
+                                                                transform: translateY(0);
+                                                            }
+                                                        </style>
+
+                                                        <div class="cart-info-icon">
+                                                            @auth
+                                                                {{-- User đã đăng nhập: bấm là thêm vào wishlist --}}
+                                                                <a href="#"
+                                                                    onclick="
+                event.preventDefault();
+                showWishlistToast('Đã thêm vào danh sách yêu thích');
+                document.getElementById('wishlist-form-{{ $product->id }}').submit();
+           ">
+                                                                    <i class="far fa-heart" data-bs-toggle="tooltip"
+                                                                        data-bs-title="Thêm vào yêu thích"></i>
+                                                                </a>
+
+                                                                <form id="wishlist-form-{{ $product->id }}"
+                                                                    action="{{ route('wishlist.add', $product->id) }}"
+                                                                    method="POST" class="d-none">
+                                                                    @csrf
+                                                                </form>
+                                                            @else
+                                                                {{-- Chưa đăng nhập: bấm chuyển qua trang login --}}
+                                                                <a href="{{ route('login') }}">
+                                                                    <i class="far fa-heart" data-bs-toggle="tooltip"
+                                                                        data-bs-title="Đăng nhập để thêm vào yêu thích"></i>
+                                                                </a>
+                                                            @endauth
+                                                        </div>
+
+                                                        {{-- Toast hiển thị thông báo --}}
+                                                        <div id="wishlist-toast" class="wishlist-toast"></div>
+
+                                                        <script>
+                                                            function showWishlistToast(message) {
+                                                                const toast = document.getElementById('wishlist-toast');
+                                                                if (!toast) return;
+
+                                                                toast.textContent = message;
+                                                                toast.classList.add('show');
+
+                                                                // 1.5 giây sau thì ẩn đi
+                                                                setTimeout(() => {
+                                                                    toast.classList.remove('show');
+                                                                }, 1500);
+                                                            }
+                                                        </script>
+                                                    </div>
+                                                    {{-- Product Detail --}}
+                                                    <div class="product-detail">
+                                                        {{-- Đổi thành Xem chi tiết --}}
+                                                        <div class="add-button">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                                            </a>
+                                                        </div>
+
+                                                        <a href="{{ route('products.detail', $product->id) }}">
+                                                            <h5>{{ Str::limit($product->name, 40) }}</h5>
+                                                        </a>
+
+                                                        <p>
+                                                            @if ($product->discount_price)
+                                                                {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                                @php
+                                                                    $discountPercent = round(
+                                                                        (($product->discount_price -
+                                                                            $product->base_price) /
+                                                                            $product->base_price) *
+                                                                            100,
+                                                                    );
+                                                                @endphp
+                                                                <span>-{{ $discountPercent }}%</span>
+                                                            @else
+                                                                {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                            @endif
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            {{-- Product Detail --}}
-                                            <div class="product-detail">
-                                                {{-- Đổi thành Xem chi tiết --}}
-                                                <div class="add-button">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                                    </a>
-                                                </div>
-
-                                                <a href="{{ route('products.detail', $product->id) }}">
-                                                    <h5>{{ Str::limit($product->name, 40) }}</h5>
-                                                </a>
-
-                                                <p>
-                                                    @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
-                                                        @php
-                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
-                                                        @endphp
-                                                        <span>-{{ $discountPercent }}%</span>
-                                                    @else
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                    @endif
-                                                </p>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-center">Chưa có sản phẩm nổi bật</p>
                                             </div>
-                                        </div>
+                                        @endforelse
                                     </div>
-                                    @empty
-                                    <div class="col-12">
-                                        <p class="text-center">Chưa có sản phẩm nổi bật</p>
-                                    </div>
-                                    @endforelse
                                 </div>
-                            </div>
 
-                            {{-- LATEST PRODUCTS --}}
-                            <div class="tab-pane fade" id="latest-products" role="tabpanel">
-                                <div class="row g-4">
-                                    @forelse($latestProducts as $product)
-                                    <div class="col-xxl-3 col-md-4 col-6">
-                                        <div class="product-box">
-                                            <div class="img-wrapper">
-                                                @if($product->discount_price)
-                                                <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
-                                                    <span>Giảm <br>giá!</span>
-                                                </div>
-                                                @endif
+                                {{-- LATEST PRODUCTS --}}
+                                <div class="tab-pane fade" id="latest-products" role="tabpanel">
+                                    <div class="row g-4">
+                                        @forelse($latestProducts as $product)
+                                            <div class="col-xxl-3 col-md-4 col-6">
+                                                <div class="product-box">
+                                                    <div class="img-wrapper">
+                                                        @if ($product->discount_price)
+                                                            <div class="label-block">
+                                                                <img src="{{ asset('client/assets/images/product/2.png') }}"
+                                                                    alt="label">
+                                                                <span>Giảm <br>giá!</span>
+                                                            </div>
+                                                        @endif
 
-                                                <div class="product-image">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <img class="bg-img" 
-                                                            src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}" 
-                                                            alt="{{ $product->name }}">
-                                                    </a>
-                                                </div>
+                                                        <div class="product-image">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <img class="bg-img"
+                                                                    src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
+                                                                    alt="{{ $product->name }}">
+                                                            </a>
+                                                        </div>
 
-                                                <div class="cart-info-icon">
-                                                    <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
-                                                    </a>
+                                                        <div class="cart-info-icon">
+                                                            <a class="wishlist-icon" href="javascript:void(0)">
+                                                                <i class="far fa-heart" data-bs-toggle="tooltip"
+                                                                    data-bs-title="Thêm vào yêu thích"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="product-detail">
+                                                        <div class="add-button">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                                            </a>
+                                                        </div>
+
+                                                        <a href="{{ route('products.detail', $product->id) }}">
+                                                            <h5>{{ Str::limit($product->name, 40) }}</h5>
+                                                        </a>
+
+                                                        <p>
+                                                            @if ($product->discount_price)
+                                                                {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                                @php
+                                                                    $discountPercent = round(
+                                                                        (($product->discount_price -
+                                                                            $product->base_price) /
+                                                                            $product->base_price) *
+                                                                            100,
+                                                                    );
+                                                                @endphp
+                                                                <span>-{{ $discountPercent }}%</span>
+                                                            @else
+                                                                {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                            @endif
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            <div class="product-detail">
-                                                <div class="add-button">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                                    </a>
-                                                </div>
-
-                                                <a href="{{ route('products.detail', $product->id) }}">
-                                                    <h5>{{ Str::limit($product->name, 40) }}</h5>
-                                                </a>
-
-                                                <p>
-                                                    @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
-                                                        @php
-                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
-                                                        @endphp
-                                                        <span>-{{ $discountPercent }}%</span>
-                                                    @else
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                    @endif
-                                                </p>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-center">Chưa có sản phẩm mới</p>
                                             </div>
-                                        </div>
+                                        @endforelse
                                     </div>
-                                    @empty
-                                    <div class="col-12">
-                                        <p class="text-center">Chưa có sản phẩm mới</p>
-                                    </div>
-                                    @endforelse
                                 </div>
-                            </div>
 
-                            {{-- BEST SELLER PRODUCTS --}}
-                            <div class="tab-pane fade" id="seller-products" role="tabpanel">
-                                <div class="row g-4">
-                                    @forelse($bestSellerProducts as $product)
-                                    <div class="col-xxl-3 col-md-4 col-6">
-                                        <div class="product-box">
-                                            <div class="img-wrapper">
-                                                @if($product->discount_price)
-                                                <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
-                                                    <span>Giảm <br>giá!</span>
-                                                </div>
-                                                @endif
+                                {{-- BEST SELLER PRODUCTS --}}
+                                <div class="tab-pane fade" id="seller-products" role="tabpanel">
+                                    <div class="row g-4">
+                                        @forelse($bestSellerProducts as $product)
+                                            <div class="col-xxl-3 col-md-4 col-6">
+                                                <div class="product-box">
+                                                    <div class="img-wrapper">
+                                                        @if ($product->discount_price)
+                                                            <div class="label-block">
+                                                                <img src="{{ asset('client/assets/images/product/2.png') }}"
+                                                                    alt="label">
+                                                                <span>Giảm <br>giá!</span>
+                                                            </div>
+                                                        @endif
 
-                                                <div class="product-image">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <img class="bg-img" 
-                                                            src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}" 
-                                                            alt="{{ $product->name }}">
-                                                    </a>
-                                                </div>
+                                                        <div class="product-image">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <img class="bg-img"
+                                                                    src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
+                                                                    alt="{{ $product->name }}">
+                                                            </a>
+                                                        </div>
 
-                                                <div class="cart-info-icon">
-                                                    <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
-                                                    </a>
+                                                        <div class="cart-info-icon">
+                                                            <a class="wishlist-icon" href="javascript:void(0)">
+                                                                <i class="far fa-heart" data-bs-toggle="tooltip"
+                                                                    data-bs-title="Thêm vào yêu thích"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="product-detail">
+                                                        <div class="add-button">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                                            </a>
+                                                        </div>
+
+                                                        <a href="{{ route('products.detail', $product->id) }}">
+                                                            <h5>{{ Str::limit($product->name, 40) }}</h5>
+                                                        </a>
+
+                                                        <p>
+                                                            @if ($product->discount_price)
+                                                                {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                                @php
+                                                                    $discountPercent = round(
+                                                                        (($product->discount_price -
+                                                                            $product->base_price) /
+                                                                            $product->base_price) *
+                                                                            100,
+                                                                    );
+                                                                @endphp
+                                                                <span>-{{ $discountPercent }}%</span>
+                                                            @else
+                                                                {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                            @endif
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            <div class="product-detail">
-                                                <div class="add-button">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                                    </a>
-                                                </div>
-
-                                                <a href="{{ route('products.detail', $product->id) }}">
-                                                    <h5>{{ Str::limit($product->name, 40) }}</h5>
-                                                </a>
-
-                                                <p>
-                                                    @if($product->discount_price)
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
-                                                        @php
-                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
-                                                        @endphp
-                                                        <span>-{{ $discountPercent }}%</span>
-                                                    @else
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                    @endif
-                                                </p>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-center">Chưa có sản phẩm bán chạy</p>
                                             </div>
-                                        </div>
+                                        @endforelse
                                     </div>
-                                    @empty
-                                    <div class="col-12">
-                                        <p class="text-center">Chưa có sản phẩm bán chạy</p>
-                                    </div>
-                                    @endforelse
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
     {{-- bài viết --}}
     <section class="section-t-space">
@@ -509,89 +607,94 @@
         </div>
     </section>
     {{-- sản phẩm --}}
-<section class="section-t-space">
-    <div class="custom-container container product-contain">
-        <div class="title">
-            <h3>Sản phẩm đa dạng nhất</h3>
-            <svg>
-                <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
-            </svg>
-        </div>
-        
-        <div class="swiper fashikart-slide">
-            <div class="swiper-wrapper trending-products ratio_square">
-                
-                @forelse($diverseProducts as $product)
-                <div class="swiper-slide product-box">
-                    <div class="img-wrapper">
-                            @if($product->discount_price)
-                                                <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
-                                                    <span>Giảm <br>giá!</span>
-                                                </div>
-                                                @endif
-                        {{-- Ảnh sản phẩm --}}
-                        <div class="product-image">
-                            <a href="{{ route('products.detail', $product->id) }}">
-                                <img class="bg-img"
-                                    src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
-                                    alt="{{ $product->name }}">
-                            </a>
-                        </div>
-
-                        {{-- Icons --}}
-                        <div class="cart-info-icon">
-                            <a class="wishlist-icon" href="javascript:void(0)" tabindex="0">
-                                <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    {{-- Chi tiết sản phẩm --}}
-                    <div class="product-detail">
-                        <div class="add-button">
-                            <a href="{{ route('products.detail', $product->id) }}"
-                                title="Xem chi tiết" tabindex="0">
-                                <i class="fa-solid fa-eye"></i> Xem chi tiết
-                            </a>
-                        </div>
-
-
-                        <a href="{{ route('products.detail', $product->id) }}">
-                            <h5>{{ Str::limit($product->name, 40) }}</h5>
-                        </a>
-
-                        {{-- Giá sản phẩm --}}
-                        <p>
-                            @if($product->discount_price)
-                                {{ number_format($product->base_price, 0, ',', '.') }}₫ 
-                                <del>{{ number_format($product->discount_price, 0, ',', '.') }}₫</del>
-                                @php
-                                    $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
-                                @endphp
-                                <span>-{{ $discountPercent }}%</span>
-                            @else
-                                {{ number_format($product->base_price, 0, ',', '.') }}₫
-                            @endif
-                        </p>
-
-
-                    </div>
-                </div>
-                @empty
-                <div class="swiper-slide">
-                    <p class="text-center">Chưa có sản phẩm</p>
-                </div>
-                @endforelse
-
+    <section class="section-t-space">
+        <div class="custom-container container product-contain">
+            <div class="title">
+                <h3>Sản phẩm đa dạng nhất</h3>
+                <svg>
+                    <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
+                </svg>
             </div>
 
-            {{-- Navigation buttons --}}
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
+            <div class="swiper fashikart-slide">
+                <div class="swiper-wrapper trending-products ratio_square">
+
+                    @forelse($diverseProducts as $product)
+                        <div class="swiper-slide product-box">
+                            <div class="img-wrapper">
+                                @if ($product->discount_price)
+                                    <div class="label-block">
+                                        <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
+                                        <span>Giảm <br>giá!</span>
+                                    </div>
+                                @endif
+                                {{-- Ảnh sản phẩm --}}
+                                <div class="product-image">
+                                    <a href="{{ route('products.detail', $product->id) }}">
+                                        <img class="bg-img"
+                                            src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
+                                            alt="{{ $product->name }}">
+                                    </a>
+                                </div>
+
+                                {{-- Icons --}}
+                                <div class="cart-info-icon">
+                                    <a class="wishlist-icon" href="javascript:void(0)" tabindex="0">
+                                        <i class="far fa-heart" data-bs-toggle="tooltip"
+                                            data-bs-title="Thêm vào yêu thích"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            {{-- Chi tiết sản phẩm --}}
+                            <div class="product-detail">
+                                <div class="add-button">
+                                    <a href="{{ route('products.detail', $product->id) }}" title="Xem chi tiết"
+                                        tabindex="0">
+                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                    </a>
+                                </div>
+
+
+                                <a href="{{ route('products.detail', $product->id) }}">
+                                    <h5>{{ Str::limit($product->name, 40) }}</h5>
+                                </a>
+
+                                {{-- Giá sản phẩm --}}
+                                <p>
+                                    @if ($product->discount_price)
+                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                        @php
+                                            $discountPercent = round(
+                                                (($product->discount_price - $product->base_price) /
+                                                    $product->base_price) *
+                                                    100,
+                                            );
+                                        @endphp
+                                        <span>-{{ $discountPercent }}%</span>
+                                    @else
+                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                    @endif
+                                </p>
+
+
+                            </div>
+                        </div>
+                    @empty
+                        <div class="swiper-slide">
+                            <p class="text-center">Chưa có sản phẩm</p>
+                        </div>
+                    @endforelse
+
+                </div>
+
+                {{-- Navigation buttons --}}
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
     {{-- insta KOL --}}
     <section class="section-t-space instashop-section">
         <div class="container-fluid">
@@ -746,25 +849,25 @@
     </section>
     {{-- thương hiệu --}}
 
-{{-- thương hiệu --}}
-<section class="section-b-space">
-    <div class="custom-container container">
-        <div class="swiper logo-slider">
-            <div class="swiper-wrapper">
+    {{-- thương hiệu --}}
+    <section class="section-b-space">
+        <div class="custom-container container">
+            <div class="swiper logo-slider">
+                <div class="swiper-wrapper">
 
-                @foreach ($brands as $brand)
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('storage/'.$brand->logo) }}" alt="{{ $brand->name }}">
-                        </a>
-                    </div>
-                @endforeach
+                    @foreach ($brands as $brand)
+                        <div class="swiper-slide">
+                            <a href="#">
+                                <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}">
+                            </a>
+                        </div>
+                    @endforeach
 
+                </div>
             </div>
         </div>
-    </div>
-</section>
-{{-- ========================================================= --}}
+    </section>
+    {{-- ========================================================= --}}
     {{-- PHẦN CHATBOT (ĐÃ CẬP NHẬT GIAO DIỆN & SỬA LỖI)            --}}
     {{-- ========================================================= --}}
 

@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Admin\Order;
 use App\Models\Admin\OrderItem;
+
 use App\Models\UserAddress;
 use App\Models\PaymentMethod;
 use App\Models\Voucher;
@@ -15,9 +16,16 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use App\Notifications\OrderStatusChanged;
+use Illuminate\Support\Facades\Http;
 
 class CheckoutController extends Controller
 {
+    protected $voucherService;
+
+    public function __construct(VoucherService $voucherService)
+    {
+        $this->voucherService = $voucherService;
+    }
     public function show()
     {
         $user = auth()->user();
@@ -40,7 +48,15 @@ class CheckoutController extends Controller
 
         // sản phẩm 
         $formattedCartItems = $cartItems->map(function($item) {
-            $price = $item->variant ? $item->variant->price : $item->product->base_price;
+            if ($item->variant) {
+                $price = (float)$item->variant->price;
+            } 
+            elseif ($item->product->discount_price) {
+                $price = (float)$item->product->discount_price;
+            }else{
+                $price = (float)$item->product->base_price;
+            }
+            
             return [
                 'id' => $item->id,
                 'product_id' => $item->product_id,
@@ -61,6 +77,8 @@ class CheckoutController extends Controller
         $shipping = 30000;
         $total = $subtotal + $shipping ;
 
+        // tỉnh
+        $provinces = $this->getProvinces();
         // lấy địa chỉ: ưu tiên mặc định
         $shippingAddresses = UserAddress::where('user_id', $user->id)
             ->orderByDesc('is_default')
@@ -77,10 +95,107 @@ class CheckoutController extends Controller
             'shipping'          => $shipping,
             'total'             => $total,
             'paymentMethods'    => $paymentMethods,
+            'provinces'    => $provinces,
+            
         ]);
     }
 
-    // ====================== ĐỊA CHỈ ======================
+    // lấy tỉnh
+    public function getProvinces()
+    {
+        try {
+            $response = Http::withHeaders([
+                'Token' => env('GHN_TOKEN'),
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province');
+
+            if ($response->ok() && isset($response->json()['data'])) {
+                return $response->json()['data'];
+            }
+        } catch (\Exception $e) {
+            Log::error('GHN getProvinces error: ' . $e->getMessage());
+        }
+
+        return [];
+    }
+
+    // láy quận huyện
+    public function getDistricts(Request $request)
+    {
+        $provinceId = $request->query('province_id');
+        
+        if (!$provinceId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng chọn tỉnh'
+            ], 400);
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Token' => env('GHN_TOKEN'),
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district', [
+                'province_id' => $provinceId
+            ]);
+
+            if ($response->ok() && isset($response->json()['data'])) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $response->json()['data']
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy quận/huyện'
+            ], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi kết nối dữ liệu'
+            ], 500);
+        }
+    }
+
+    //lấy phường xã
+    public function getWards(Request $request)
+    {
+        $districtId = $request->query('district_id');
+        
+        if (!$districtId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng chọn quận/huyện'
+            ], 400);
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Token' => env('GHN_TOKEN'),
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward', [
+                'district_id' => $districtId
+            ]);
+
+            if ($response->ok() && isset($response->json()['data'])) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $response->json()['data']
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy phường/xã'
+            ], 400);
+
+        } catch (\Exception $e) {
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi kết nối dữ liệu'
+            ], 500);
+        }
+    }
 
     // lưu địa chỉ 
     public function storeAddress(Request $request)
@@ -88,6 +203,9 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'name'       => 'required|string|max:255',
             'phone'      => 'required|string|max:20',
+            'province_id' => 'required|numeric',
+            'district_id' => 'required|numeric',
+            'ward_code'   => 'required|string',
             'address'    => 'required|string|max:500',
             'is_default' => 'nullable|boolean',
         ]);
@@ -104,6 +222,9 @@ class CheckoutController extends Controller
             $address = UserAddress::create([
                 'user_id'    => $userId,
                 'name'       => $validated['name'],
+                'province_id'  => $validated['province_id'],
+                'district_id'  => $validated['district_id'],
+                'ward_code'    => $validated['ward_code'],
                 'phone'      => $validated['phone'],
                 'address'    => $validated['address'],
                 'is_default' => $isDefault ? 1 : 0,
@@ -128,6 +249,111 @@ class CheckoutController extends Controller
 
             return redirect()->back()->with('error', 'Lỗi khi thêm địa chỉ: ' . $e->getMessage());
         }
+    }
+
+    // dùng voucher
+     public function applyVoucher(Request $request)
+    {
+        
+        $request->validate([
+            'code' => 'required|string|max:50',
+            'subtotal' => 'required|numeric|min:0'
+        ]);
+
+        try {
+            $user = auth()->user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn cần đăng nhập'
+                ], 401);
+            }
+            
+            $cart = Cart::where('user_id', $user->id)->first();
+            
+            if (!$cart) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Giỏ hàng không tìm thấy'
+                ]);
+            }
+            
+            $cartItems = CartItem::where('cart_id', $cart->id)
+                ->with(['product', 'variant'])
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Giỏ hàng trống'
+                ]);
+            }
+
+            $subtotal = (float) $request->input('subtotal');
+            
+            $result = $this->voucherService->applyVoucher(
+                $cartItems->toArray(),
+                $request->input('code'),
+                $user->id,
+                $subtotal
+            );
+
+
+            if ($result['success']) {
+                session([
+                    'applied_voucher' => [
+                        'voucher_id' => $result['voucher_id'],
+                        'code' => $result['code'],
+                        'discount_amount' => $result['discount_amount'],
+                        'discount_type' => $result['discount_type'],
+                        'discount_value' => $result['discount_value']
+                    ]
+                ]);
+            }
+
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            Log::error('Apply voucher exception: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function removeVoucher(Request $request)
+    {
+        try {
+            $appliedVoucher = session('applied_voucher');
+            
+            Log::info('Removing voucher', ['voucher' => $appliedVoucher]);
+            
+            if ($appliedVoucher && isset($appliedVoucher['voucher_id'])) {
+                $this->voucherService->removeVoucher($appliedVoucher['voucher_id']);
+            }
+
+            session()->forget('applied_voucher');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa mã voucher'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Remove voucher error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+    public function applyCoupon(Request $request)
+    {
+        return $this->applyVoucher($request);
     }
 
     /**
@@ -224,7 +450,7 @@ class CheckoutController extends Controller
         return redirect()->back()->with('success', 'Đã đặt địa chỉ mặc định.');
     }
 
-    // ====================== ĐẶT HÀNG / THANH TOÁN ======================
+    
 
     // đặt hàng
     public function placeOrder(Request $request)
@@ -275,13 +501,27 @@ class CheckoutController extends Controller
 
             // tính tiền
             $subtotal = 0;
-            foreach ($cartItems as $item) {
-                $price = $item->variant ? $item->variant->price : $item->product->base_price;
+                foreach ($cartItems as $item) {
+                    if ($item->variant) {
+                    $price = (float)$item->variant->price;
+                } 
+                elseif ($item->product->discount_price) {
+                    $price = (float)$item->product->discount_price;
+                }else{
+                    $price = (float)$item->product->base_price;
+                }
+               
                 $subtotal += $item->quantity * $price;
             }
 
             $promotionAmount = 0;
             $promotionId = null;
+
+            if (session()->has('applied_voucher')) {
+                $appliedVoucher = session('applied_voucher');
+                $promotionAmount = (float) $appliedVoucher['discount_amount'];
+                $promotionId = $appliedVoucher['voucher_id'];
+            }
 
             $shippingFee = (float) $validated['shipping_fee'];
             $totalAmount = $subtotal - $promotionAmount + $shippingFee;
@@ -306,7 +546,7 @@ class CheckoutController extends Controller
 
                 CartItem::where('cart_id', $cart->id)->delete();
                 $this->sendOrderEmail($order);
-
+                session()->forget('applied_voucher'); 
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Đơn hàng đã được tạo! Vui lòng thanh toán khi nhận hàng.');
             } 
@@ -324,6 +564,8 @@ class CheckoutController extends Controller
                     'shipping_fee'     => $shippingFee,
                     'total_amount'     => $totalAmount,
                     'order_number'     => $orderNumber,
+                    'promotion_amount' => $promotionAmount,
+                    'promotion_id' => $promotionId,
                 ]]);
 
                 // gọi MoMo
@@ -333,7 +575,7 @@ class CheckoutController extends Controller
                     return redirect()->away($payUrl);
                 } else {
                     session()->forget('pending_order');
-                    return redirect()->back()->with('error', 'Lỗi kết nối MoMo. Vui lòng thử lại.');
+                    return redirect()->back()->with('error', 'Lỗi kết nối MoMo. Vui lòng thử sau.');
                 }
             }
             else {
@@ -374,7 +616,15 @@ class CheckoutController extends Controller
         foreach ($cartItems as $item) {
             $product = $item->product;
             $variant = $item->variant;
-            $price = $variant ? $variant->price : $product->base_price;
+            if ($variant ) {
+                $price = (float)$variant->price;
+            } 
+            elseif ($item->product->discount_price) {
+                $price = (float)$product->discount_price;
+            }else{
+                $price = (float)$product->base_price;
+            }
+            
             $itemSubtotal = $item->quantity * $price;
 
             $itemDiscountAmount = 0;
@@ -556,8 +806,15 @@ class CheckoutController extends Controller
                     
                     $product = \App\Models\Admin\Product::findOrFail($item['product_id']);
                     $variant = $item['variant_id'] ? \App\Models\Admin\ProductVariant::findOrFail($item['variant_id']) : null;
-                    
-                    $price = $variant ? $variant->price : $product->base_price;
+                    if ($variant) {
+                        $price = (float)$variant->price;
+                    } 
+                    elseif ($item->product->discount_price) {
+                        $price = (float)$product->discount_price;
+                    }else{
+                        $price = (float)$product->base_price;
+                    }
+                   
                     $itemSubtotal = $item['quantity'] * $price;
                     $itemDiscountAmount = 0;
 
@@ -623,6 +880,7 @@ class CheckoutController extends Controller
 
                 // xóa session
                 session()->forget('pending_order');
+                session()->forget('applied_voucher');
 
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Thanh toán thành công!');
@@ -635,6 +893,7 @@ class CheckoutController extends Controller
         } 
         //  Thanh toán thất bại
         else {
+            session()->forget('pending_order');
             session()->forget('pending_order');
             return redirect()->route('checkout')
                 ->with('error', "Thanh toán thất bại: $message");
@@ -681,25 +940,32 @@ class CheckoutController extends Controller
     /**
      * Chi tiết 1 đơn hàng.
      */
-    public function showOrder(Order $order)
-    {
-        if ($order->user_id !== auth()->id()) {
-            return redirect()->route('orders.index')
-                ->with('error', 'Bạn không có quyền xem đơn hàng này.');
-        }
-
-        $orderItems = OrderItem::where('order_id', $order->id)
-            ->with(['product', 'variant'])
-            ->get();
-
-        $paymentMethod = PaymentMethod::find($order->payment_method_id);
-
-        return view('client.orders.show', [
-            'order'         => $order,
-            'orderItems'    => $orderItems,
-            'paymentMethod' => $paymentMethod,
-        ]);
+   /**
+ * Chi tiết 1 đơn hàng.
+ * GIỮ NGUYÊN LUỒNG CŨ, CHỈ THÊM LOAD BRAND + VARIANT.
+ */
+public function showOrder(Order $order)
+{
+    if ($order->user_id !== auth()->id()) {
+        return redirect()->route('orders.index')
+            ->with('error', 'Bạn không có quyền xem đơn hàng này.');
     }
+
+    $orderItems = OrderItem::where('order_id', $order->id)
+        ->with([
+            'product.brand',                     // sản phẩm + thương hiệu
+            'variant.attributeValues.attribute', // biến thể + giá trị thuộc tính + tên thuộc tính
+        ])
+        ->get();
+
+    $paymentMethod = PaymentMethod::find($order->payment_method_id);
+
+    return view('client.orders.show', [
+        'order'         => $order,
+        'orderItems'    => $orderItems,
+        'paymentMethod' => $paymentMethod,
+    ]);
+}
 
     /**
      * Hủy đơn hàng (hoàn kho + thông báo).
@@ -733,7 +999,7 @@ class CheckoutController extends Controller
 
         $order->update([
             'status'         => 'cancelled_by_customer',
-            'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
+            // 'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
             'cancelled_at'   => now(),
         ]);
 
@@ -742,14 +1008,5 @@ class CheckoutController extends Controller
 
     return redirect()->back()->with('success', 'Đã hủy đơn hàng và hoàn lại tồn kho.');
 }
-    /**
-     * Stub applyCoupon để tránh lỗi route (có thể tự triển khai sau).
-     */
-    public function applyCoupon(Request $request)
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Chức năng mã giảm giá đang được phát triển.',
-        ], 400);
-    }
+    
 }

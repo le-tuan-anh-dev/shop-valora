@@ -22,9 +22,13 @@ class DashboardController extends Controller
 
         $defaultAddress = $addresses->firstWhere('is_default', true) ?? $addresses->first();
 
-        // Lấy đơn hàng, kèm items + paymentMethod
+        // ĐOẠN SỬA: load sâu tới attributeValues.attribute
         $baseOrdersQuery = $user->orders()
-            ->with(['items', 'paymentMethod'])
+            ->with([
+                'items.product.brand',               // sản phẩm + brand
+                'items.variant.attributeValues.attribute', // biến thể + giá trị thuộc tính + tên thuộc tính
+                'paymentMethod',
+            ])
             ->orderByDesc('created_at');
 
         // Lấy 10 đơn gần nhất
@@ -37,14 +41,20 @@ class DashboardController extends Controller
         // Thông báo mới nhất
         $notifications = $user->notifications()->latest()->take(10)->get();
 
+        // Danh sách sản phẩm yêu thích
+        $wishlistProducts = $user->wishlistProducts()
+            ->orderByDesc('wishlists.created_at')
+            ->get();
+
         return view('client.dashboard', [
-            'user'           => $user,
-            'addresses'      => $addresses,
-            'defaultAddress' => $defaultAddress,
-            'orders'         => $orders,
-            'totalOrders'    => $totalOrders,
-            'totalSpent'     => $totalSpent,
-            'notifications'  => $notifications,
+            'user'              => $user,
+            'addresses'         => $addresses,
+            'defaultAddress'    => $defaultAddress,
+            'orders'            => $orders,
+            'totalOrders'       => $totalOrders,
+            'totalSpent'        => $totalSpent,
+            'notifications'     => $notifications,
+            'wishlistProducts'  => $wishlistProducts,
         ]);
     }
 

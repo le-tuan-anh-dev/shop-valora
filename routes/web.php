@@ -19,7 +19,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
-
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\PostController as ClientPostController;
 // Admin controllers
@@ -27,13 +27,13 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CommentController;
-use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController; // ĐẶT ALIAS
 use App\Http\Controllers\Admin\PostController as AdminPostController;
+
+use App\Http\Controllers\WishlistController;
+
 use App\Http\Controllers\Api\ChatbotController;
-
-
-
-
+use App\Http\Controllers\GHNController;
 
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -84,6 +84,13 @@ Route::prefix('products')->group(function () {
 // Customer routes 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     // Dashboard khách hàng
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
+        ->name('wishlist.add');
+
+    Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
+        ->name('wishlist.remove');
+    // ============================
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])
         ->name('client.dashboard');
 
@@ -103,7 +110,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
     Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('place-order');
-    Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply-coupon');
+
+    Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
+    Route::post('/checkout/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('checkout.remove-voucher');
 
     Route::post('/checkout/address', [CheckoutController::class, 'storeAddress'])->name('checkout.store-address');
     Route::put('/checkout/address/{id}', [CheckoutController::class, 'updateAddress'])->name('checkout.update-address');
@@ -111,11 +120,14 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/checkout/address/{id}/set-default', [CheckoutController::class, 'setDefaultAddress'])
         ->name('checkout.set-default-address');
 
+    Route::get('/checkout/get-districts', [CheckoutController::class, 'getDistricts'])->name('checkout.get-districts');
+    Route::get('/checkout/get-wards', [CheckoutController::class, 'getWards'])->name('checkout.get-wards');
+
+
     // Orders (customer)
     Route::get('/orders', [CheckoutController::class, 'myOrders'])->name('orders.index');
     Route::get('/orders/{order}', [CheckoutController::class, 'showOrder'])->name('orders.show');
     Route::post('/orders/{order}/cancel', [CheckoutController::class, 'cancelOrder'])->name('orders.cancel');
-
     // Order success
     Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
 });
@@ -176,25 +188,25 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     
 
  // --- Quản lý Đánh giá (Reviews) ---
-    
-    // CẤP 1: Danh sách Sản phẩm có đánh giá (Hàm index)
-    // URI: /admin/reviews
-    Route::get('/reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
 
-    // CẤP 2: Xem chi tiết tất cả đánh giá của 1 SẢN PHẨM (Hàm show)
-    // {id} ở đây là ID của PRODUCT
-    // URI: /admin/reviews/{product_id}
-    Route::get('/reviews/{id}', [ReviewController::class, 'show'])->name('admin.reviews.show'); // <--- Đã thêm
+// CẤP 1: Danh sách Sản phẩm có đánh giá (Hàm index)
+// URI: /admin/reviews
+Route::get('/reviews', [AdminReviewController::class, 'index'])->name('admin.reviews.index');
 
-    // Trả lời (Store) - Tạo Review/Reply mới
-    // URI: /admin/reviews
-    Route::post('/reviews', [ReviewController::class, 'store'])->name('admin.reviews.store');
+// CẤP 2: Xem chi tiết tất cả đánh giá của 1 SẢN PHẨM (Hàm show)
+// {id} ở đây là ID của PRODUCT
+// URI: /admin/reviews/{product_id}
+Route::get('/reviews/{id}', [AdminReviewController::class, 'show'])->name('admin.reviews.show');
 
-    // Sửa phản hồi (Update) - {id} là ID của REVIEW/REPLY
-    // URI: /admin/reviews/{review_id}
-    Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
-      
-    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+// Trả lời (Store) - Tạo Review/Reply mới
+// URI: /admin/reviews
+Route::post('/reviews', [AdminReviewController::class, 'store'])->name('admin.reviews.store');
+
+// Sửa phản hồi (Update) - {id} là ID của REVIEW/REPLY
+// URI: /admin/reviews/{review_id}
+Route::put('/reviews/{id}', [AdminReviewController::class, 'update'])->name('admin.reviews.update');
+  
+Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
 
     // Posts

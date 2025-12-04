@@ -47,7 +47,9 @@ class CartController extends Controller
             if ($item->variant) {
                 $price = (float)$item->variant->price;
             } 
-            elseif ($item->product) {
+            elseif ($item->product->discount_price) {
+                $price = (float)$item->product->discount_price;
+            }else{
                 $price = (float)$item->product->base_price;
             }
 
@@ -90,14 +92,14 @@ class CartController extends Controller
             ];
         });
 
-        // ===== TÍNH TOÁN TỔNG TIỀN =====
+        // TÍNH TOÁN TỔNG TIỀN
         $subtotal = $cartItems->sum('total');
         $shipping = 30000;
         $total = $subtotal + $shipping;
 
 
-        // ===== LẤY SẢN PHẨM GIẢM GIÁ (NGOÀI LOOP) =====
-        Log::info('===== GETTING DISCOUNT PRODUCTS =====');
+        //  LẤY SẢN PHẨM GIẢM GIÁ
+
         
         $discountProducts = Product::where('discount_price', '!=', null)
             ->where('discount_price', '!=', '')
@@ -106,7 +108,7 @@ class CartController extends Controller
             ->limit(4)
             ->get();
 
-        Log::info('Discount products count: ' . $discountProducts->count());
+  
 
         if ($discountProducts->count() > 0) {
             $discountProducts->each(function ($prod) {
@@ -158,8 +160,14 @@ class CartController extends Controller
             }
 
             $cartItem->update(['quantity' => $request->quantity]);
-
-            $price = $cartItem->variant ? (float)$cartItem->variant->price : (float)$cartItem->product->base_price;
+            if ($cartItem->variant) {
+                $price = (float)$cartItem->variant->price;
+            } 
+            elseif ($cartItem->product->discount_price) {
+                $price = (float)$cartItem->product->discount_price;
+            }else{
+                $price = (float)$cartItem->product->base_price;
+            }
             $itemTotal = $price * $request->quantity;
 
             return response()->json([
@@ -280,7 +288,15 @@ class CartController extends Controller
 
             $subtotal = 0;
             foreach ($cartItems as $item) {
-                $price = $item->variant ? (float)$item->variant->price : (float)$item->product->base_price;
+                if ($item->variant) {
+                $price = (float)$item->variant->price;
+            } 
+            elseif ($item->product->discount_price) {
+                $price = (float)$item->product->discount_price;
+            }else{
+                $price = (float)$item->product->base_price;
+            }
+               
                 $subtotal += $price * $item->quantity;
             }
 
