@@ -3,7 +3,7 @@
 namespace App\Models\Admin;
 
 use App\Models\Admin\Attributes;
-use App\Models\admin\AttributeValue;
+use App\Models\Admin\AttributeValue;              // SỬA: Admin chứ không phải admin
 use App\Models\Admin\Product;
 use App\Models\Admin\VariantAttributeValue;
 use App\Models\Voucher;
@@ -15,19 +15,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class ProductVariant extends Model
 {
     protected $table = 'product_variants';
+
     protected $fillable = [
         'product_id',
         'sku',
         'price',
         'stock',
+        'length',     
+        'width',    
+        'height',
+        'weight',
         'image_url',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'price' => 'float',
-        'stock' => 'integer',
+        'price'     => 'float',
+        'stock'     => 'integer',
     ];
 
     // Quan hệ tới Product
@@ -44,7 +49,9 @@ class ProductVariant extends Model
             'variant_attribute_values',
             'variant_id',
             'attribute_value_id'
-        )->withPivot(['variant_id', 'attribute_value_id']);
+        )
+        ->with(['attribute'])
+        ->withPivot(['variant_id', 'attribute_value_id']);
     }
 
     // Quan hệ tới VariantAttributeValue (pivot table)
@@ -53,7 +60,7 @@ class ProductVariant extends Model
         return $this->hasMany(VariantAttributeValue::class, 'variant_id');
     }
 
-    //  Quan hệ tới Attribute (qua AttributeValue)
+    // Quan hệ tới Attribute (qua AttributeValue)
     public function attributes()
     {
         return $this->hasManyThrough(
@@ -80,10 +87,10 @@ class ProductVariant extends Model
         foreach ($variantAttributes as $vav) {
             $av = $vav->attributeValue;
             $details[] = [
-                'attribute_id' => $av->attribute_id,
-                'attribute_name' => $av->attribute->name,
-                'attribute_value_id' => $av->id,
-                'attribute_value' => $av->value,
+                'attribute_id'        => $av->attribute_id,
+                'attribute_name'      => $av->attribute->name,
+                'attribute_value_id'  => $av->id,
+                'attribute_value'     => $av->value,
             ];
         }
 
@@ -99,5 +106,15 @@ class ProductVariant extends Model
             'voucher_id'
         )->withTimestamps();
     }
+
+    // Lấy kích thước biến thể, nếu không có thì dùng kích thước sản phẩm
+    public function getDimensions()
+    {
+        return [
+            'length' => $this->length ?? $this->product->length,
+            'width' => $this->width ?? $this->product->width,
+            'height' => $this->height ?? $this->product->height,
+            'weight' => $this->weight ?? $this->product->weight,
+        ];
+    }
 }
-?>

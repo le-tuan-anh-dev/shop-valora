@@ -15,7 +15,6 @@ class Order extends Model
 
     /**
      * Các cột cho phép mass-assign.
-     * Khớp với cấu trúc bảng orders bạn đã gửi.
      */
     protected $fillable = [
         'order_number',
@@ -74,11 +73,11 @@ class Order extends Model
     ];
 
     /**
-     * 1 đơn hàng có nhiều item.
+     * 1 đơn hàng có nhiều item (App\Models\OrderItem).
      */
     public function items()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'order_id');
     }
 
     /**
@@ -94,7 +93,7 @@ class Order extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
