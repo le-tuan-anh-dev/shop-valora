@@ -1,8 +1,9 @@
 @extends('admin.layouts.main_nav')
 
 @section('content')
+<div class="page-content">
 <div class="container-fluid">
-    <h4 class="mb-4">✏️ Chỉnh sửa bài viết</h4>
+    <h4 class="mb-4"> Chỉnh sửa bài viết</h4>
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -64,12 +65,13 @@
                 </div>
 
                 <div class="mt-4 d-flex gap-2">
-                    <button class="btn btn-primary px-4">💾 Lưu thay đổi</button>
+                    <button class="btn btn-primary px-4"> Lưu thay đổi</button>
                     <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary px-4">Hủy</a>
                 </div>
             </form>
         </div>
     </div>
+</div>
 </div>
 
 @push('scripts')

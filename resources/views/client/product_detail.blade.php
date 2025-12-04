@@ -74,7 +74,7 @@
                                 <strong>{{ number_format($product->discount_price, 0, ',', '.') }} đ</strong>
                                 <del>{{ number_format($product->base_price, 0, ',', '.') }} đ</del>
                                 <span class="offer-btn">
-                                    {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% off
+                                    - {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% 
                                 </span>
                             @else
                             <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
@@ -194,9 +194,9 @@
                                     </li>
                                     <li>
                                         <div class="d-flex align-items-center gap-2"> 
-                    <h6>Thương hiệu:</h6>
-                    <p>{{  $brand->name ??'' }}</p>
-                </div>
+                                            <h6>Thương hiệu:</h6>
+                                            <p>{{  $brand->name ??'' }}</p>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>

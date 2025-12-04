@@ -9,12 +9,12 @@
             <div class="custom-container container">
                 <div class="row align-items-center">
                     <div class="col-sm-6">
-                        <h4>Dashboard</h4>
+                        <h4>Của tôi</h4>
                     </div>
                     <div class="col-sm-6">
                         <ul class="breadcrumb float-end">
-                            <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
-                            <li class="breadcrumb-item active"><a href="{{ route('client.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url('/') }}">Trang chủ</a></li>-
+                            <li class=" "><a href="{{ route('client.dashboard') }}">Của tôi</a></li>
                         </ul>
                     </div>
                 </div>
@@ -271,7 +271,8 @@
                                 <div class="order">
                                     <div class="sidebar-title">
                                         <div class="loader-line"></div>
-                                        <h4>My Orders History</h4>
+                                        <h4>
+Lịch sử đơn hàng của tôi</h4>
                                     </div>
 
                                     <div class="row gy-4">

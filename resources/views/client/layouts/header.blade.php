@@ -1,9 +1,9 @@
 <header> 
     <div class="top_header"> 
         <p>
-            Free Coupne Code: Summer Sale On Selected items Use:
-            <span>NEW 26</span>
-            <a href="#"> SHOP NOW</a>
+            Mã giảm giá miễn phí: Giảm giá mùa hè cho các mặt hàng được chọn Sử dụng:
+            <span>26 sản phẩm </span>
+            <a href="#"> MUA NGAY</a>
         </p>
     </div>
     
@@ -15,19 +15,19 @@
                     <ul> 
                         <li>
                             <a href="{{ route('home') }}">
-                                <i class="iconsax"></i>Home
+                                <i class="iconsax"></i>Trang chủ
                             </a>
                         </li>
 
                         <li>
                             <a href="{{ route('cart.index') }}">
-                                <i class="iconsax" data-icon="basket-2"></i>Cart
+                                <i class="iconsax" data-icon="basket-2"></i>Giỏ hàng
                             </a>
                         </li>
 
                         <li>
                             <a href="#">
-                                <i class="iconsax" data-icon="heart"></i>My Wish
+                                <i class="iconsax" data-icon="heart"></i>Sản phẩm yêu thích
                             </a>
                         </li>
                     </ul>
@@ -36,9 +36,9 @@
             
             <!-- Main Navigation -->
             <div class="col-12">
-                <div class="main-menu"> 
+                <div class="main-menu">     
                     <a class="brand-logo" href="{{ route('home') }}"> 
-                        <img class="img-fluid for-light" src="{{ asset('client/assets/images/logo/logo.png')}}" alt="logo"/>
+                        <img class="img-fluid for-light"  src="{{ asset('storage/logo5.png')}}" alt="logo"/>
                         <img class="img-fluid for-dark" src="{{ asset('client/assets/images/logo/logo-white-1.png')}}" alt="logo"/>
                     </a>
                     
@@ -47,10 +47,10 @@
                             <li class="mobile-back" id="mobile-back">
                                 Back<i class="fa-solid fa-angle-right ps-2"></i>
                             </li>
-                            <li><a class="nav-link" href="{{ route('home') }}">Home</a></li>
-                            <li><a class="nav-link" href="{{ route('shop.index') }}">Shop</a></li>
-                            <li><a class="nav-link" href="#">About</a></li>
-                            <li><a class="nav-link" href="#">Contact</a></li>
+                            <li><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
+                            <li><a class="nav-link" href="{{ route('shop.index') }}">Cửa hàng</a></li>
+                            <li><a class="nav-link" href="{{ route('posts.index') }}">Bài viết</a></li>
+                            <li><a class="nav-link" href="#">Liên hệ</a></li>
                         </ul>
                     </nav>
                     

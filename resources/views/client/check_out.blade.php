@@ -59,7 +59,7 @@
                               @if($address->is_default == 1 || $address->is_default == true)
                                 checked
                               @endif
-                              name="shipping_address_id" value="{{ $address->id }}" required>
+                              name="shipping_address_id" value="{{ $address->id }}" >
                           </div>
                           <div class="address-detail">
                             <span class="address"><span class="address-title">{{ $address->name }}</span></span>

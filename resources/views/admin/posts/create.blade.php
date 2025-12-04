@@ -1,6 +1,7 @@
 @extends('admin.layouts.main_nav')
 
 @section('content')
+<div class="page-content">
 <div class="container-fluid">
     <h4 class="mb-4">Tạo Bài Viết Mới</h4>
 
@@ -62,9 +63,10 @@
         </div>
     </div>
 </div>
+</div>
 @endsection
 
-<!-- ✅ SCRIPT ĐỂ KÍCH HOẠT CKEDITOR -->
+<!-- SCRIPT ĐỂ KÍCH HOẠT CKEDITOR -->
 @push('scripts')
     <!-- 1. Nạp thư viện CKEditor 5 từ CDN -->
    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>

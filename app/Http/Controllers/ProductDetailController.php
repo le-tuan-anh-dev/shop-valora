@@ -307,121 +307,121 @@ class ProductDetailController extends Controller
     }
 
     
-public function addToCart(Request $request)
-{
-    $request->validate([
-        'product_id' => 'required|integer|exists:products,id',
-        'variant_id' => 'nullable|integer|exists:product_variants,id', 
-        'quantity' => 'required|integer|min:1',
-        'attribute_value_ids' => 'nullable' 
-    ]);
-
-    $product = Product::findOrFail($request->product_id);
-    $variantId = $request->variant_id;
-
-    // Sản phẩm có biến thể 
-    if ($variantId) {
-        $variant = ProductVariant::where('id', $variantId)
-            ->where('product_id', $request->product_id)
-            ->first();
-
-        if (!$variant) {
-            return redirect()->back()->with('error', 'Biến thể không phù hợp');
-        }
-
-        if ($variant->stock < $request->quantity) {
-            return redirect()->back()->with('error', "Số lượng sản phẩm không đủ");
-        }
-
-        if (!$variant->is_active) {
-            return redirect()->back()->with('error', 'Biến thể sản phẩm không khả dụng');
-        }
-
-        $productStock = $variant->stock;
-    } 
-    // Sản phẩm không có biến thể 
-    else {
-        // Kiểm tra sản phẩm tồn tại và còn hàng
-        if ($product->stock < $request->quantity) {
-            return redirect()->back()->with('error', "Số lượng sản phẩm không đủ");
-        }
-
-        if (!$product->is_active) {
-            return redirect()->back()->with('error', 'Sản phẩm không khả dụng');
-        }
-
-        $productStock = $product->stock;
-    }
-
-    // Lấy user_id từ session
-    $userId = session()->get('user_id');
-    
-    if (!$userId) {
-        return redirect()->back()->with('error', 'Vui lòng đăng nhập');
-    }
-
-    // Lấy hoặc tạo cart
-    $cart = Cart::where('user_id', $userId)->first();
-
-    if (!$cart) {
-        $cart = Cart::create([
-            'user_id' => $userId,
+    public function addToCart(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'variant_id' => 'nullable|integer|exists:product_variants,id', 
+            'quantity' => 'required|integer|min:1',
+            'attribute_value_ids' => 'nullable' 
         ]);
-    }
 
-    // Thêm vào cart 
-    if ($variantId) {
-        // Có variant: kiểm tra theo variant_id
-        $cartItem = CartItem::where('cart_id', $cart->id)
-            ->where('variant_id', $variantId)
-            ->first();
+        $product = Product::findOrFail($request->product_id);
+        $variantId = $request->variant_id;
 
-        if ($cartItem) {
-            $newQuantity = $cartItem->quantity + $request->quantity;
-            
-            if ($product->variants()->find($variantId)->stock < $newQuantity) {
-                return redirect()->back()->with('error', "Không đủ sản phẩm trong kho");
+        // Sản phẩm có biến thể 
+        if ($variantId) {
+            $variant = ProductVariant::where('id', $variantId)
+                ->where('product_id', $request->product_id)
+                ->first();
+
+            if (!$variant) {
+                return redirect()->back()->with('error', 'Biến thể không phù hợp');
             }
-            
-            $cartItem->update(['quantity' => $newQuantity]);
-        } else {
-            CartItem::create([
-                'cart_id' => $cart->id,
-                'product_id' => $request->product_id,
-                'variant_id' => $variantId,
-                'quantity' => $request->quantity
+
+            if ($variant->stock < $request->quantity) {
+                return redirect()->back()->with('error', "Số lượng sản phẩm không đủ");
+            }
+
+            if (!$variant->is_active) {
+                return redirect()->back()->with('error', 'Biến thể sản phẩm không khả dụng');
+            }
+
+            $productStock = $variant->stock;
+        } 
+        // Sản phẩm không có biến thể 
+        else {
+            // Kiểm tra sản phẩm tồn tại và còn hàng
+            if ($product->stock < $request->quantity) {
+                return redirect()->back()->with('error', "Số lượng sản phẩm không đủ");
+            }
+
+            if (!$product->is_active) {
+                return redirect()->back()->with('error', 'Sản phẩm không khả dụng');
+            }
+
+            $productStock = $product->stock;
+        }
+
+        // Lấy user_id từ session
+        $userId = session()->get('user_id');
+        
+        if (!$userId) {
+            return redirect()->back()->with('error', 'Vui lòng đăng nhập');
+        }
+
+        // Lấy hoặc tạo cart
+        $cart = Cart::where('user_id', $userId)->first();
+
+        if (!$cart) {
+            $cart = Cart::create([
+                'user_id' => $userId,
             ]);
         }
-    } else {
-        // Không có variant: kiểm tra theo product_id, variant_id = NULL
-        $cartItem = CartItem::where('cart_id', $cart->id)
-            ->where('product_id', $request->product_id)
-            ->whereNull('variant_id')
-            ->first();
 
-        if ($cartItem) {
-            $newQuantity = $cartItem->quantity + $request->quantity;
-            
-            if ($product->stock < $newQuantity) {
-                return redirect()->back()->with('error', "Không đủ sản phẩm trong kho");
+        // Thêm vào cart 
+        if ($variantId) {
+            // Có variant: kiểm tra theo variant_id
+            $cartItem = CartItem::where('cart_id', $cart->id)
+                ->where('variant_id', $variantId)
+                ->first();
+
+            if ($cartItem) {
+                $newQuantity = $cartItem->quantity + $request->quantity;
+                
+                if ($product->variants()->find($variantId)->stock < $newQuantity) {
+                    return redirect()->back()->with('error', "Không đủ sản phẩm trong kho");
+                }
+                
+                $cartItem->update(['quantity' => $newQuantity]);
+            } else {
+                CartItem::create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $request->product_id,
+                    'variant_id' => $variantId,
+                    'quantity' => $request->quantity
+                ]);
             }
-            
-            $cartItem->update(['quantity' => $newQuantity]);
         } else {
-            CartItem::create([
-                'cart_id' => $cart->id,
-                'product_id' => $request->product_id,
-                'variant_id' => null,
-                'quantity' => $request->quantity
-            ]);
+            // Không có variant: kiểm tra theo product_id, variant_id = NULL
+            $cartItem = CartItem::where('cart_id', $cart->id)
+                ->where('product_id', $request->product_id)
+                ->whereNull('variant_id')
+                ->first();
+
+            if ($cartItem) {
+                $newQuantity = $cartItem->quantity + $request->quantity;
+                
+                if ($product->stock < $newQuantity) {
+                    return redirect()->back()->with('error', "Không đủ sản phẩm trong kho");
+                }
+                
+                $cartItem->update(['quantity' => $newQuantity]);
+            } else {
+                CartItem::create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $request->product_id,
+                    'variant_id' => null,
+                    'quantity' => $request->quantity
+                ]);
+            }
         }
-    }
 
-    $cart->touch();
-     if ($request->has('buy_now') && $request->buy_now == '1') {
-        return redirect()->route('cart.index')->with('success', 'Sản phẩm đã thêm vào giỏ hàng');
-    }
+        $cart->touch();
+        if ($request->has('buy_now') && $request->buy_now == '1') {
+            return redirect()->route('cart.index')->with('success', 'Sản phẩm đã thêm vào giỏ hàng');
+        }
 
-    return back()->with('success', 'Thêm sản phẩm vào giỏ hàng thành công');
-}
+        return back()->with('success', 'Thêm sản phẩm vào giỏ hàng thành công');
+    }
 }
