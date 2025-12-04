@@ -50,12 +50,8 @@ $recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
         ->where('is_published', true)
         ->findOrFail($id);
 
-    // Tăng view
-    $sessionKey = 'post_viewed_' . $id;
-    if (!Session::has($sessionKey)) {
-        $post->increment('views');
-        Session::put($sessionKey, true);
-    }
+    
+    
 
     // Sidebar nổi bật
     $topPosts = Post::where('is_published', true)
