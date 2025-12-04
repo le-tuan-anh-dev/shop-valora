@@ -49,6 +49,7 @@
                             </li>
                             <li><a class="nav-link" href="{{ route('home') }}">Home</a></li>
                             <li><a class="nav-link" href="{{ route('shop.index') }}">Shop</a></li>
+                            <li><a class="nav-link" href="{{ route('posts.index') }}">Bài Viết</a></li>
                             <li><a class="nav-link" href="#">About</a></li>
                             <li><a class="nav-link" href="#">Contact</a></li>
                         </ul>

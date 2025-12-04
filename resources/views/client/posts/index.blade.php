@@ -61,7 +61,7 @@
                                             <h6 class="mb-0">{{ $post->author->name ?? 'Admin' }}</h6>
                                         </div>
                                         <div class="d-flex align-items-center gap-3 ms-auto" style="font-size: 12px; color: #777;">
-                                            <span><i class="fa-regular fa-eye"></i> {{ number_format($post->views) }}</span>
+                                            
                                             {{-- Hiển thị số lượng Comment --}}
                                             {{-- Giả định model Post có quan hệ 'comments' --}}
                                             <span><i class="fa-regular fa-comment-dots"></i> {{ $post->comments_count ?? 0 }}</span>
