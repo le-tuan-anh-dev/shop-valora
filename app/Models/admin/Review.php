@@ -34,4 +34,8 @@ class Review extends Model
     public function images() {
         return $this->hasMany(ReviewImage::class);
     }
+    public function productVariant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+    }
 }
