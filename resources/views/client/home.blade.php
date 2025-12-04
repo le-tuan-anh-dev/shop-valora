@@ -872,333 +872,278 @@
     {{-- ========================================================= --}}
 
     <style>
-        /* Nút tròn chat (Icon Robot) */
-        #chat-circle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px;
-            /* To hơn chút */
-            height: 65px;
-            background: #007bff;
-            /* Màu xanh chủ đạo */
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            /* Icon to hơn */
-            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
-            z-index: 9999;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+    /* Nút tròn chat */
+    #chat-circle {
+        position: fixed;
+        bottom: 30px; right: 30px;
+        width: 60px; height: 60px;
+        background: #007bff;
+        border-radius: 50%;
+        color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        cursor: pointer; z-index: 9999;
+        transition: transform 0.3s;
+    }
+    #chat-circle:hover { transform: scale(1.1); }
 
-        #chat-circle:hover {
-            transform: scale(1.1);
-            background: #0056b3;
-            box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.4);
-        }
+    /* Khung chat */
+    .chat-box {
+        display: none; /* Mặc định ẩn */
+        position: fixed;
+        bottom: 100px; right: 30px;
+        width: 400px; max-width: 90%;
+        height: 65vh; max-height: 600px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+        z-index: 9999;
+        flex-direction: column;
+        border: 1px solid #ddd;
+        font-family: Arial, sans-serif;
+    }
 
-        /* Khung chat Box */
-        .chat-box {
-            display: none;
-            /* Ẩn mặc định */
-            position: fixed;
-            bottom: 110px;
-            /* Cách nút tròn một chút */
-            right: 30px;
+    /* Header */
+    .chat-header {
+        background: #007bff; color: white;
+        padding: 15px;
+        font-weight: bold;
+        display: flex; justify-content: space-between; align-items: center;
+        border-radius: 12px 12px 0 0;
+    }
+    .chat-close { cursor: pointer; font-size: 20px; }
 
-            /* --- [FIX QUAN TRỌNG: KÍCH THƯỚC] --- */
-            width: 450px;
-            /* Chiều rộng to hơn (cũ là 380px) */
-            max-width: 90vw;
-            /* Không quá 90% chiều rộng màn hình (cho mobile) */
+    /* Vùng tin nhắn */
+    #messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        background: #f4f6f9;
+        display: flex; flex-direction: column; gap: 10px;
+    }
 
-            height: 70vh;
-            /* Cao bằng 70% chiều cao màn hình -> Không bị tràn lên trên */
-            max-height: 600px;
-            /* Giới hạn cao nhất là 600px */
-            /* ------------------------------------ */
+    /* Bong bóng tin nhắn */
+    .message {
+        padding: 10px 14px;
+        border-radius: 10px;
+        max-width: 85%;
+        word-wrap: break-word;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .user {
+        background: #007bff; color: white;
+        align-self: flex-end; /* Căn phải */
+    }
+    .ai {
+        background: #fff; color: #333;
+        border: 1px solid #e1e1e1;
+        align-self: flex-start; /* Căn trái */
+    }
 
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
-            z-index: 9999;
-            overflow: hidden;
-            font-family: sans-serif;
-            border: 1px solid #ddd;
-            flex-direction: column;
-            /* Để xếp dọc Header - Body - Input */
-        }
+    /* --- HIỆU ỨNG LOADING (3 chấm nhảy) --- */
+    .typing-indicator {
+        display: none; /* Ẩn mặc định, JS sẽ bật */
+        align-self: flex-start;
+        background: #e6e6e6;
+        padding: 10px 15px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+    }
+    .dot {
+        height: 8px; width: 8px;
+        background-color: #666;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 0 2px;
+        animation: chatBounce 1.4s infinite ease-in-out both;
+    }
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes chatBounce {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+    }
 
-        /* Header Chat */
-        .chat-box-header {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            /* Màu gradient đẹp hơn */
-            color: white;
-            padding: 15px 20px;
-            font-weight: bold;
-            font-size: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-            /* Không bị co lại */
-        }
+    /* --- THẺ SẢN PHẨM INLINE (Hiện ngay trong dòng) --- */
+    .inline-product-card {
+        display: block;
+        margin: 8px 0;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+        max-width: 250px; /* Giới hạn chiều rộng ảnh cho gọn */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .inline-product-card img {
+        width: 100%; height: 150px; object-fit: cover;
+    }
+    .inline-product-card .btn-view {
+        display: block;
+        text-align: center;
+        padding: 6px;
+        background: #f8f9fa;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .inline-product-card .btn-view:hover { background: #e9ecef; }
 
-        .chat-close {
-            cursor: pointer;
-            font-size: 24px;
-            transition: 0.2s;
-        }
+    /* Input */
+    .input-area {
+        padding: 10px; border-top: 1px solid #eee; background: white;
+        display: flex;
+    }
+    #msg-input {
+        flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none;
+    }
+    #btn-send {
+        margin-left: 10px; padding: 0 15px;
+        background: #007bff; color: white; border: none; border-radius: 20px; cursor: pointer;
+    }
+</style>
 
-        .chat-close:hover {
-            color: #ffdddd;
-        }
+<div id="chat-circle" onclick="toggleChat()">
+    <i class="fa-solid fa-robot"></i> </div>
 
-        /* Vùng hiển thị tin nhắn */
-        #messages {
-            flex-grow: 1;
-            /* Tự động chiếm hết khoảng trống còn lại */
-            overflow-y: auto;
-            /* Chỉ cuộn nội dung bên trong, không cuộn cả web */
-            padding: 20px;
-            background: #f4f6f9;
-        }
-
-        /* Tùy chỉnh thanh cuộn cho đẹp */
-        #messages::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #messages::-webkit-scrollbar-thumb {
-            background-color: #ccc;
-            border-radius: 4px;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            max-width: 80%;
-            word-wrap: break-word;
-            line-height: 1.5;
-            font-size: 15px;
-            /* Chữ to hơn chút cho dễ đọc */
-            position: relative;
-        }
-
-        .user {
-            background: #007bff;
-            color: white;
-            margin-left: auto;
-            text-align: right;
-            border-bottom-right-radius: 2px;
-        }
-
-        .ai {
-            background: #ffffff;
-            color: #333;
-            border: 1px solid #e1e1e1;
-            border-bottom-left-radius: 2px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Input Area */
-        .input-area {
-            display: flex;
-            padding: 15px;
-            background: white;
-            border-top: 1px solid #eee;
-            flex-shrink: 0;
-            /* Không bị co lại */
-        }
-
-        #msg {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            outline: none;
-            font-size: 15px;
-            background: #f9f9f9;
-        }
-
-        #msg:focus {
-            border-color: #007bff;
-            background: #fff;
-        }
-
-        #btn-send {
-            margin-left: 10px;
-            padding: 0 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
-        #btn-send:hover {
-            background: #0056b3;
-        }
-
-        /* Card Sản Phẩm trong chat */
-        .product-container {
-            margin-top: 12px;
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s;
-        }
-
-        .product-container:hover {
-            transform: translateY(-3px);
-        }
-
-        .product-img {
-            width: 100%;
-            height: 140px;
-            /* Ảnh to hơn */
-            object-fit: cover;
-            border-radius: 6px;
-            background: #f0f0f0;
-        }
-
-        .product-caption {
-            font-size: 13px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 8px;
-            color: #007bff;
-            text-transform: uppercase;
-        }
-
-        .product-link {
-            text-decoration: none;
-            display: block;
-        }
-    </style>
-
-    <div id="chat-circle" onclick="toggleChat()">
-        <i class="fa-solid fa-robot"></i>
+<div class="chat-box" id="chat-box">
+    <div class="chat-header">
+        <span>AI Trợ Lý</span>
+        <span class="chat-close" onclick="toggleChat()">×</span>
     </div>
-
-    <div class="chat-box" id="chat-box" style="display: none;">
-        <div class="chat-box-header">
-            <span><i class="fa-solid fa-robot" style="margin-right: 8px;"></i> AI Trợ Lý</span>
-            <span class="chat-close" onclick="toggleChat()">&times;</span>
-        </div>
-
-        <div id="messages">
-            <div class="message ai">Xin chào! Tôi là AI hỗ trợ. Bạn cần tìm sản phẩm gì không?</div>
-        </div>
-
-        <div class="input-area">
-            <input id="msg" type="text" placeholder="Nhập câu hỏi..."
-                onkeydown="if(event.keyCode===13) sendMsg()">
-            <button id="btn-send" onclick="sendMsg()">Gửi</button>
+    
+    <div id="messages">
+        <div class="message ai">Xin chào! Tôi có thể giúp gì cho bạn?</div>
+        <div class="typing-indicator" id="loading-dots">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
         </div>
     </div>
 
-    <script>
-        // Hàm bật/tắt khung chat
-        function toggleChat() {
-            var chatBox = document.getElementById('chat-box');
-            if (chatBox.style.display === 'none' || chatBox.style.display === '') {
-                chatBox.style.display = 'flex';
-                // Focus vào ô nhập liệu khi mở
-                setTimeout(() => document.getElementById("msg").focus(), 100);
-            } else {
-                chatBox.style.display = 'none';
-            }
-        }
+    <div class="input-area">
+        <input type="text" id="msg-input" placeholder="Nhập tin nhắn..." onkeydown="if(event.keyCode===13) sendMessage()">
+        <button id="btn-send" onclick="sendMessage()">Gửi</button>
+    </div>
+</div>
 
-        // Hàm gửi tin nhắn (Logic cũ của bạn)
-        function sendMsg() {
-            let text = document.getElementById("msg").value;
-            if (!text) return;
+<script>
+    // --- KHAI BÁO BIẾN TOÀN CỤC ---
+    const chatBox = document.getElementById('chat-box');
+    const messagesArea = document.getElementById('messages');
+    const inputField = document.getElementById('msg-input');
+    const loadingDots = document.getElementById('loading-dots');
+    let isChatOpen = false;
+    let isProcessing = false;
 
-            // Hiển thị tin nhắn User
-            let msgDiv = document.createElement('div');
-            msgDiv.className = 'message user';
-            msgDiv.textContent = text;
-            let messagesArea = document.getElementById("messages");
-            messagesArea.appendChild(msgDiv);
-            messagesArea.scrollTop = messagesArea.scrollHeight; // Auto scroll
+    // 1. HÀM BẬT TẮT CHAT (Đảm bảo hoạt động)
+    function toggleChat() {
+        isChatOpen = !isChatOpen;
+        chatBox.style.display = isChatOpen ? 'flex' : 'none';
+        if (isChatOpen) inputField.focus();
+    }
 
-            document.getElementById("msg").value = '';
+    // 2. HÀM GỬI TIN NHẮN
+    function sendMessage() {
+        if (isProcessing) return; // Chặn spam
 
-            // Gọi API
-            fetch("/chatbot/ask", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}" // Laravel Token
-                    },
-                    body: JSON.stringify({
-                        message: text
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    let replyDiv = document.createElement('div');
-                    replyDiv.className = 'message ai';
-                    let messageHtml = data.message;
+        const text = inputField.value.trim();
+        if (!text) return;
 
-                    // Lấy danh sách link từ Backend
-                    const PRODUCT_LINKS = data.product_links || {};
+        // Hiện tin nhắn User
+        appendMessage(text, 'user');
+        inputField.value = '';
 
-                    // --- [FIX LỖI HIỂN THỊ ẢNH] ---
-                    // Sắp xếp tên dài lên trước để ưu tiên hiển thị (tránh nhầm tên con)
-                    let productNames = Object.keys(PRODUCT_LINKS).sort((a, b) => b.length - a.length);
+        // Bật Loading
+        showLoading(true);
 
-                    productNames.forEach(name => {
-                        const product = PRODUCT_LINKS[name];
+        // Gọi API
+        fetch("/chatbot/ask", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}" // Blade token
+            },
+            body: JSON.stringify({ message: text })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const rawMsg = data.message;
+            const links = data.product_links || {};
+            
+            // XỬ LÝ CHÈN ẢNH VÀO GIỮA VĂN BẢN
+            const finalHtml = processMessageWithImages(rawMsg, links);
+            
+            appendMessage(finalHtml, 'ai', true); // true = render HTML
+        })
+        .catch(err => {
+            console.error(err);
+            appendMessage("Lỗi kết nối server. Vui lòng thử lại!", 'ai');
+        })
+        .finally(() => {
+            showLoading(false);
+        });
+    }
 
-                        // Xử lý ký tự đặc biệt trong tên để không lỗi Regex
-                        let safeName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    // 3. LOGIC CHÈN ẢNH VÀO SAU TÊN SẢN PHẨM (CORE)
+    function processMessageWithImages(text, productLinks) {
+        let processedText = text.replace(/\n/g, '<br>'); // Xuống dòng
+        
+        // Sắp xếp tên dài trước để replace chính xác
+        const sortedNames = Object.keys(productLinks).sort((a, b) => b.length - a.length);
 
-                        // Regex tìm tên sản phẩm (không phân biệt hoa thường)
-                        const regex = new RegExp(`(${safeName})`, 'gi');
+        sortedNames.forEach(name => {
+            // Lấy data sản phẩm
+            const prod = productLinks[name];
+            
+            // Tạo thẻ HTML cho ảnh
+            const cardHtml = `
+                <div class="inline-product-card">
+                    <a href="${prod.product_url}" target="_blank">
+                        <img src="${prod.image_url}" onerror="this.src='https://placehold.co/300?text=No+Image'">
+                        <div class="btn-view">Xem chi tiết ${prod.name}</div>
+                    </a>
+                </div>
+            `;
 
-                        if (messageHtml.match(regex)) {
-                            // In đậm tên sản phẩm
-                            messageHtml = messageHtml.replace(regex, "<b>$1</b>");
+            // Regex tìm tên (không phân biệt hoa thường)
+            // Replace tên sản phẩm = Tên sản phẩm + Thẻ ảnh
+            const safeName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`(${safeName})`, 'gi');
+            
+            // Chỉ replace lần xuất hiện đầu tiên hoặc tất cả tuỳ ý. 
+            // Ở đây dùng replace (thay thế lần đầu) để tránh spam ảnh nếu tên lặp lại nhiều lần.
+            // Nếu muốn tất cả thì dùng replaceAll hoặc regex g
+            processedText = processedText.replace(regex, `<b>$1</b><br>${cardHtml}`);
+        });
 
-                            // Tạo thẻ Ảnh (có fallback nếu ảnh lỗi)
-                            const imageHtml = `
-                            <div class="product-container">
-                                <a href="${product.product_url}" target="_blank" class="product-link">
-                                    <img src="${product.image_url}" class="product-img" 
-                                         alt="${name}"
-                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'; this.onerror=null;">
-                                    <div class="product-caption">Xem chi tiết</div>
-                                </a>
-                            </div><br>`;
+        return processedText;
+    }
 
-                            // Chèn ảnh xuống cuối câu trả lời
-                            messageHtml += imageHtml;
-                        }
-                    });
+    // Hỗ trợ UI
+    function appendMessage(content, role, isHtml = false) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${role}`;
+        
+        if (isHtml) msgDiv.innerHTML = content;
+        else msgDiv.textContent = content;
 
-                    replyDiv.innerHTML = messageHtml;
-                    messagesArea.appendChild(replyDiv);
-                    messagesArea.scrollTop = messagesArea.scrollHeight;
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("Lỗi kết nối Server");
-                });
-        }
-    </script>
+        // Chèn tin nhắn mới LÊN TRÊN cái loading (để loading luôn ở cuối)
+        messagesArea.insertBefore(msgDiv, loadingDots);
+        scrollToBottom();
+    }
+
+    function showLoading(show) {
+        isProcessing = show;
+        loadingDots.style.display = show ? 'block' : 'none';
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+</script>
 
 
 
