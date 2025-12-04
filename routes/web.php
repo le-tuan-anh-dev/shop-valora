@@ -118,6 +118,10 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     // Order success
     Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
+
+    // Review
+    Route::post('/products/review', [ProductDetailController::class, 'postReview'])->name('products.review.store');
+    Route::delete('/reviews/{review}', [ProductDetailController::class, 'deleteReview'])->name('products.review.delete');
 });
 
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Admin\Product;
+use App\Models\admin\ProductImage;
 use App\Models\Admin\ProductVariant;
 use App\Models\Cart;
 use App\Models\CartItem;
@@ -12,25 +13,46 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Models\admin\Review;
 
 class ProductDetailController extends Controller
 { 
     
 
-    /**
-     * hiển thị sản phẩm chi tiết
-     * 
-     * Route: GET /products/{id}
 
-     */
  public function show(int $id): View
     {
-        // : Lấy sản phẩm
+        //  Lấy sản phẩm
         $product = Product::find($id);
         
         if (!$product) {
             abort(404, 'Product not found');
         }
+
+        $reviews = Review::where('product_id', $product->id)
+                 // Chỉ lấy các đánh giá gốc (không phải phản hồi)
+                 ->whereNull('parent_id') 
+                 // Tải trước user, images, biến thể và cả phản hồi (replies)
+                 ->with(['user', 'productVariant.attributeValues', 'images', 'replies']) 
+                 ->latest()
+                 ->get();
+    
+    $totalReviews = $reviews->count();
+    $averageRating = $reviews->avg('rating');
+    $ratingCounts = $reviews->groupBy('rating')->map->count();
+    
+    // Tính phần trăm cho từng loại sao
+    $ratingPercentages = [];
+    for ($i = 5; $i >= 1; $i--) {
+        $count = $ratingCounts->get($i, 0);
+        $percentage = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+        $ratingPercentages["{$i}star"] = [
+            'count' => $count,
+            'percentage' => $percentage
+        ];
+    }
 
         //  Lấy tất cả attributes của sản phẩm
         $attributes = DB::table('variant_attribute_values as vav')
@@ -62,14 +84,11 @@ class ProductDetailController extends Controller
             $images[] = $this->getImageUrl($product->image_main);
         }
         
-        // Thêm ảnh từ variants nếu có
-        $variantImages = ProductVariant::where('product_id', $id)
-            ->where('image_url', '!=', null)
-            ->distinct()
-            ->pluck('image_url')
-            ->toArray();
-        
-        foreach ($variantImages as $image) {
+        $secondaryImages = ProductImage::where('product_id', $id)
+        ->pluck('image')
+        ->toArray();
+
+        foreach ($secondaryImages as $image) {
             $url = $this->getImageUrl($image);
             if (!in_array($url, $images)) {
                 $images[] = $url;
@@ -119,35 +138,23 @@ class ProductDetailController extends Controller
                 ];
             });
 
-    
-        Log::info('=== PRODUCT DEBUG ===');
-        Log::info('Product:', $product->toArray());
-        Log::info('Attributes:', $attributes->toArray());
-        Log::info('Images:', $images);
-        Log::info('Variants Count:', ['count' => $variants->count()]);
-        if ($variants->isNotEmpty()) {
-            Log::info('First Variant:', $variants->first());
-        }
-
-        //  Return view 
+        $brand = $product->brand; 
+ 
         return view('client.product_detail', [
             'product' => $product,
             'attributes' => $attributes,
             'images' => $images,
             'variants' => $variants,
-            'relatedProducts' => $relatedProducts
+            'relatedProducts' => $relatedProducts,
+            'brand' => $brand,
+            'reviews' => $reviews, 
+        'totalReviews' => $totalReviews,
+        'averageRating' => round($averageRating ?? 0, 1),
+        'ratingPercentages' => $ratingPercentages
         ]);
-    }
+}
 
-    /**
-     * ═══════════════════════════════════════════════════════════════
-     * lấy các thuộc tính (AJAX)
-     * ═══════════════════════════════════════════════════════════════
-     * 
-     * Route: POST /products/{id}/get-available-attributes
-     * - Tìm tất cả variants có attribute này
-     * - Return những attributes khác khả dụng
-     */
+  
     public function getAvailableAttributes(Request $request, int $id)
     {
         $request->validate([
@@ -202,9 +209,7 @@ class ProductDetailController extends Controller
     }
 
     /**
-
      * lấy biến thể thuộc tính (AJAX)
-
      * - Tìm variant 
      * - Return giá, stock, sku, ảnh
      * - Kiểm tra còn hàng hay không
@@ -290,8 +295,6 @@ class ProductDetailController extends Controller
 
     /**
      * kiểm tra nhiều biến thể VARIANTS (AJAX)
-     * 
-     * Route: POST /products/{id}/check-variants
      */
     public function checkMultipleVariants(Request $request, int $id)
     {
@@ -346,7 +349,7 @@ public function addToCart(Request $request)
     $product = Product::findOrFail($request->product_id);
     $variantId = $request->variant_id;
 
-    // ===== TH1: Sản phẩm có biến thể =====
+    // Sản phẩm có biến thể 
     if ($variantId) {
         $variant = ProductVariant::where('id', $variantId)
             ->where('product_id', $request->product_id)
@@ -366,7 +369,7 @@ public function addToCart(Request $request)
 
         $productStock = $variant->stock;
     } 
-    // ===== TH2: Sản phẩm không có biến thể =====
+    // Sản phẩm không có biến thể 
     else {
         // Kiểm tra sản phẩm tồn tại và còn hàng
         if ($product->stock < $request->quantity) {
@@ -396,7 +399,7 @@ public function addToCart(Request $request)
         ]);
     }
 
-    // ===== Thêm vào cart =====
+    // Thêm vào cart 
     if ($variantId) {
         // Có variant: kiểm tra theo variant_id
         $cartItem = CartItem::where('cart_id', $cart->id)
@@ -450,5 +453,20 @@ public function addToCart(Request $request)
     }
 
     return back()->with('success', 'Thêm sản phẩm vào giỏ hàng thành công');
+}
+    public function deleteReview(Request $request, Review $review)
+{
+    $userId = Auth::id();
+
+    // 1. Kiểm tra quyền sở hữu
+    if ($review->user_id !== $userId) {
+        return back()->with('error', 'Bạn không có quyền xóa đánh giá của người khác.');
+    }
+
+    
+    // 2. Xóa đánh giá chính
+    $review->delete();
+
+    return back()->with('success', 'Đánh giá đã được xóa thành công.');
 }
 }
