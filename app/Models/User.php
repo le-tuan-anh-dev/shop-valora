@@ -3,6 +3,7 @@
 namespace App\Models;
 // Gọi sai ADMIN
 use App\Models\Order;
+use App\Models\Admin\Product;
 use App\Models\UserAddress;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -85,5 +86,15 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return $this->role === 'customer';
+    }
+
+    public function wishlistProducts()
+    {
+        return $this->belongsToMany(
+            Product::class,   // App\Models\Admin\Product
+            'wishlists',      // bảng pivot
+            'user_id',        // cột user_id trong wishlists
+            'product_id'      // cột product_id trong wishlists
+        )->withTimestamps();
     }
 }

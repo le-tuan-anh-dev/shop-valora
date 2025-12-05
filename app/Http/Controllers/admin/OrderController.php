@@ -60,24 +60,10 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::with(['user', 'orderItems'])->findOrFail($id);
-
-        // Debug: Log product_options data
-        foreach ($order->orderItems as $item) {
-            Log::info('OrderItem Debug', [
-                'product_name' => $item->product_name,
-                'product_options_type' => gettype($item->product_options),
-                'product_options_raw' => $item->product_options,
-                'product_options_json' => json_encode($item->product_options),
-            ]);
-        }
-
         $allowedStatuses = $this->getAllowedStatuses($order->status);
 
         return view('admin.orders.order-detail', compact('order', 'allowedStatuses'));
     }
-    /**
-     * Lấy danh sách trạng thái có thể chuyển đến từ trạng thái hiện tại
-     */
     private function getAllowedStatuses($currentStatus)
     {
         $allowedTransitions = [
@@ -132,6 +118,9 @@ class OrderController extends Controller
 
         if ($newStatus === 'delivered' && !$order->delivered_at) {
             $order->delivered_at = Carbon::now();
+            if ($order->payment_status === 'unpaid') {
+                $order->payment_status = 'paid';
+            }
         }
 
         if ($newStatus === 'cancelled_by_admin' && !$order->cancelled_at) {
@@ -168,7 +157,7 @@ class OrderController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error restoring product stock for order #' . $order->order_number . ': ' . $e->getMessage());
+            Log::error('Error restoring product stock for order #' . $order->order_number . ': ' . $e->getMessage());
             throw $e;
         }
     }

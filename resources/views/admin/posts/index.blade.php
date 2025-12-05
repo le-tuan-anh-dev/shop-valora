@@ -45,8 +45,7 @@
         <select name="sort" class="form-control">
             <option value="">-- Sắp xếp --</option>
 
-            <option value="views_asc"  {{ request('sort')=='views_asc'?'selected':'' }}>Views ↑</option>
-            <option value="views_desc" {{ request('sort')=='views_desc'?'selected':'' }}>Views ↓</option>
+            
 
             <option value="likes_asc"  {{ request('sort')=='likes_asc'?'selected':'' }}>Likes ↑</option>
             <option value="likes_desc" {{ request('sort')=='likes_desc'?'selected':'' }}>Likes ↓</option>
@@ -70,7 +69,7 @@
                             <th>Ảnh</th>
                             <th>Tiêu đề</th>
                             <th>Tác giả</th>
-                            <th>Views</th>
+                          
                             <th>Likes</th>
                             <th>Ngày tạo</th>
                             <th>Trạng thái</th>
@@ -98,7 +97,7 @@
 
                                 <td>{{ $post->title }}</td>
                                 <td>{{ $post->author->name ?? 'N/A' }}</td>
-                                <td>{{ number_format($post->views) }}</td>
+                                
                                 <td>{{ number_format($post->likes) }}</td>
 
                                 <td>{{ $post->created_at->format('d/m/Y') }}</td>

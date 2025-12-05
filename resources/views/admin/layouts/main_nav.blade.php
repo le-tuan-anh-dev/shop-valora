@@ -25,6 +25,9 @@
     <!-- App css (Require in all Page) -->
     <link href="{{ asset('admin/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <!-- Theme Config js (Require in all Page) -->
     <script src="{{ asset('admin/assets/js/config.js') }}"></script>
 </head>
@@ -437,6 +440,20 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+    <a
+        class="nav-link"
+        href="{{ route('admin.posts.index') }}"
+        role="button"
+        aria-expanded="false"
+        aria-controls="sidebarPosts"
+    >
+        <span class="nav-icon">
+            <iconify-icon icon="solar:document-add-bold-duotone"></iconify-icon>
+        </span>
+        <span class="nav-text"> Bài viết </span>
+    </a>
+</li>
 
                     <li class="nav-item">
                         <a

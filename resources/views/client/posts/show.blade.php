@@ -2,224 +2,205 @@
 
 @section('title', $post->title)
 
+@section('styles')
+<style>
+    .content-body img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .content-body iframe {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+@endsection
+
 @section('content')
 
 <div class="container py-4">
+    <div class="row">
 
-    {{-- =============================================== --}}
-    {{-- 1. NỘI DUNG BÀI VIẾT CHÍNH                      --}}
-    {{-- =============================================== --}}
-    <div class="card shadow-sm border-0">
-        <div class="card-body px-4 py-4">
+        {{-- ============================ --}}
+        {{-- LEFT SIDE: CONTENT --}}
+        {{-- ============================ --}}
+        <div class="col-lg-8">
 
-            <h2 class="fw-bold text-center mb-3" style="line-height: 1.4;">
-                {{ $post->title }}
-            </h2>
-
-            <p class="text-muted text-center mb-4">
-                Tác giả: <b>{{ $post->author->name ?? 'Admin' }}</b> •
-                {{ $post->created_at->format('d/m/Y H:i') }} •
-                Lượt xem: <b>{{ number_format($post->views ?? 0) }}</b>
-            </p>
-
-            <hr class="my-4">
-
-            {{-- Nội dung bài viết --}}
-            <div class="content-body" style="font-size: 1.1rem; line-height: 1.8;">
-                {!! $post->content !!}
-            </div>
-
-        </div>
-    </div>
-
-    {{-- =============================================== --}}
-    {{-- 2. KHUNG BÌNH LUẬN (COMMENT SECTION)            --}}
-    {{-- =============================================== --}}
-    <div class="card shadow-sm border-0 mt-4" id="comment-section">
-        <div class="card-body p-4">
-            <h4 class="fw-bold mb-4">Bình luận ({{ $post->comments->count() }})</h4>
-
-            {{-- A. HIỂN THỊ THÔNG BÁO (LỖI TỪ CẤM HOẶC THÀNH CÔNG) --}}
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
+            {{-- SUCCESS / ERROR --}}
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fa-solid fa-check-circle me-2"></i> {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
 
-            {{-- B. FORM NHẬP BÌNH LUẬN --}}
-            @auth
-                <form action="{{ route('comments.store', $post->id) }}" method="POST" class="mb-5">
-                    @csrf
-                    <div class="d-flex align-items-start gap-3">
-                        {{-- Avatar User đang login --}}
-                        <img src="{{ Auth::user()->avatar ? asset('storage/'.Auth::user()->avatar) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=random' }}" 
-                             class="rounded-circle" 
-                             style="width: 50px; height: 50px; object-fit: cover;" 
-                             alt="My Avatar">
-                        
-                        <div class="w-100">
-                            <textarea name="content" 
-                                      class="form-control @error('content') is-invalid @enderror" 
-                                      rows="3" 
-                                      placeholder="Chia sẻ suy nghĩ của bạn (Vui lòng dùng từ ngữ lịch sự)...">{{ old('content') }}</textarea>
-                            @error('content')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            
-                            <div class="mt-2 text-end">
-                                <button type="submit" class="btn btn-primary px-4">Gửi bình luận</button>
-                            </div>
-                        </div>
+            {{-- MAIN CONTENT --}}
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body px-5 py-4">
+
+                    <h2 class="fw-bold text-center mb-3">{{ $post->title }}</h2>
+
+                    <p class="text-muted text-center mb-4">
+                        Tác giả: <b>{{ $post->author->name ?? 'N/A' }}</b> •
+                        {{ $post->created_at->format('d/m/Y H:i') }}
+                        <span class="ms-3"><i class="fa-solid fa-eye me-1"></i> {{ number_format($post->views) }}</span>
+                        <span class="ms-3"><i class="fa-solid fa-heart me-1 text-danger"></i> {{ number_format($post->likes) }}</span>
+                    </p>
+
+                    <hr>
+
+                    <div class="content-body" style="font-size: 1.05rem; line-height: 1.75;">
+                        {!! $post->content !!}
                     </div>
-                </form>
-            @else
-                <div class="alert alert-secondary text-center mb-5 py-3">
-                    Bạn cần <a href="{{ route('login') }}" class="fw-bold text-decoration-underline">Đăng nhập</a> để tham gia bình luận.
+
                 </div>
-            @endauth
+            </div>
 
-            {{-- C. DANH SÁCH BÌNH LUẬN --}}
-            <div class="comment-list">
-                @forelse ($post->comments as $comment)
-                    <div class="d-flex gap-3 mb-4">
-                        {{-- Avatar người comment --}}
-                        <div class="flex-shrink-0">
-                            <img src="{{ $comment->user->avatar ? asset('storage/'.$comment->user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($comment->user->name ?? 'User').'&background=random' }}" 
-                                 alt="{{ $comment->user->name }}" 
-                                 class="rounded-circle" 
-                                 style="width: 50px; height: 50px; object-fit: cover;">
+            {{-- COMMENT SECTION --}}
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body px-5 py-4">
+
+                    @php
+                        $rootComments = $post->comments->whereNull('parent_id')->sortByDesc('created_at');
+                    @endphp
+
+                    <h4 class="mb-4">💬 Bình luận ({{ $post->comments_count }})</h4>
+
+                    @auth
+                        <div class="mb-4 p-3 border rounded bg-light">
+                            <h6 class="fw-bold mb-3">Bạn đang bình luận với tên: {{ Auth::user()->name }}</h6>
+                            {{-- <form action="{{ route('client.posts.store_comment', $post->id) }}" method="POST"> --}}
+                                @csrf
+                                <textarea name="content" class="form-control mb-3" rows="3" placeholder="Viết bình luận của bạn..."></textarea>
+                                <button class="btn btn-primary">Gửi bình luận</button>
+                            </form>
                         </div>
-                        
-                        {{-- Nội dung comment --}}
-                        <div class="flex-grow-1">
-                            <div class="bg-light p-3 rounded-3 position-relative">
-                                
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <h6 class="fw-bold mb-0">{{ $comment->user->name ?? 'Người dùng ẩn danh' }}</h6>
-                                    <small class="text-muted" style="font-size: 0.85rem;">
-                                        {{ $comment->created_at->diffForHumans() }}
-                                    </small>
-                                </div>
+                    @else
+                        <div class="alert alert-warning text-center mb-4">
+                            Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để bình luận.
+                        </div>
+                    @endauth
 
-                                <p class="mb-0 text-secondary" style="white-space: pre-line;">{{ $comment->content }}</p>
+                    <hr>
 
-                                {{-- 🔥 NÚT XÓA: Chỉ hiện nếu User đang login là chủ comment --}}
-                                @if(Auth::check() && Auth::id() == $comment->user_id)
-                                    <div class="position-absolute top-0 end-0 mt-2 me-2">
-                                        <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" 
-                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm text-danger p-0 border-0" title="Xóa bình luận">
-                                                <i class="fa-solid fa-trash-can"></i>
-                                            </button>
+                    @forelse($rootComments as $comment)
+                        <div class="border p-3 mb-4 rounded bg-light">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa-solid fa-user-circle me-2 text-primary"></i>
+                                <h6 class="mb-0 fw-bold me-2">{{ $comment->user->name ?? 'Khách' }}</h6>
+                                <small class="text-muted">({{ $comment->created_at->diffForHumans() }})</small>
+
+                                @auth
+                                    @if(Auth::id() === $comment->user_id)
+                                        {{-- <form action="{{ route('client.posts.destroy_comment', $comment->id) }}" method="POST" class="ms-auto"> --}}
+                                            @csrf @method('DELETE')
+                                            <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i> Xóa</button>
                                         </form>
-                                    </div>
-                                @endif
-                                {{-- Kết thúc nút xóa --}}
-
+                                    @endif
+                                @endauth
                             </div>
+
+                            <p>{{ $comment->content }}</p>
+
+                            {{-- Replies --}}
+                            @if($comment->replies->count())
+                                <div class="mt-3 ps-4 border-start border-3 border-primary">
+                                    @foreach($comment->replies as $reply)
+                                        <div class="p-3 mb-2 rounded bg-white border">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fa-solid fa-reply me-2 text-success"></i>
+                                                <h6 class="mb-0 fw-bold me-2">{{ $reply->user->name }} (Phản hồi)</h6>
+                                                <small class="text-muted">{{ $reply->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <p>{{ $reply->content }}</p>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
                         </div>
-                    </div>
-                @empty
-                    <div class="text-center py-4">
-                        <p class="text-muted fst-italic mb-0">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
-                    </div>
-                @endforelse
+                    @empty
+                        <p class="alert alert-info text-center">Chưa có bình luận nào.</p>
+                    @endforelse
+
+                </div>
             </div>
 
         </div>
-    </div>
 
-    {{-- =============================================== --}}
-    {{-- 3. BÀI VIẾT LIÊN QUAN KHÁC                      --}}
-    {{-- =============================================== --}}
-    <div class="mt-5">
-        <h3 class="fw-bold mb-4 border-bottom pb-2">Bài viết liên quan khác</h3>
-        
-        @if(isset($relatedPosts) && $relatedPosts->isNotEmpty())
-            <div class="row g-4">
-                @foreach ($relatedPosts as $rPost)
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card h-100 shadow-sm blog-card">
-                            <a href="{{ route('posts.show', $rPost->id) }}" style="overflow: hidden; height: 180px;">
-                                @if($rPost->thumbnail)
-                                    <img src="{{ asset('storage/'.$rPost->thumbnail) }}" 
-                                         class="card-img-top w-100 h-100" 
-                                         alt="{{ $rPost->title }}" 
-                                         style="object-fit: cover;">
-                                @else
-                                    <img src="https://via.placeholder.com/400x180?text=No+Image" 
-                                         class="card-img-top w-100 h-100" 
-                                         alt="no-image" 
-                                         style="object-fit: cover;">
-                                @endif
-                            </a>
-                            <div class="card-body">
-                                <a href="{{ route('posts.show', $rPost->id) }}" class="text-decoration-none">
-                                    <h5 class="card-title fw-bold" style="font-size: 1.1rem; line-height: 1.4;">
-                                        {{ Str::limit($rPost->title, 50) }}
-                                    </h5>
-                                </a>
-                                <p class="card-text mt-3 text-muted" style="font-size: 0.9rem;">
-                                    <i class="fa-regular fa-calendar-alt"></i> {{ $rPost->created_at->format('d/m/Y') }} 
-                                    <span class="ms-3"><i class="fa-regular fa-eye"></i> {{ number_format($rPost->views) }}</span>
-                                </p>
-                            </div>
-                        </div>
+        {{-- ============================ --}}
+        {{-- RIGHT SIDE: SIDEBAR --}}
+        {{-- ============================ --}}
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 20px;">
+                @if($topPosts->count())
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">⭐ Bài viết nổi bật</h5>
+                        <ul class="list-unstyled m-0 p-0">
+                            @foreach($topPosts as $topPost)
+                                <li class="mb-3 pb-3 border-bottom">
+                                    <div class="d-flex">
+                                        <img src="{{ asset('storage/' . $topPost->image) }}" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
+                                        <div>
+                                            <h6 class="mb-1 fw-bold">
+                                                <a href="{{ route('posts.show', $topPost->id) }}" class="text-dark text-decoration-none">
+                                                    {{ Str::limit($topPost->title, 45) }}
+                                                </a>
+                                            </h6>
+                                            <small class="text-muted"><i class="fa-solid fa-heart me-1 text-danger"></i>{{ number_format($topPost->likes) }}</small>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
-                @endforeach
+                </div>
+                @endif
             </div>
-        @else
-            <p class="alert alert-info text-center">Hiện chưa có bài viết liên quan nào khác.</p>
-        @endif
+        </div>
+
     </div>
-    
 </div>
 
+{{-- ================================================= --}}
+{{-- RELATED POSTS — TÁCH RA KHỎI LAYOUT & ĐẢM BẢO LUÔN CUỐI --}}
+{{-- ================================================= --}}
+@if ($relatedPosts->count())
+<div class="container mb-5">
+    <h4 class="fw-bold mb-4">🔥 Bài viết liên quan</h4>
+
+    <div class="row">
+        @foreach($relatedPosts as $relatedPost)
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="{{ asset('storage/' . $relatedPost->image) }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="fw-bold">
+                            <a href="{{ route('posts.show', $relatedPost->id) }}" class="text-dark text-decoration-none">
+                                {{ Str::limit($relatedPost->title, 50) }}
+                            </a>
+                        </h6>
+                        <small class="text-muted mt-auto">
+                            <i class="fa-solid fa-clock me-1"></i>
+                            {{ $relatedPost->created_at->diffForHumans() }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
 @endsection
-
-@push('styles')
-<style>
-    /* CSS định dạng ảnh trong bài viết */
-    .content-body img {
-        max-width: 100% !important;
-        max-height: 400px !important;
-        width: auto !important;
-        height: auto !important;
-        object-fit: contain !important;
-        border-radius: 8px !important;
-        margin: 15px auto !important;
-        display: block !important;
-    }
-    
-    /* Hiệu ứng hover cho Related Post */
-    .blog-card {
-        transition: transform 0.3s, box-shadow 0.3s;
-        border: 1px solid #eee;
-    }
-    .blog-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
-    }
-    .blog-card img {
-        transition: transform 0.5s;
-    }
-    .blog-card:hover img {
-        transform: scale(1.05);
-    }
-
-    /* Button xóa comment */
-    .btn-link:hover {
-        text-decoration: underline;
-    }
-</style>
-@endpush

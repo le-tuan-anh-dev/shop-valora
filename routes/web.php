@@ -30,9 +30,22 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 
+use App\Http\Controllers\WishlistController;
+
+use App\Http\Controllers\Api\ChatbotController;
+
+
+
+
+
 
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+
+Route::post('/chatbot/ask', [ChatbotController::class, 'askAI']);
+
+
 
 // Shop
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
@@ -46,7 +59,9 @@ Route::post('/posts/{id}/comment', [ClientPostController::class, 'storeComment']
     Route::delete('/comments/{id}', [ClientPostController::class, 'destroyComment'])
     ->name('comments.destroy')
     ->middleware('auth');
-
+Route::post('/posts/{id}/like', [ClientPostController::class, 'toggleLike'])
+    ->name('posts.toggleLike')
+    ->middleware('auth');
 // Đăng ký đăng nhập
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login-form', [AuthController::class, 'showLoginForm'])->name('login.show');
@@ -73,6 +88,13 @@ Route::prefix('products')->group(function () {
 // Customer routes 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     // Dashboard khách hàng
+    
+    Route::post('/wishlist/{product}', [WishlistController::class, 'store'])
+        ->name('wishlist.add');
+
+    Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
+        ->name('wishlist.remove');
+    // ============================
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])
         ->name('client.dashboard');
 
@@ -162,6 +184,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/comments/banned-words/{id}', [CommentController::class, 'deleteBannedWord'])
         ->name('admin.comments.banned.delete');
 
+    
+
  // --- Quản lý Đánh giá (Reviews) ---
     
     // CẤP 1: Danh sách Sản phẩm có đánh giá (Hàm index)
@@ -180,15 +204,21 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     // Sửa phản hồi (Update) - {id} là ID của REVIEW/REPLY
     // URI: /admin/reviews/{review_id}
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('admin.reviews.update');
+      
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
 
     // Posts
-    Route::get('/posts', [AdminPostController::class, 'index'])->name('admin.posts.index');
-    Route::get('/posts/create', [AdminPostController::class, 'create'])->name('admin.posts.create');
-    Route::post('/posts', [AdminPostController::class, 'store'])->name('admin.posts.store');
-    Route::get('/posts/{id}/edit', [AdminPostController::class, 'edit'])->name('admin.posts.edit');
-    Route::put('/posts/{id}', [AdminPostController::class, 'update'])->name('admin.posts.update');
-    Route::delete('/posts/{id}', [AdminPostController::class, 'destroy'])->name('admin.posts.destroy');
+  Route::resource('posts', PostController::class)->names('admin.posts');
+      Route::post('/post-comments/{comment}/reply', [AdminPostController::class, 'replyComment'])
+        ->name('admin.post_comments.reply');
+         Route::put('/post-comments/{comment}/update', [AdminPostController::class, 'updateComment'])
+        ->name('admin.post_comments.update');
+    
+    Route::delete('/post-comments/{comment}', [AdminPostController::class, 'deleteComment'])
+        ->name('admin.post_comments.delete');
+        
+
 
     // CKEditor / TinyMCE upload
     Route::post('/tinymce/upload', [AdminPostController::class, 'tinymceUpload'])

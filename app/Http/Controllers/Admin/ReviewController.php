@@ -8,6 +8,7 @@ use App\Models\admin\ReviewImage;
 use App\Models\admin\BannedWord;
 use App\Models\Admin\Product;
 use App\Models\Admin\ProductVariant;
+use App\Models\Admin\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +23,8 @@ class ReviewController extends Controller
         // Kèm theo: Số lượng đánh giá (reviews_count) và Điểm trung bình (reviews_avg_rating)
         $query = Product::has('reviews')
             ->withCount('reviews')
-            ->withAvg('reviews', 'rating');
+            ->withAvg('reviews', 'rating')
+            ->with('brand');
 
         // Tìm kiếm tên sản phẩm (nếu cần)
         if ($request->filled('search')) {
@@ -80,7 +82,7 @@ class ReviewController extends Controller
     
     public function store(Request $request)
     {
-        // Logic giữ nguyên như code cũ của bạn
+// Logic giữ nguyên như code cũ của bạn
         $rules = [
             'product_id' => 'required|exists:products,id',
             'content' => 'nullable|string',
