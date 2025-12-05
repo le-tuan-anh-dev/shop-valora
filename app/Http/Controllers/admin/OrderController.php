@@ -9,6 +9,7 @@ use App\Models\Admin\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -60,11 +61,23 @@ class OrderController extends Controller
     {
         $order = Order::with(['user', 'orderItems'])->findOrFail($id);
 
+        // Debug: Log product_options data
+        foreach ($order->orderItems as $item) {
+            Log::info('OrderItem Debug', [
+                'product_name' => $item->product_name,
+                'product_options_type' => gettype($item->product_options),
+                'product_options_raw' => $item->product_options,
+                'product_options_json' => json_encode($item->product_options),
+            ]);
+        }
+
         $allowedStatuses = $this->getAllowedStatuses($order->status);
 
         return view('admin.orders.order-detail', compact('order', 'allowedStatuses'));
     }
-
+    /**
+     * Lấy danh sách trạng thái có thể chuyển đến từ trạng thái hiện tại
+     */
     private function getAllowedStatuses($currentStatus)
     {
         $allowedTransitions = [

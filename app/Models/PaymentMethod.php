@@ -16,7 +16,9 @@ class PaymentMethod extends Model
         'description',
     ];
 
-    
+    /**
+     * 1 phương thức thanh toán có nhiều đơn hàng.
+     */
     public function orders()
     {
         return $this->hasMany(Order::class, 'payment_method_id', 'id');

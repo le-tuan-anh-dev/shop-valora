@@ -71,14 +71,9 @@ class ProductController extends Controller
         return view('admin.products.product-add', compact('categories', 'brands', 'attributes'));
     }
 
-    /**
-     * 1. INSERT INTO products
-     * 2. INSERT INTO product_variants 
-     * 3. INSERT INTO variant_attribute_values 
-     */
+
     public function store(Request $request)
     {
-        // Custom messages tiếng Việt
         $messages = [
             'category_id.required' => 'Bạn phải chọn danh mục.',
             'category_id.exists'   => 'Danh mục không hợp lệ.',
@@ -92,14 +87,16 @@ class ProductController extends Controller
             'base_price.numeric'   => 'Giá bán phải là số.',
             'base_price.gt'        => 'Giá bán phải lớn hơn giá nhập.',
             'discount_price.numeric' => 'Giá khuyến mãi phải là số.',
-            'discount_price.lt'    => 'Giá khuyến mãi phải nhỏ hơn giá bán.',
+            'discount_price.gt'    => 'Giá khuyến mãi phải lớn hơn giá bán.',
             'stock.required'       => 'Bạn phải nhập số lượng tồn kho.',
             'stock.integer'        => 'Tồn kho phải là số nguyên.',
             'stock.min'            => 'Tồn kho không được âm.',
             'variants.*.price.numeric' => 'Giá biến thể phải là số.',
             'variants.*.stock.integer' => 'Tồn kho biến thể phải là số nguyên.',
-            'variants.*.stock.min'     => 'Tồn kho biến thể không được âm.',
+            'variants.*.stock.min'     => 'Tồn kho biến thể phải lớn hơn không.',
             'variants.*.sku.unique'    => 'SKU biến thể đã tồn tại.',   
+            'image_main.required'=>'Ảnh phải dược thêm',
+            'description.required'=>'Mô tả không được trống',
         ];
 
         // Validate dữ liệu
@@ -110,13 +107,15 @@ class ProductController extends Controller
             'description'      => 'nullable|string',
             'cost_price'       => 'required|numeric|gt:0',
             'base_price'       => 'required|numeric|gt:cost_price',
-            'discount_price'   => 'nullable|numeric|lt:base_price',
+            'discount_price'   => 'nullable|numeric|gt:base_price',
             'stock'            => 'required|integer|min:0',
             'image_main'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants'         => 'nullable|array',
             'variants.*.sku'   => 'nullable|string|unique:product_variants,sku',
             'variants.*.price' => 'nullable|numeric|gte:cost_price',
             'variants.*.stock' => 'nullable|integer|min:0',
+            'image_main' =>'required',
+            'description'=>'required|string',
         ], $messages);
 
         DB::beginTransaction();
@@ -242,7 +241,7 @@ class ProductController extends Controller
             'base_price.numeric'   => 'Giá bán phải là số.',
             'base_price.gt'        => 'Giá bán phải lớn hơn giá nhập.',
             'discount_price.numeric' => 'Giá khuyến mãi phải là số.',
-            'discount_price.lt'    => 'Giá khuyến mãi phải nhỏ hơn giá bán.',
+            'discount_price.gt'    => 'Giá khuyến mãi phải lớn hơn giá bán.',
             'stock.required'       => 'Bạn phải nhập số lượng tồn kho.',
             'stock.integer'        => 'Tồn kho phải là số nguyên.',
             'stock.min'            => 'Tồn kho không được âm.',
@@ -260,7 +259,7 @@ class ProductController extends Controller
             'description'      => 'nullable|string',
             'cost_price'       => 'required|numeric|gt:0',
             'base_price'       => 'required|numeric|gt:cost_price',
-            'discount_price'   => 'nullable|numeric|lt:base_price',
+            'discount_price'   => 'nullable|numeric|gt:base_price',
             'stock'            => 'required|integer|min:0',
             'image_main'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants'         => 'nullable|array',

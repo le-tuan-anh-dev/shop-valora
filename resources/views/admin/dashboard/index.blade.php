@@ -487,8 +487,8 @@
                                                             'banned' => 'danger',
                                                         ];
                                                         $statusLabels = [
-                                                            'active' => 'Hoạt động',
-                                                            'locked' => 'Đã khóa',
+                                                            'active' => 'Đã kích hoạt',
+                                                            'locked' => 'Chưa kích hoạt',
                                                             'banned' => 'Đã cấm',
                                                         ];
                                                         $color = $statusColors[$customer->status] ?? 'secondary';

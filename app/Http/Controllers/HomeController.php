@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin\Brand;
 use App\Models\Admin\Category;
 use App\Models\Admin\Product;
 
@@ -40,12 +41,17 @@ public function index()
             ->orderBy('name', 'asc') // Sắp xếp theo tên A-Z
             ->get();
 
+    $brands = Brand::where('is_active', 1)
+    ->orderBy('name', 'asc')
+    ->get();
+
     return view('client.home', compact(
         'featuredProducts',
         'latestProducts',
         'bestSellerProducts',
         'diverseProducts',
-        'categories'
+        'categories',
+        'brands'
     ));
 }
 }

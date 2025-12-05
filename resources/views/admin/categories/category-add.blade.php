@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="page-content">
-    <div class="container-fluid">
+    <div class="container-xxl">
 
         {{-- Header Section --}}
         <div class="row">
@@ -79,10 +79,11 @@
                                     Slug
                                 </label>
                                 <input type="text" 
-                                       name="slug" 
-                                       class="form-control @error('slug') is-invalid @enderror" 
-                                       value="{{ old('slug') }}"
-                                       placeholder="Để trống để tự động sinh">
+                                    name="slug" 
+                                    class="form-control @error('slug') is-invalid @enderror" 
+                                    value="{{ old('slug') }}"
+                                    placeholder="Để trống để tự động sinh"
+                                    id="slugInput">
                                 @error('slug')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
@@ -90,6 +91,8 @@
                                     <iconify-icon icon="solar:info-circle-linear" class="me-1"></iconify-icon>
                                     Dùng trong URL, chỉ chứa chữ thường, số và dấu gạch
                                 </small>
+                                
+                                
                             </div>
 
                             {{-- Danh mục cha --}}
@@ -185,20 +188,24 @@
 
 @push('scripts')
 <script>
+    function convertToSlug(str) {
+    str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    str = str.toLowerCase();
+    str = str.trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return str;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const nameInput = document.querySelector('input[name="name"]');
     const slugInput = document.querySelector('input[name="slug"]');
 
     if (nameInput && slugInput) {
+        // Tự động điền slug mỗi khi người dùng nhập tên
         nameInput.addEventListener('input', function() {
-            if (slugInput.value === '') {
-                slugInput.value = this.value
-                    .toLowerCase()
-                    .trim()
-                    .replace(/[^\w\s-]/g, '')
-                    .replace(/[\s_-]+/g, '-')
-                    .replace(/^-+|-+$/g, '');
-            }
+            slugInput.value = convertToSlug(this.value);
         });
     }
 });

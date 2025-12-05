@@ -291,82 +291,76 @@
             </svg>
         </div>
         <div class="swiper special-offer-slide-2">
-            <div class="swiper-wrapper ratio1_3">
+            <div class="swiper-wrapper trending-products ratio_square">
                 
                 @forelse($relatedProducts as $relatedProduct)
-                    <div class="swiper-slide">
-                        <div class="product-box-3">
-                            <div class="img-wrapper">
-                                <div class="label-block">
-                                    <span class="lable-1">NEW</span>
-                                    <a class="label-2 wishlist-icon" href="javascript:void(0)" tabindex="0">
-                                        <i class="iconsax" data-icon="heart" aria-hidden="true" data-bs-toggle="tooltip" data-bs-title="Add to Wishlist"></i>
-                                    </a>
-                                </div>
-                                
-                                <!-- Product Image -->
-                                <div class="product-image">
-                                    <a class="pro-first" href="{{ route('products.detail', $relatedProduct['id']) }}">
-                                        <img class="bg-img" src="{{ $relatedProduct['image_main'] }}" alt="{{ $relatedProduct['name'] }}">
-                                    </a>
-                                    <a class="pro-sec" href="{{ route('products.detail', $relatedProduct['id']) }}">
-                                        <img class="bg-img" src="{{ $relatedProduct['image_main'] }}" alt="{{ $relatedProduct['name'] }}">
-                                    </a>
-                                </div>
-                                
-                                <!-- Cart Actions -->
-                                <div class="cart-info-icon">
-                                    <a href="{{ route('products.detail', $relatedProduct['id']) }}" data-bs-toggle="tooltip" data-bs-title="Quick View" tabindex="0">
-                                        <i class="iconsax" data-icon="basket-2" aria-hidden="true"></i>
-                                    </a>
-                                    <a href="{{ route('products.detail', $relatedProduct['id']) }}" tabindex="0">
-                                        <i class="iconsax" data-icon="arrow-up-down" aria-hidden="true" data-bs-toggle="tooltip" data-bs-title="Compare"></i>
-                                    </a>
-                                    <a href="{{ route('products.detail', $relatedProduct['id']) }}" data-bs-toggle="tooltip" data-bs-title="Quick View" tabindex="0">
-                                        <i class="iconsax" data-icon="eye" aria-hidden="true"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            
-                            <!-- Product Detail -->
-                            <div class="product-detail">
-                                <!-- Rating -->
-                                <ul class="rating">      
-                                    <li><i class="fa-solid fa-star"></i></li>
-                                    <li><i class="fa-solid fa-star"></i></li>
-                                    <li><i class="fa-solid fa-star"></i></li>
-                                    <li><i class="fa-solid fa-star-half-stroke"></i></li>
-                                    <li><i class="fa-regular fa-star"></i></li>
-                                    
-                                </ul>
-                                
-                                <!-- Product Name -->
+                    <div class="swiper-slide product-box">
+                        <div class="img-wrapper">
+                            <!-- Product Image -->
+                            <div class="product-image">
                                 <a href="{{ route('products.detail', $relatedProduct['id']) }}">
-                                    <h6>{{ $relatedProduct['name'] }}</h6>
+                                    <img class="bg-img" 
+                                        src="{{ $relatedProduct['image_main']}}" 
+                                        alt="{{ $relatedProduct['name'] }}">
                                 </a>
-                                
-                                <!-- Price -->
-                                <p>
-                                    <strong>{{ $relatedProduct['base_price'] }}</strong>
-                                    @if($relatedProduct['discount_price'])
-                                        <del>${{ $relatedProduct['discount_price'] }}</del>
-                                        
-                                    @endif
-                                </p>
                             </div>
+
+                            <!-- Icons -->
+                            <div class="cart-info-icon">
+                                <a class="wishlist-icon" href="javascript:void(0)" tabindex="0" onclick="toggleWishlist(event)">
+                                    <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Product Detail -->
+                        <div class="product-detail">
+                            <div class="add-button">
+                                <a href="{{ route('products.detail', $relatedProduct['id']) }}"
+                                    title="Xem chi tiết" tabindex="0">
+                                    <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                </a>
+                            </div>
+
+                            <a href="{{ route('products.detail', $relatedProduct['id']) }}">
+                                <h5>{{ Str::limit($relatedProduct['name'], 40) }}</h5>
+                            </a>
+
+                            <!-- Price -->
+                            <p>
+                                @if($relatedProduct['discount_price'])
+                                    {{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫ 
+                                    <del>{{ number_format($relatedProduct['discount_price'], 0, ',', '.') }}₫</del>
+                                @else
+                                    {{ number_format($relatedProduct['base_price'], 0, ',', '.') }}₫
+                                @endif
+                            </p>
                         </div>
                     </div>
                 @empty
-                    <div class="swiper-slide" style="text-align: center; padding: 40px;">
-                        <p>No related products found</p>
+                    <div class="swiper-slide">
+                        <p class="text-center"></p>
                     </div>
                 @endforelse
                 
             </div>
+
+            {{-- Navigation buttons --}}
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
         </div>
     </div>
 </section>
 
+<script>
+// Toggle Wishlist
+function toggleWishlist(event) {
+    event.preventDefault();
+    const icon = event.target.closest('i');
+    icon.classList.toggle('far');
+    icon.classList.toggle('fas');
+}
+</script>
 
 <script>
     let selectedAttributes = {};
