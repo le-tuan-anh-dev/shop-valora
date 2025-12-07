@@ -4,63 +4,63 @@
 
 @section('content')
     {{-- danh mục và banner --}}
-<section class="pt-0 home-section-3">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            
-            <div class="col-2 d-none d-xl-block">
-                <div class="category-sidebar">
-                    <div class="category-list">
-                        <ul class="category-menu flush-left"> 
-                            @forelse($categories as $category)
-                            <li>
-                                <a href="{{ route('shop.index') }}" class="category-link">
-                                    {{ $category->name }}
-                                    
-                                </a>
-                            </li>
-                            @empty
-                            <li>
-                                <p class="text-muted text-left flush-left-text">Chưa có danh mục</p>
-                            </li>
-                            @endforelse
+    <section class="pt-0 home-section-3">
+        <div class="container-fluid">
+            <div class="row align-items-center">
 
-                            @if($categories->count() > 8)
-                            <li class="more-categories-li">
-                                <a href="{{ route('shop.index') }}" class="category-link view-all-link">
-                                    Xem thêm <i class="fa-solid fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            @endif
-                        </ul>
+                <div class="col-2 d-none d-xl-block">
+                    <div class="category-sidebar">
+                        <div class="category-list">
+                            <ul class="category-menu flush-left">
+                                @forelse($categories as $category)
+                                    <li>
+                                        <a href="{{ route('shop.index') }}" class="category-link">
+                                            {{ $category->name }}
+
+                                        </a>
+                                    </li>
+                                @empty
+                                    <li>
+                                        <p class="text-muted text-left flush-left-text">Chưa có danh mục</p>
+                                    </li>
+                                @endforelse
+
+                                @if ($categories->count() > 8)
+                                    <li class="more-categories-li">
+                                        <a href="{{ route('shop.index') }}" class="category-link view-all-link">
+                                            Xem thêm <i class="fa-solid fa-arrow-right"></i>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Nội dung banner chính (bên PHẢI) -->
-            <div class="col pe-0">
-                <div class="home-banner p-right">
-                    <img class="img-fluid" src="{{ asset('client/assets/images/layout-3/1.jpg') }}" alt="" />
-                    <div class="contain-banner">
-                        <div>
-                            <h4>Hot Offer <span>START TODAY</span></h4>
-                            <h1>Explore Your True Creative Fashion.</h1>
-                            <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.</p>
-                            <div class="link-hover-anim underline">
-                                <a class="btn btn_underline link-strong" href="#">
-                                    Show Now
-                                    <svg>
-                                        <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                    </svg>
-                                </a>
+                <!-- Nội dung banner chính (bên PHẢI) -->
+                <div class="col pe-0">
+                    <div class="home-banner p-right">
+                        <img class="img-fluid" src="{{ asset('client/assets/images/layout-3/1.jpg') }}" alt="" />
+                        <div class="contain-banner">
+                            <div>
+                                <h4>Ưu đãi hấp dẫn <span>BẮT ĐẦU NGAY HÔM NAY</span></h4>
+                                <h1>Khám phá phong cách thời trang sáng tạo đích thực của bạn.</h1>
+                                
+                                <div class="link-hover-anim underline">
+                                    <a class="btn btn_underline link-strong" href="#">
+                                        Mua Ngay
+                                        <svg>
+                                            <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
+                                        </svg>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
     {{-- chính sách --}}
     <section class="section-t-space">
         <div class="custom-container container service">
@@ -69,8 +69,8 @@
                     <div class="service-block">
                         <img src="https://themes.pixelstrap.net/katie/assets/images/svg-icon/1.svg" alt="" />
                         <div>
-                            <h6>Free Shipping Worldwide</h6>
-                            <p>Apply to all orders over $800</p>
+                            <h6>Miễn phí vận chuyển trên toàn thế giới</h6>
+                            <p>Áp dụng cho tất cả các đơn hàng trên 1.000.000 VND</p>
                         </div>
                     </div>
                 </li>
@@ -78,8 +78,8 @@
                     <div class="service-block">
                         <img src="https://themes.pixelstrap.net/katie/assets/images/svg-icon/2.svg" alt="" />
                         <div>
-                            <h6>Return & Exchanges</h6>
-                            <p>Complete warranty</p>
+                            <h6>Trả & Hoàn hàng</h6>
+                            <p>Bảo hành đầy đủ</p>
                         </div>
                     </div>
                 </li>
@@ -87,8 +87,8 @@
                     <div class="service-block">
                         <img src="https://themes.pixelstrap.net/katie/assets/images/svg-icon/3.svg" alt="" />
                         <div>
-                            <h6>Technical Support</h6>
-                            <p>Service support 24/7</p>
+                            <h6>Hỗ trọ</h6>
+                            <p>Hỗ trợ dịch vụ 24/7</p>
                         </div>
                     </div>
                 </li>
@@ -96,8 +96,8 @@
                     <div class="service-block border-0">
                         <img src="https://themes.pixelstrap.net/katie/assets/images/svg-icon/4.svg" alt="" />
                         <div>
-                            <h6>Daily Gift Vouchers</h6>
-                            <p>Shopping now is more fun</p>
+                            <h6>Phiếu quà tặng hàng ngày</h6>
+                            <p>Mua sắm đầy ưu đãi</p>
                         </div>
                     </div>
                 </li>
@@ -105,249 +105,347 @@
         </div>
     </section>
     {{-- sản phẩm --}}
-<section class="section-t-space">
-    <div class="custom-container container product-contain">
-        <div class="title">
-            <h3>Sản phẩm đặc biệt</h3>
-            <svg>
-                <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
-            </svg>
-        </div>
+    <section class="section-t-space">
+        <div class="custom-container container product-contain">
+            <div class="title">
+                <h3>Sản phẩm đặc biệt</h3>
+                <svg>
+                    <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
+                </svg>
+            </div>
 
-        <div class="row trending-products">
-            <div class="col-12">
-                <div class="theme-tab-1">
-                    <!-- NAV TABS -->
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" data-bs-target="#features-products" role="tab">
-                                <h6>Sản phẩm giảm giá</h6>
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#latest-products" role="tab">
-                                <h6>Sản phẩm mới nhất</h6>
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#seller-products" role="tab">
-                                <h6>Bán chạy nhất</h6>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="row trending-products">
+                <div class="col-12">
+                    <div class="theme-tab-1">
+                        <!-- NAV TABS -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" data-bs-toggle="tab" data-bs-target="#features-products"
+                                    role="tab">
+                                    <h6>Sản phẩm giảm giá</h6>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#latest-products" role="tab">
+                                    <h6>Sản phẩm mới nhất</h6>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#seller-products" role="tab">
+                                    <h6>Bán chạy nhất</h6>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                <div class="row">
-                    <div class="col-12 ratio_square">
-                        <div class="tab-content">
+                    <div class="row">
+                        <div class="col-12 ratio_square">
+                            <div class="tab-content">
 
-                            {{-- FEATURED PRODUCTS --}}
-                            <div class="tab-pane fade show active" id="features-products" role="tabpanel">
-                                <div class="row g-4">
-                                    @forelse($featuredProducts as $product)
-                                    <div class="col-xxl-3 col-md-4 col-6">
-                                        <div class="product-box">
-                                            <div class="img-wrapper">
-                                                {{-- Label Sale --}}
-                                                @if($product->discount_price)
-                                                <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
-                                                    <span>Giảm <br>giá!</span>
-                                                </div>
-                                                @endif
+                                {{-- FEATURED PRODUCTS --}}
+                                <div class="tab-pane fade show active" id="features-products" role="tabpanel">
+                                    <div class="row g-4">
+                                        @forelse($featuredProducts as $product)
+                                            <div class="col-xxl-3 col-md-4 col-6">
+                                                <div class="product-box">
+                                                    <div class="img-wrapper">
+                                                        {{-- Label Sale --}}
+                                                        @if ($product->discount_price)
+                                                            <div class="label-block">
+                                                                <img src="{{ asset('client/assets/images/product/2.png') }}"
+                                                                    alt="label">
+                                                                <span>Giảm <br>giá!</span>
+                                                            </div>
+                                                        @endif
 
-                                                {{-- Product Image --}}
-                                                <div class="product-image">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <img class="bg-img" 
-                                                            src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}" 
-                                                            alt="{{ $product->name }}">
-                                                    </a>
-                                                </div>
+                                                        {{-- Product Image --}}
+                                                        <div class="product-image">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <img class="bg-img"
+                                                                    src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
+                                                                    alt="{{ $product->name }}">
+                                                            </a>
+                                                        </div>
 
-                                                {{-- Icon chỉ còn wishlist --}}
-                                                <div class="cart-info-icon">
-                                                    <a class="wishlist-icon" href="javascript:void(0)">
-                                                       <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
-                                                    </a>
+                                                        {{-- Icon chỉ còn wishlist --}}
+                                                        <style>
+                                                            .cart-info-icon i {
+                                                                font-size: 30px;
+                                                                color: #777;
+                                                                /* màu mặc định */
+                                                                cursor: pointer;
+                                                                transition: color 0.2s;
+                                                            }
+
+                                                            .cart-info-icon i:hover {
+                                                                color: red;
+                                                                /* di vào thì đỏ */
+                                                            }
+
+                                                            /* Toast thông báo */
+                                                            .wishlist-toast {
+                                                                position: fixed;
+                                                                top: 50%;
+                                                                left: 50%;
+                                                                transform: translate(-50%, -50%);
+                                                                /* căn giữa theo cả 2 trục */
+                                                                background: rgba(0, 0, 0, 0.85);
+                                                                color: #fff;
+                                                                padding: 10px 16px;
+                                                                border-radius: 6px;
+                                                                font-size: 14px;
+                                                                opacity: 0;
+                                                                visibility: hidden;
+                                                                transition: all 0.3s ease;
+                                                                z-index: 9999;
+                                                            }
+
+                                                            .wishlist-toast.show {
+                                                                opacity: 1;
+                                                                visibility: visible;
+                                                                transform: translateY(0);
+                                                            }
+                                                        </style>
+
+                                                        <div class="cart-info-icon">
+                                                            @auth
+                                                                {{-- User đã đăng nhập: bấm là thêm vào wishlist --}}
+                                                                <a href="#"
+                                                                    onclick="
+                                                                        event.preventDefault();
+                                                                        showWishlistToast('Đã thêm vào danh sách yêu thích');
+                                                                        document.getElementById('wishlist-form-{{ $product->id }}').submit();
+                                                                ">
+                                                                    <i class="far fa-heart" data-bs-toggle="tooltip"
+                                                                        data-bs-title="Thêm vào yêu thích"></i>
+                                                                </a>
+
+                                                                <form id="wishlist-form-{{ $product->id }}"
+                                                                    action="{{ route('wishlist.add', $product->id) }}"
+                                                                    method="POST" class="d-none">
+                                                                    @csrf
+                                                                </form>
+                                                            @else
+                                                                {{-- Chưa đăng nhập: bấm chuyển qua trang login --}}
+                                                                <a href="{{ route('login') }}">
+                                                                    <i class="far fa-heart" data-bs-toggle="tooltip"
+                                                                        data-bs-title="Đăng nhập để thêm vào yêu thích"></i>
+                                                                </a>
+                                                            @endauth
+                                                        </div>
+
+                                                        {{-- Toast hiển thị thông báo --}}
+                                                        <div id="wishlist-toast" class="wishlist-toast"></div>
+
+                                                        <script>
+                                                            function showWishlistToast(message) {
+                                                                const toast = document.getElementById('wishlist-toast');
+                                                                if (!toast) return;
+
+                                                                toast.textContent = message;
+                                                                toast.classList.add('show');
+
+                                                                // 1.5 giây sau thì ẩn đi
+                                                                setTimeout(() => {
+                                                                    toast.classList.remove('show');
+                                                                }, 1500);
+                                                            }
+                                                        </script>
+                                                    </div>
+                                                    {{-- Product Detail --}}
+                                                    <div class="product-detail">
+                                                        {{-- Đổi thành Xem chi tiết --}}
+                                                        <div class="add-button">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                                            </a>
+                                                        </div>
+
+                                                        <a href="{{ route('products.detail', $product->id) }}">
+                                                            <h5>{{ Str::limit($product->name, 40) }}</h5>
+                                                        </a>
+
+                                                        <p>
+                                                            @if ($product->discount_price)
+                                                                {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                                @php
+                                                                    $discountPercent = round(
+                                                                        (($product->discount_price -
+                                                                            $product->base_price) /
+                                                                            $product->base_price) *
+                                                                            100,
+                                                                    );
+                                                                @endphp
+                                                                <span>{{ $discountPercent }}%</span>
+                                                            @else
+                                                                {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                            @endif
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            {{-- Product Detail --}}
-                                            <div class="product-detail">
-                                                {{-- Đổi thành Xem chi tiết --}}
-                                                <div class="add-button">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                                    </a>
-                                                </div>
-
-                                                <a href="{{ route('products.detail', $product->id) }}">
-                                                    <h5>{{ Str::limit($product->name, 40) }}</h5>
-                                                </a>
-
-                                                <p>
-                                                    @if($product->discount_price)
-                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
-                                                        @php
-                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
-                                                        @endphp
-                                                        <span>-{{ $discountPercent }}%</span>
-                                                    @else
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                    @endif
-                                                </p>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-center">Chưa có sản phẩm nổi bật</p>
                                             </div>
-                                        </div>
+                                        @endforelse
                                     </div>
-                                    @empty
-                                    <div class="col-12">
-                                        <p class="text-center">Chưa có sản phẩm nổi bật</p>
-                                    </div>
-                                    @endforelse
                                 </div>
-                            </div>
 
-                            {{-- LATEST PRODUCTS --}}
-                            <div class="tab-pane fade" id="latest-products" role="tabpanel">
-                                <div class="row g-4">
-                                    @forelse($latestProducts as $product)
-                                    <div class="col-xxl-3 col-md-4 col-6">
-                                        <div class="product-box">
-                                            <div class="img-wrapper">
-                                                @if($product->discount_price)
-                                                <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
-                                                    <span>Giảm <br>giá!</span>
-                                                </div>
-                                                @endif
+                                {{-- LATEST PRODUCTS --}}
+                                <div class="tab-pane fade" id="latest-products" role="tabpanel">
+                                    <div class="row g-4">
+                                        @forelse($latestProducts as $product)
+                                            <div class="col-xxl-3 col-md-4 col-6">
+                                                <div class="product-box">
+                                                    <div class="img-wrapper">
+                                                        @if ($product->discount_price)
+                                                            <div class="label-block">
+                                                                <img src="{{ asset('client/assets/images/product/2.png') }}"
+                                                                    alt="label">
+                                                                <span>Giảm <br>giá!</span>
+                                                            </div>
+                                                        @endif
 
-                                                <div class="product-image">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <img class="bg-img" 
-                                                            src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}" 
-                                                            alt="{{ $product->name }}">
-                                                    </a>
-                                                </div>
+                                                        <div class="product-image">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <img class="bg-img"
+                                                                    src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
+                                                                    alt="{{ $product->name }}">
+                                                            </a>
+                                                        </div>
 
-                                                <div class="cart-info-icon">
-                                                    <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
-                                                    </a>
+                                                        <div class="cart-info-icon">
+                                                            <a class="wishlist-icon" href="javascript:void(0)">
+                                                                <i class="far fa-heart" data-bs-toggle="tooltip"
+                                                                    data-bs-title="Thêm vào yêu thích"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="product-detail">
+                                                        <div class="add-button">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                                            </a>
+                                                        </div>
+
+                                                        <a href="{{ route('products.detail', $product->id) }}">
+                                                            <h5>{{ Str::limit($product->name, 40) }}</h5>
+                                                        </a>
+
+                                                        <p>
+                                                            @if ($product->discount_price)
+                                                                {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                                @php
+                                                                    $discountPercent = round(
+                                                                        (($product->discount_price -
+                                                                            $product->base_price) /
+                                                                            $product->base_price) *
+                                                                            100,
+                                                                    );
+                                                                @endphp
+                                                                <span>{{ $discountPercent }}%</span>
+                                                            @else
+                                                                {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                            @endif
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            <div class="product-detail">
-                                                <div class="add-button">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                                    </a>
-                                                </div>
-
-                                                <a href="{{ route('products.detail', $product->id) }}">
-                                                    <h5>{{ Str::limit($product->name, 40) }}</h5>
-                                                </a>
-
-                                                <p>
-                                                    @if($product->discount_price)
-                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
-                                                        @php
-                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
-                                                        @endphp
-                                                        <span>-{{ $discountPercent }}%</span>
-                                                    @else
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                    @endif
-                                                </p>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-center">Chưa có sản phẩm mới</p>
                                             </div>
-                                        </div>
+                                        @endforelse
                                     </div>
-                                    @empty
-                                    <div class="col-12">
-                                        <p class="text-center">Chưa có sản phẩm mới</p>
-                                    </div>
-                                    @endforelse
                                 </div>
-                            </div>
 
-                            {{-- BEST SELLER PRODUCTS --}}
-                            <div class="tab-pane fade" id="seller-products" role="tabpanel">
-                                <div class="row g-4">
-                                    @forelse($bestSellerProducts as $product)
-                                    <div class="col-xxl-3 col-md-4 col-6">
-                                        <div class="product-box">
-                                            <div class="img-wrapper">
-                                                @if($product->discount_price)
-                                                <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
-                                                    <span>Giảm <br>giá!</span>
-                                                </div>
-                                                @endif
+                                {{-- BEST SELLER PRODUCTS --}}
+                                <div class="tab-pane fade" id="seller-products" role="tabpanel">
+                                    <div class="row g-4">
+                                        @forelse($bestSellerProducts as $product)
+                                            <div class="col-xxl-3 col-md-4 col-6">
+                                                <div class="product-box">
+                                                    <div class="img-wrapper">
+                                                        @if ($product->discount_price)
+                                                            <div class="label-block">
+                                                                <img src="{{ asset('client/assets/images/product/2.png') }}"
+                                                                    alt="label">
+                                                                <span>Giảm <br>giá!</span>
+                                                            </div>
+                                                        @endif
 
-                                                <div class="product-image">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <img class="bg-img" 
-                                                            src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}" 
-                                                            alt="{{ $product->name }}">
-                                                    </a>
-                                                </div>
+                                                        <div class="product-image">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <img class="bg-img"
+                                                                    src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
+                                                                    alt="{{ $product->name }}">
+                                                            </a>
+                                                        </div>
 
-                                                <div class="cart-info-icon">
-                                                    <a class="wishlist-icon" href="javascript:void(0)">
-                                                        <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
-                                                    </a>
+                                                        <div class="cart-info-icon">
+                                                            <a class="wishlist-icon" href="javascript:void(0)">
+                                                                <i class="far fa-heart" data-bs-toggle="tooltip"
+                                                                    data-bs-title="Thêm vào yêu thích"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="product-detail">
+                                                        <div class="add-button">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                                            </a>
+                                                        </div>
+
+                                                        <a href="{{ route('products.detail', $product->id) }}">
+                                                            <h5>{{ Str::limit($product->name, 40) }}</h5>
+                                                        </a>
+
+                                                        <p>
+                                                            @if ($product->discount_price)
+                                                                {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                                                @php
+                                                                    $discountPercent = round(
+                                                                        (($product->discount_price -
+                                                                            $product->base_price) /
+                                                                            $product->base_price) *
+                                                                            100,
+                                                                    );
+                                                                @endphp
+                                                                <span>{{ $discountPercent }}%</span>
+                                                            @else
+                                                                {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                                            @endif
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            <div class="product-detail">
-                                                <div class="add-button">
-                                                    <a href="{{ route('products.detail', $product->id) }}">
-                                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                                    </a>
-                                                </div>
-
-                                                <a href="{{ route('products.detail', $product->id) }}">
-                                                    <h5>{{ Str::limit($product->name, 40) }}</h5>
-                                                </a>
-
-                                                <p>
-                                                    @if($product->discount_price)
-                                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
-                                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
-                                                        @php
-                                                            $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
-                                                        @endphp
-                                                        <span>-{{ $discountPercent }}%</span>
-                                                    @else
-                                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
-                                                    @endif
-                                                </p>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-center">Chưa có sản phẩm bán chạy</p>
                                             </div>
-                                        </div>
+                                        @endforelse
                                     </div>
-                                    @empty
-                                    <div class="col-12">
-                                        <p class="text-center">Chưa có sản phẩm bán chạy</p>
-                                    </div>
-                                    @endforelse
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
     {{-- bài viết --}}
     <section class="section-t-space">
         <div class="custom-container container">
             <div class="title">
-                <h3>Latest Blog</h3>
+                <h3>Bài viết mới nhất</h3>
                 <svg>
                     <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
                 </svg>
@@ -481,23 +579,21 @@
                 </div>
                 <div class="col-xl-4 col-5">
                     <div class="subscribe-content">
-                        <h6>GET 20% OFF</h6>
-                        <h4>Subscribe to Our Newsletter!</h4>
+                        <h6>Giảm giá tới 30%</h6>
+                        <h4>Đăng ký nhận thông tin của chúng tôi!</h4>
                         <p>
-                            Join the insider list - you’ll be the first to know about new
-                            arrivals, insider - only discounts and receive \$15 off your
-                            first order.
+                            Tham gia danh sách - bạn sẽ là người đầu tiên biết về các sản phẩm mới, các chương trình dành riêng và được giảm giá 30.000 VND cho đơn đầu tiên.
                         </p>
                         <input type="text" name="text" placeholder="Your email address..." />
                         <div class="link-hover-anim underline">
                             <a class="btn btn_underline link-strong link-strong-unhovered"
-                                href="{{ route('home') }}">Subscribe Now
+                                href="{{ route('home') }}">Đăng ký ngay
                                 <svg>
                                     <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                 </svg>
                             </a>
                             <a class="btn btn_underline link-strong link-strong-hovered"
-                                href="{{ route('home') }}">Subscribe Now
+                                href="{{ route('home') }}">Đăng ký ngay
                                 <svg>
                                     <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                 </svg>
@@ -509,89 +605,94 @@
         </div>
     </section>
     {{-- sản phẩm --}}
-<section class="section-t-space">
-    <div class="custom-container container product-contain">
-        <div class="title">
-            <h3>Sản phẩm đa dạng nhất</h3>
-            <svg>
-                <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
-            </svg>
-        </div>
-        
-        <div class="swiper fashikart-slide">
-            <div class="swiper-wrapper trending-products ratio_square">
-                
-                @forelse($diverseProducts as $product)
-                <div class="swiper-slide product-box">
-                    <div class="img-wrapper">
-                            @if($product->discount_price)
-                                                <div class="label-block">
-                                                    <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
-                                                    <span>Giảm <br>giá!</span>
-                                                </div>
-                                                @endif
-                        {{-- Ảnh sản phẩm --}}
-                        <div class="product-image">
-                            <a href="{{ route('products.detail', $product->id) }}">
-                                <img class="bg-img"
-                                    src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
-                                    alt="{{ $product->name }}">
-                            </a>
-                        </div>
-
-                        {{-- Icons --}}
-                        <div class="cart-info-icon">
-                            <a class="wishlist-icon" href="javascript:void(0)" tabindex="0">
-                                <i class="far fa-heart" data-bs-toggle="tooltip" data-bs-title="Thêm vào yêu thích"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    {{-- Chi tiết sản phẩm --}}
-                    <div class="product-detail">
-                        <div class="add-button">
-                            <a href="{{ route('products.detail', $product->id) }}"
-                                title="Xem chi tiết" tabindex="0">
-                                <i class="fa-solid fa-eye"></i> Xem chi tiết
-                            </a>
-                        </div>
-
-
-                        <a href="{{ route('products.detail', $product->id) }}">
-                            <h5>{{ Str::limit($product->name, 40) }}</h5>
-                        </a>
-
-                        {{-- Giá sản phẩm --}}
-                        <p>
-                            @if($product->discount_price)
-                                {{ number_format($product->discount_price, 0, ',', '.') }}₫ 
-                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
-                                @php
-                                    $discountPercent = round((($product->discount_price -$product->base_price) / $product->base_price) * 100);
-                                @endphp
-                                <span>-{{ $discountPercent }}%</span>
-                            @else
-                                {{ number_format($product->base_price, 0, ',', '.') }}₫
-                            @endif
-                        </p>
-
-
-                    </div>
-                </div>
-                @empty
-                <div class="swiper-slide">
-                    <p class="text-center">Chưa có sản phẩm</p>
-                </div>
-                @endforelse
-
+    <section class="section-t-space">
+        <div class="custom-container container product-contain">
+            <div class="title">
+                <h3>Sản phẩm đa dạng nhất</h3>
+                <svg>
+                    <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
+                </svg>
             </div>
 
-            {{-- Navigation buttons --}}
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
+            <div class="swiper fashikart-slide">
+                <div class="swiper-wrapper trending-products ratio_square">
+
+                    @forelse($diverseProducts as $product)
+                        <div class="swiper-slide product-box">
+                            <div class="img-wrapper">
+                                @if ($product->discount_price)
+                                    <div class="label-block">
+                                        <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
+                                        <span>Giảm <br>giá!</span>
+                                    </div>
+                                @endif
+                                {{-- Ảnh sản phẩm --}}
+                                <div class="product-image">
+                                    <a href="{{ route('products.detail', $product->id) }}">
+                                        <img class="bg-img"
+                                            src="{{ $product->image_main ? asset('storage/' . $product->image_main) : asset('client/assets/images/product/product-4/1.jpg') }}"
+                                            alt="{{ $product->name }}">
+                                    </a>
+                                </div>
+
+                                {{-- Icons --}}
+                                <div class="cart-info-icon">
+                                    <a class="wishlist-icon" href="javascript:void(0)" tabindex="0">
+                                        <i class="far fa-heart" data-bs-toggle="tooltip"
+                                            data-bs-title="Thêm vào yêu thích"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            {{-- Chi tiết sản phẩm --}}
+                            <div class="product-detail">
+                                <div class="add-button">
+                                    <a href="{{ route('products.detail', $product->id) }}" title="Xem chi tiết"
+                                        tabindex="0">
+                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                    </a>
+                                </div>
+
+
+                                <a href="{{ route('products.detail', $product->id) }}">
+                                    <h5>{{ Str::limit($product->name, 40) }}</h5>
+                                </a>
+
+                                {{-- Giá sản phẩm --}}
+                                <p>
+                                    @if ($product->discount_price)
+                                        {{ number_format($product->discount_price, 0, ',', '.') }}₫
+                                        <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
+                                        @php
+                                            $discountPercent = round(
+                                                (($product->discount_price - $product->base_price) /
+                                                    $product->base_price) *
+                                                    100,
+                                            );
+                                        @endphp
+                                        <span>{{ $discountPercent }}%</span>
+                                    @else
+                                        {{ number_format($product->base_price, 0, ',', '.') }}₫
+                                    @endif
+                                </p>
+
+
+                            </div>
+                        </div>
+                    @empty
+                        <div class="swiper-slide">
+                            <p class="text-center">Chưa có sản phẩm</p>
+                        </div>
+                    @endforelse
+
+                </div>
+
+                {{-- Navigation buttons --}}
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
     {{-- insta KOL --}}
     <section class="section-t-space instashop-section">
         <div class="container-fluid">
@@ -606,16 +707,16 @@
                                     <svg class="insta-icon">
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#instagram') }}"></use>
                                     </svg>
-                                    <p>Instashop</p>
+                                    <p>KOL Insta</p>
                                     <div class="link-hover-anim underline">
                                         <a class="btn btn_underline link-strong link-strong-unhovered"
-                                            href="product.html">Discover
+                                            href="product.html">Đến ngay
                                             <svg>
                                                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                             </svg>
                                         </a>
                                         <a class="btn btn_underline link-strong link-strong-hovered"
-                                            href="product.html">Discover
+                                            href="product.html">Đến ngay
                                             <svg>
                                                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                             </svg>
@@ -636,16 +737,16 @@
                                     <svg class="insta-icon">
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#instagram') }}"></use>
                                     </svg>
-                                    <p>Instashop</p>
+                                    <p>KOL Insta</p>
                                     <div class="link-hover-anim underline">
                                         <a class="btn btn_underline link-strong link-strong-unhovered"
-                                            href="product.html">Discover
+                                            href="product.html">Đến ngay
                                             <svg>
                                                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                             </svg>
                                         </a>
                                         <a class="btn btn_underline link-strong link-strong-hovered"
-                                            href="product.html">Discover
+                                            href="product.html">Đến ngay
                                             <svg>
                                                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                             </svg>
@@ -664,7 +765,7 @@
                                     <svg>
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#instagram') }}"></use>
                                     </svg>
-                                    <h3>Instashop</h3>
+                                    <h3>KOL Instagram</h3>
                                 </div>
                                 <span></span>
                                 <p>A conscious collection made entirely from food crop waste, recycled cotton, other more
@@ -673,9 +774,9 @@
                             <div>
                                 <div class="link-hover-anim underline">
                                     <a class="btn btn_underline link-strong link-strong-unhovered"
-                                        href="https://www.instagram.com/" target="_blank">Go To Instagram</a>
+                                        href="https://www.instagram.com/" target="_blank">Đến ngay Instagram</a>
                                     <a class="btn btn_underline link-strong link-strong-hovered"
-                                        href="https://www.instagram.com/" target="_blank">Go To Instagram</a>
+                                        href="https://www.instagram.com/" target="_blank">Đến ngay Instagram</a>
                                 </div>
                             </div>
                         </div>
@@ -746,306 +847,301 @@
     </section>
     {{-- thương hiệu --}}
 
-{{-- thương hiệu --}}
-<section class="section-b-space">
-    <div class="custom-container container">
-        <div class="swiper logo-slider">
-            <div class="swiper-wrapper">
+    {{-- thương hiệu --}}
+    <section class="section-b-space">
+        <div class="custom-container container">
+            <div class="swiper logo-slider">
+                <div class="swiper-wrapper">
 
-                @foreach ($brands as $brand)
-                    <div class="swiper-slide">
-                        <a href="#">
-                            <img src="{{ asset('storage/'.$brand->logo) }}" alt="{{ $brand->name }}">
-                        </a>
-                    </div>
-                @endforeach
+                    @foreach ($brands as $brand)
+                        <div class="swiper-slide">
+                            <a href="#">
+                                <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}">
+                            </a>
+                        </div>
+                    @endforeach
 
+                </div>
             </div>
         </div>
-    </div>
-</section>
-{{-- ========================================================= --}}
+    </section>
+    {{-- ========================================================= --}}
     {{-- PHẦN CHATBOT (ĐÃ CẬP NHẬT GIAO DIỆN & SỬA LỖI)            --}}
     {{-- ========================================================= --}}
 
     <style>
-        /* Nút tròn chat (Icon Robot) */
-        #chat-circle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px; /* To hơn chút */
-            height: 65px;
-            background: #007bff; /* Màu xanh chủ đạo */
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px; /* Icon to hơn */
-            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
-            z-index: 9999;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+    /* Nút tròn chat */
+    #chat-circle {
+        position: fixed;
+        bottom: 30px; right: 30px;
+        width: 60px; height: 60px;
+        background: #007bff;
+        border-radius: 50%;
+        color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        cursor: pointer; z-index: 9999;
+        transition: transform 0.3s;
+    }
+    #chat-circle:hover { transform: scale(1.1); }
 
-        #chat-circle:hover {
-            transform: scale(1.1);
-            background: #0056b3;
-            box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.4);
-        }
+    /* Khung chat */
+    .chat-box {
+        display: none; /* Mặc định ẩn */
+        position: fixed;
+        bottom: 100px; right: 30px;
+        width: 400px; max-width: 90%;
+        height: 65vh; max-height: 600px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+        z-index: 9999;
+        flex-direction: column;
+        border: 1px solid #ddd;
+        font-family: Arial, sans-serif;
+    }
 
-        /* Khung chat Box */
-        .chat-box {
-            display: none; /* Ẩn mặc định */
-            position: fixed;
-            bottom: 110px; /* Cách nút tròn một chút */
-            right: 30px;
-            
-            /* --- [FIX QUAN TRỌNG: KÍCH THƯỚC] --- */
-            width: 450px;          /* Chiều rộng to hơn (cũ là 380px) */
-            max-width: 90vw;       /* Không quá 90% chiều rộng màn hình (cho mobile) */
-            
-            height: 70vh;          /* Cao bằng 70% chiều cao màn hình -> Không bị tràn lên trên */
-            max-height: 600px;     /* Giới hạn cao nhất là 600px */
-            /* ------------------------------------ */
+    /* Header */
+    .chat-header {
+        background: #007bff; color: white;
+        padding: 15px;
+        font-weight: bold;
+        display: flex; justify-content: space-between; align-items: center;
+        border-radius: 12px 12px 0 0;
+    }
+    .chat-close { cursor: pointer; font-size: 20px; }
 
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
-            z-index: 9999;
-            overflow: hidden;
-            font-family: sans-serif;
-            border: 1px solid #ddd;
-            flex-direction: column; /* Để xếp dọc Header - Body - Input */
-        }
+    /* Vùng tin nhắn */
+    #messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        background: #f4f6f9;
+        display: flex; flex-direction: column; gap: 10px;
+    }
 
-        /* Header Chat */
-        .chat-box-header {
-            background: linear-gradient(135deg, #007bff, #0056b3); /* Màu gradient đẹp hơn */
-            color: white;
-            padding: 15px 20px;
-            font-weight: bold;
-            font-size: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0; /* Không bị co lại */
-        }
-        .chat-close { cursor: pointer; font-size: 24px; transition: 0.2s; }
-        .chat-close:hover { color: #ffdddd; }
+    /* Bong bóng tin nhắn */
+    .message {
+        padding: 10px 14px;
+        border-radius: 10px;
+        max-width: 85%;
+        word-wrap: break-word;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .user {
+        background: #007bff; color: white;
+        align-self: flex-end; /* Căn phải */
+    }
+    .ai {
+        background: #fff; color: #333;
+        border: 1px solid #e1e1e1;
+        align-self: flex-start; /* Căn trái */
+    }
 
-        /* Vùng hiển thị tin nhắn */
-        #messages {
-            flex-grow: 1; /* Tự động chiếm hết khoảng trống còn lại */
-            overflow-y: auto; /* Chỉ cuộn nội dung bên trong, không cuộn cả web */
-            padding: 20px;
-            background: #f4f6f9;
-        }
+    /* --- HIỆU ỨNG LOADING (3 chấm nhảy) --- */
+    .typing-indicator {
+        display: none; /* Ẩn mặc định, JS sẽ bật */
+        align-self: flex-start;
+        background: #e6e6e6;
+        padding: 10px 15px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+    }
+    .dot {
+        height: 8px; width: 8px;
+        background-color: #666;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 0 2px;
+        animation: chatBounce 1.4s infinite ease-in-out both;
+    }
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes chatBounce {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+    }
 
-        /* Tùy chỉnh thanh cuộn cho đẹp */
-        #messages::-webkit-scrollbar { width: 6px; }
-        #messages::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
+    /* --- THẺ SẢN PHẨM INLINE (Hiện ngay trong dòng) --- */
+    .inline-product-card {
+        display: block;
+        margin: 8px 0;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+        max-width: 250px; /* Giới hạn chiều rộng ảnh cho gọn */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .inline-product-card img {
+        width: 100%; height: 150px; object-fit: cover;
+    }
+    .inline-product-card .btn-view {
+        display: block;
+        text-align: center;
+        padding: 6px;
+        background: #f8f9fa;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .inline-product-card .btn-view:hover { background: #e9ecef; }
 
-        .message {
-            margin-bottom: 15px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            max-width: 80%;
-            word-wrap: break-word;
-            line-height: 1.5;
-            font-size: 15px; /* Chữ to hơn chút cho dễ đọc */
-            position: relative;
-        }
+    /* Input */
+    .input-area {
+        padding: 10px; border-top: 1px solid #eee; background: white;
+        display: flex;
+    }
+    #msg-input {
+        flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none;
+    }
+    #btn-send {
+        margin-left: 10px; padding: 0 15px;
+        background: #007bff; color: white; border: none; border-radius: 20px; cursor: pointer;
+    }
+</style>
 
-        .user {
-            background: #007bff;
-            color: white;
-            margin-left: auto;
-            text-align: right;
-            border-bottom-right-radius: 2px;
-        }
+<div id="chat-circle" onclick="toggleChat()">
+    <i class="fa-solid fa-robot"></i> </div>
 
-        .ai {
-            background: #ffffff;
-            color: #333;
-            border: 1px solid #e1e1e1;
-            border-bottom-left-radius: 2px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-
-        /* Input Area */
-        .input-area {
-            display: flex;
-            padding: 15px;
-            background: white;
-            border-top: 1px solid #eee;
-            flex-shrink: 0; /* Không bị co lại */
-        }
-
-        #msg {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            outline: none;
-            font-size: 15px;
-            background: #f9f9f9;
-        }
-        #msg:focus { border-color: #007bff; background: #fff; }
-
-        #btn-send {
-            margin-left: 10px;
-            padding: 0 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-        #btn-send:hover { background: #0056b3; }
-
-        /* Card Sản Phẩm trong chat */
-        .product-container {
-            margin-top: 12px;
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: transform 0.2s;
-        }
-        .product-container:hover { transform: translateY(-3px); }
-        .product-img {
-            width: 100%;
-            height: 140px; /* Ảnh to hơn */
-            object-fit: cover;
-            border-radius: 6px;
-            background: #f0f0f0;
-        }
-        .product-caption {
-            font-size: 13px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 8px;
-            color: #007bff;
-            text-transform: uppercase;
-        }
-        .product-link { text-decoration: none; display: block; }
-    </style>
-
-    <div id="chat-circle" onclick="toggleChat()">
-        <i class="fa-solid fa-robot"></i>
+<div class="chat-box" id="chat-box">
+    <div class="chat-header">
+        <span>AI Trợ Lý</span>
+        <span class="chat-close" onclick="toggleChat()">×</span>
+    </div>
+    
+    <div id="messages">
+        <div class="message ai">Xin chào! Tôi có thể giúp gì cho bạn?</div>
+        <div class="typing-indicator" id="loading-dots">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
     </div>
 
-    <div class="chat-box" id="chat-box" style="display: none;">
-        <div class="chat-box-header">
-            <span><i class="fa-solid fa-robot" style="margin-right: 8px;"></i> AI Trợ Lý</span>
-            <span class="chat-close" onclick="toggleChat()">&times;</span>
-        </div>
+    <div class="input-area">
+        <input type="text" id="msg-input" placeholder="Nhập tin nhắn..." onkeydown="if(event.keyCode===13) sendMessage()">
+        <button id="btn-send" onclick="sendMessage()">Gửi</button>
+    </div>
+</div>
+
+<script>
+    // --- KHAI BÁO BIẾN TOÀN CỤC ---
+    const chatBox = document.getElementById('chat-box');
+    const messagesArea = document.getElementById('messages');
+    const inputField = document.getElementById('msg-input');
+    const loadingDots = document.getElementById('loading-dots');
+    let isChatOpen = false;
+    let isProcessing = false;
+
+    // 1. HÀM BẬT TẮT CHAT (Đảm bảo hoạt động)
+    function toggleChat() {
+        isChatOpen = !isChatOpen;
+        chatBox.style.display = isChatOpen ? 'flex' : 'none';
+        if (isChatOpen) inputField.focus();
+    }
+
+    // 2. HÀM GỬI TIN NHẮN
+    function sendMessage() {
+        if (isProcessing) return; // Chặn spam
+
+        const text = inputField.value.trim();
+        if (!text) return;
+
+        // Hiện tin nhắn User
+        appendMessage(text, 'user');
+        inputField.value = '';
+
+        // Bật Loading
+        showLoading(true);
+
+        // Gọi API
+        fetch("/chatbot/ask", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}" // Blade token
+            },
+            body: JSON.stringify({ message: text })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const rawMsg = data.message;
+            const links = data.product_links || {};
+            
+            // XỬ LÝ CHÈN ẢNH VÀO GIỮA VĂN BẢN
+            const finalHtml = processMessageWithImages(rawMsg, links);
+            
+            appendMessage(finalHtml, 'ai', true); // true = render HTML
+        })
+        .catch(err => {
+            console.error(err);
+            appendMessage("Lỗi kết nối server. Vui lòng thử lại!", 'ai');
+        })
+        .finally(() => {
+            showLoading(false);
+        });
+    }
+
+    // 3. LOGIC CHÈN ẢNH VÀO SAU TÊN SẢN PHẨM (CORE)
+    function processMessageWithImages(text, productLinks) {
+        let processedText = text.replace(/\n/g, '<br>'); // Xuống dòng
         
-        <div id="messages">
-            <div class="message ai">Xin chào! Tôi là AI hỗ trợ. Bạn cần tìm sản phẩm gì không?</div>
-        </div>
+        // Sắp xếp tên dài trước để replace chính xác
+        const sortedNames = Object.keys(productLinks).sort((a, b) => b.length - a.length);
 
-        <div class="input-area">
-            <input id="msg" type="text" placeholder="Nhập câu hỏi..." onkeydown="if(event.keyCode===13) sendMsg()">
-            <button id="btn-send" onclick="sendMsg()">Gửi</button>
-        </div>
-    </div>
+        sortedNames.forEach(name => {
+            // Lấy data sản phẩm
+            const prod = productLinks[name];
+            
+            // Tạo thẻ HTML cho ảnh
+            const cardHtml = `
+                <div class="inline-product-card">
+                    <a href="${prod.product_url}" target="_blank">
+                        <img src="${prod.image_url}" onerror="this.src='https://placehold.co/300?text=No+Image'">
+                        <div class="btn-view">Xem chi tiết ${prod.name}</div>
+                    </a>
+                </div>
+            `;
 
-    <script>
-        // Hàm bật/tắt khung chat
-        function toggleChat() {
-            var chatBox = document.getElementById('chat-box');
-            if (chatBox.style.display === 'none' || chatBox.style.display === '') {
-                chatBox.style.display = 'flex';
-                // Focus vào ô nhập liệu khi mở
-                setTimeout(() => document.getElementById("msg").focus(), 100);
-            } else {
-                chatBox.style.display = 'none';
-            }
-        }
+            // Regex tìm tên (không phân biệt hoa thường)
+            // Replace tên sản phẩm = Tên sản phẩm + Thẻ ảnh
+            const safeName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`(${safeName})`, 'gi');
+            
+            // Chỉ replace lần xuất hiện đầu tiên hoặc tất cả tuỳ ý. 
+            // Ở đây dùng replace (thay thế lần đầu) để tránh spam ảnh nếu tên lặp lại nhiều lần.
+            // Nếu muốn tất cả thì dùng replaceAll hoặc regex g
+            processedText = processedText.replace(regex, `<b>$1</b><br>${cardHtml}`);
+        });
 
-        // Hàm gửi tin nhắn (Logic cũ của bạn)
-        function sendMsg() {
-            let text = document.getElementById("msg").value;
-            if (!text) return;
+        return processedText;
+    }
 
-            // Hiển thị tin nhắn User
-            let msgDiv = document.createElement('div');
-            msgDiv.className = 'message user';
-            msgDiv.textContent = text;
-            let messagesArea = document.getElementById("messages");
-            messagesArea.appendChild(msgDiv);
-            messagesArea.scrollTop = messagesArea.scrollHeight; // Auto scroll
+    // Hỗ trợ UI
+    function appendMessage(content, role, isHtml = false) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${role}`;
+        
+        if (isHtml) msgDiv.innerHTML = content;
+        else msgDiv.textContent = content;
 
-            document.getElementById("msg").value = '';
+        // Chèn tin nhắn mới LÊN TRÊN cái loading (để loading luôn ở cuối)
+        messagesArea.insertBefore(msgDiv, loadingDots);
+        scrollToBottom();
+    }
 
-            // Gọi API
-            fetch("/chatbot/ask", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}" // Laravel Token
-                },
-                body: JSON.stringify({ message: text })
-            })
-            .then(res => res.json())
-            .then(data => {
-                let replyDiv = document.createElement('div');
-                replyDiv.className = 'message ai';
-                let messageHtml = data.message;
-                
-                // Lấy danh sách link từ Backend
-                const PRODUCT_LINKS = data.product_links || {};
+    function showLoading(show) {
+        isProcessing = show;
+        loadingDots.style.display = show ? 'block' : 'none';
+        scrollToBottom();
+    }
 
-                // --- [FIX LỖI HIỂN THỊ ẢNH] ---
-                // Sắp xếp tên dài lên trước để ưu tiên hiển thị (tránh nhầm tên con)
-                let productNames = Object.keys(PRODUCT_LINKS).sort((a, b) => b.length - a.length);
-
-                productNames.forEach(name => {
-                    const product = PRODUCT_LINKS[name];
-                    
-                    // Xử lý ký tự đặc biệt trong tên để không lỗi Regex
-                    let safeName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                    
-                    // Regex tìm tên sản phẩm (không phân biệt hoa thường)
-                    const regex = new RegExp(`(${safeName})`, 'gi'); 
-
-                    if (messageHtml.match(regex)) {
-                        // In đậm tên sản phẩm
-                        messageHtml = messageHtml.replace(regex, "<b>$1</b>");
-
-                        // Tạo thẻ Ảnh (có fallback nếu ảnh lỗi)
-                        const imageHtml = `
-                            <div class="product-container">
-                                <a href="${product.product_url}" target="_blank" class="product-link">
-                                    <img src="${product.image_url}" class="product-img" 
-                                         alt="${name}"
-                                         onerror="this.src='https://placehold.co/400x300?text=No+Image'; this.onerror=null;">
-                                    <div class="product-caption">Xem chi tiết</div>
-                                </a>
-                            </div><br>`;
-                        
-                        // Chèn ảnh xuống cuối câu trả lời
-                        messageHtml += imageHtml;
-                    }
-                });
-
-                replyDiv.innerHTML = messageHtml;
-                messagesArea.appendChild(replyDiv);
-                messagesArea.scrollTop = messagesArea.scrollHeight;
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Lỗi kết nối Server");
-            });
-        }
-    </script>
+    function scrollToBottom() {
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+</script>
 
 
 

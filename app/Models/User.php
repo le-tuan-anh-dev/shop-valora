@@ -97,4 +97,8 @@ class User extends Authenticatable
             'product_id'      // cột product_id trong wishlists
         )->withTimestamps();
     }
+    public function reviews()
+{
+    return $this->hasMany(\App\Models\Review::class);
+}
 }

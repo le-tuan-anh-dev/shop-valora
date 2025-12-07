@@ -1,5 +1,6 @@
 <?php 
-namespace App\Models\admin;
+
+namespace App\Models\Admin;     // SỬA: Admin viết hoa, đồng bộ với namespace khác
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,10 +17,12 @@ class AttributeValue extends Model
 
     public function attribute()
     {
-       return $this->belongsTo(Attributes::class, 'attribute_id');
+        // SỬA: thêm use hoặc dùng FQCN \App\Models\Admin\Attributes nếu cần
+        return $this->belongsTo(Attributes::class, 'attribute_id');
     }
+
     public function variantAttributeValues()
-{
-    return $this->hasMany(VariantAttributeValue::class, 'attribute_value_id');
-}
+    {
+        return $this->hasMany(VariantAttributeValue::class, 'attribute_value_id');
+    }
 }

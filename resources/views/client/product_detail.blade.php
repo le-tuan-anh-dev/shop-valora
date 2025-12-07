@@ -74,7 +74,7 @@
                                 <strong>{{ number_format($product->discount_price, 0, ',', '.') }} đ</strong>
                                 <del>{{ number_format($product->base_price, 0, ',', '.') }} đ</del>
                                 <span class="offer-btn">
-                                    {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% off
+                                    - {{ round((($product->base_price - $product->discount_price) / $product->base_price) * 100) }}% 
                                 </span>
                             @else
                             <strong>{{ number_format($product->base_price, 0, ',', '.') }} đ</strong>
@@ -86,7 +86,7 @@
                             <li><i class="fa-solid fa-star"></i></li>
                             <li><i class="fa-solid fa-star-half-stroke"></i></li>
                             <li><i class="fa-regular fa-star"></i></li>
-                            <li>4.5</li>
+                            <li>{{ $averageRating }}</li>
                         </ul>
 
                         <h6>
@@ -192,6 +192,12 @@
                                             <p>{{ $product->name }}</p>
                                         </div>
                                     </li>
+                                    <li>
+                                        <div class="d-flex align-items-center gap-2"> 
+                                            <h6>Thương hiệu:</h6>
+                                            <p>{{  $brand->name ??'' }}</p>
+                                        </div>
+                                    </li>
                                 </ul>
                             </div>
                         </form>
@@ -242,39 +248,6 @@
         </div>
     </div>
 
-
-    <!-- Wishlist & Compare -->
-    <div class="buy-box">
-        <ul> 
-            <li><a href="wishlist.html"><i class="fa-regular fa-heart me-2"></i>Thêm vào sản phẩm yêu thích</a></li>
-            <li><a href="compare.html"><i class="fa-solid fa-arrows-rotate me-2"></i>Add To Compare</a></li>
-            <li><a href="#" data-bs-toggle="modal" data-bs-target="#social-box"><i class="fa-solid fa-share-nodes me-2"></i>Chia sẻ</a></li>
-        </ul>
-    </div>
-
-    <!-- Info Box -->
-    <div class="dz-info"> 
-        <ul> 
-            <li>
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Mã sản phẩm:</h6>
-                    <span id="skuDisplay">{{ $product->id }}</span>
-                </div>
-            </li>
-            <li> 
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Số lượng còn:</h6>
-                    <span id="stockDisplay">{{ $product->stock }}</span>
-                </div>
-            </li>
-            <li> 
-                <div class="d-flex align-items-center gap-2"> 
-                    <h6>Thương hiệu:</h6>
-                    <p>{{  $brand->name ??'' }}</p>
-                </div>
-            </li>
-        </ul>
-    </div>
 </form>
         </div>
     </div>
@@ -294,73 +267,157 @@
                             <div class="row gy-4">
                                 <div class="col-lg-4">
                                     <div class="review-right">
-                                        <div class="customer-rating">
-                                            <div class="global-rating">
-                                                <div>
-                                                    <h5>4.5</h5>
-                                                </div>
-                                                <div>
-                                                    <h6>Average Ratings</h6>
-                                                    <ul class="rating p-0 mb">
-                                                        <li><i class="fa-solid fa-star"></i></li>
-                                                        <li><i class="fa-solid fa-star"></i></li>
-                                                        <li><i class="fa-solid fa-star"></i></li>
-                                                        <li><i class="fa-solid fa-star-half-stroke"></i></li>
-                                                        <li><i class="fa-regular fa-star"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <ul class="rating-progess">
-                                                <li>
-                                                    <p>5 Star</p>
-                                                    <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                                                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 80%"></div>
-                                                    </div>
-                                                    <p>80%</p>
-                                                </li>
-                                                <!-- Other ratings follow a similar structure -->
-                                            </ul>
-                                            <button class="btn reviews-modal" data-bs-toggle="modal" data-bs-target="#Reviews-modal" title="Quick View" tabindex="0">
-                                                Write a review
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-8"> 
-                                    <div class="comments-box"> 
-                                        <h5>Comments</h5>
-                                        <ul class="theme-scrollbar"> 
-                                            <li> 
-                                                <div class="comment-items"> 
-                                                    <div class="user-img"> 
-                                                        <img src="{{ asset('client/assets/images/user/1.jpg') }}" alt="">
-                                                    </div>
-                                                    <div class="user-content"> 
-                                                        <div class="user-info"> 
-                                                            <div class="d-flex justify-content-between gap-3"> 
-                                                                <h6><i class="iconsax" data-icon="user-1"></i>Michel Poe</h6>
-                                                                <span><i class="iconsax" data-icon="clock"></i>Mar 29, 2022</span>
-                                                            </div>
-                                                            <ul class="rating p-0 mb">
-                                                                <li><i class="fa-solid fa-star"></i></li>
-                                                                <li><i class="fa-solid fa-star"></i></li>
-                                                                <li><i class="fa-solid fa-star"></i></li>
-                                                                <li><i class="fa-solid fa-star-half-stroke"></i></li>
-                                                                <li><i class="fa-regular fa-star"></i></li>
-                                                            </ul>
-                                                        </div>
-                                                        <p>Khaki cotton blend military jacket flattering fit mock horn buttons and patch pockets.</p>
-                                                        <a href="#">
-                                                            <span><i class="iconsax" data-icon="undo"></i> Replay</span>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <!-- Additional comments follow a similar structure -->
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>{{-- .row --}}
+        <div class="customer-rating">
+            <div class="global-rating">
+                <div>
+                    <h5>{{ $averageRating }}</h5>
+                </div>
+                <div>
+                    <h6>Average Ratings</h6>
+                    <ul class="rating p-0 mb">
+                        {{-- Hiển thị sao trung bình --}}
+                        @for($i = 1; $i <= 5; $i++)
+                            <li><i class="fa-solid fa-star {{ $i <= round($averageRating) ? 'text-warning' : 'text-muted' }}"></i></li>
+                        @endfor
+                    </ul>
+                </div>
+            </div>
+
+            <ul class="rating-progess">
+                @foreach($ratingPercentages as $star => $data)
+                <li>
+                    <p>{{ str_replace('star', ' Star', $star) }}</p>
+                    <div class="progress" role="progressbar">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             style="width: {{ $data['percentage'] }}%"></div>
+                    </div>
+                    <p>{{ $data['percentage'] }}%</p>
+                </li>
+                @endforeach
+            </ul>
+
+           
+            
+        </div>
+    </div>
+</div>
+                                <div class="col-lg-8">
+    <div class="comments-box">
+        <h5>Đánh giá từ khách hàng ({{ $totalReviews }})</h5>
+        <ul class="theme-scrollbar">
+            
+            @forelse($reviews as $review)
+    <li>
+        <div class="comment-items">
+            {{-- === 1. HIỂN THỊ ẢNH USER (AVATAR) === --}}
+            <div class="user-img">
+                @php
+                    // Thiết lập URL mặc định nếu không có ảnh
+                    $avatarUrl = asset('client/assets/images/user/1.jpg'); 
+
+                    if (!empty($review->user->image)) {
+                        // Kiểm tra nếu ảnh user có tồn tại trong storage
+                        if (Storage::disk('public')->exists($review->user->image)) {
+                            $avatarUrl = Storage::url($review->user->image);
+                        } 
+                        // Bạn có thể thêm logic nếu ảnh nằm ở thư mục public/uploads/users
+                        // else {
+                        //     $avatarUrl = asset($review->user->image);
+                        // }
+                    }
+                @endphp
+                <img src="{{ $avatarUrl }}" alt="{{ $review->user->name ?? 'User' }} Avatar"> 
+            </div>
+            
+            <div class="user-content">
+                <div class="user-info">
+                    <div class="d-flex justify-content-between gap-3 w-100 align-items-center">
+                        {{-- Tên người dùng --}}
+                        <h6><i class="iconsax" data-icon="user-1"></i> {{ $review->user->name ?? 'Người dùng ẩn danh' }}</h6>
+                        
+                        {{-- === 2. NÚT XÓA ĐÁNH GIÁ (CHỈ HIỂN THỊ CHO CHỦ REVIEW) === --}}
+                        @auth
+                            {{-- $review->parent_id == null để đảm bảo không xóa phản hồi của Admin --}}
+                            @if(Auth::id() == $review->user_id && $review->parent_id == null) 
+                                <form action="{{ route('products.review.delete', $review) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này không?');" class="ms-auto">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" style="font-size: 12px; padding: 3px 8px;">
+                                        <i class="fa-solid fa-trash-can"></i> Xóa
+                                    </button>
+                                </form>
+                            @endif
+                        @endauth
+                        {{-- END: NÚT XÓA --}}
+                    </div>
+                    
+                    {{-- Thời gian đánh giá --}}
+                    <span><i class="iconsax" data-icon="clock"></i> {{ $review->created_at->format('d/m/Y') }}</span>
+
+                    {{-- Hiển thị số sao --}}
+                    <ul class="rating p-0 mb">
+                        @for($i = 1; $i <= 5; $i++)
+                            <li><i class="fa-solid fa-star {{ $i <= $review->rating ? 'text-warning' : 'text-muted' }}"></i></li>
+                        @endfor
+                    </ul>
+                </div>
+
+                {{-- === HIỂN THỊ BIẾN THỂ (SIZE/MÀU) === --}}
+                @if($review->productVariant)
+                    <div class="variant-info mt-1" style="font-size: 0.85rem; color: #777; background: #f9f9f9; padding: 5px; border-radius: 4px; display: inline-block;">
+                        <strong>Phân loại:</strong>
+                        @foreach($review->productVariant->attributeValues as $attrValue)
+                            <span>{{ $attrValue->attribute->name }}: {{ $attrValue->value }}</span>
+                            @if(!$loop->last) | @endif
+                        @endforeach
+                    </div>
+                @endif
+
+                <p class="mt-2">{{ $review->comment }}</p>
+
+               
+                
+                {{-- === PHẢN HỒI TỪ ADMIN/SHOP (LỒNG VÀO) === --}}
+                @if($review->replies->count() > 0)
+                    @foreach($review->replies as $reply)
+                        <div class="admin-reply mt-3 p-3 border-start border-3 border-info bg-light ms-3">
+                            <div class="d-flex align-items-center mb-2">
+                                {{-- Avatar của người phản hồi (Admin/Shop) --}}
+                                @php
+                                    $replyAvatarUrl = $reply->user->image ? Storage::url($reply->user->image) : asset('client/assets/images/user/admin-icon.png');
+                                @endphp
+                                <img src="{{ $replyAvatarUrl }}" 
+                                     alt="Admin Avatar" 
+                                     style="width: 30px; height: 30px; object-fit: cover; border-radius: 50%; margin-right: 10px;">
+                                
+                                {{-- Tên người phản hồi (Admin/Shop) --}}
+                                <h6 class="mb-0 text-info">
+                                    {{ $reply->user->name ?? 'Shop' }} 
+                                    @if($reply->user->role == 'admin') 
+                                        <span class="badge bg-primary ms-1">Admin</span>
+                                    @endif
+                                </h6>
+                            </div>
+                            <p class="mb-0" style="font-size: 0.9rem; color: #333;">{{ $reply->content }}</p>
+                            <span class="text-muted" style="font-size: 0.75rem;">Phản hồi vào: {{ $reply->created_at->format('H:i d/m/Y') }}</span>
+                        </div>
+                    @endforeach
+                @endif
+                {{-- END: PHẢN HỒI TỪ ADMIN/SHOP --}}
+
+            </div>
+        </div>
+    </li>
+@empty
+    <li>
+        <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+    </li>
+@endforelse
+
+        </ul>
+    </div>
+</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -624,14 +681,12 @@
         })
         .then(r => r.json())
         .then(data => {
-            console.log('Variant data:', data); // DEBUG
+            
             if (data.success) {
                 const variant = data.data.variant;
                 const stock = data.data.stock_info;
                 
-                console.log('Variant:', variant); // DEBUG
-                console.log('Base Price:', variant.base_price); // DEBUG
-                console.log('Discount Price:', variant.discount_price); // DEBUG
+               
                 
                 document.getElementById('variantId').value = variant.id;
                 

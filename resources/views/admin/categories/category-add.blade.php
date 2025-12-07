@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="page-content">
-    <div class="container-xxl">
+    <div class="container-fluid">
 
         {{-- Header Section --}}
         <div class="row">
@@ -43,7 +43,7 @@
 
         {{-- Form Card --}}
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
@@ -87,10 +87,7 @@
                                 @error('slug')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
-                                <small class="text-muted d-block mt-1">
-                                    <iconify-icon icon="solar:info-circle-linear" class="me-1"></iconify-icon>
-                                    Dùng trong URL, chỉ chứa chữ thường, số và dấu gạch
-                                </small>
+                                
                                 
                                 
                             </div>
