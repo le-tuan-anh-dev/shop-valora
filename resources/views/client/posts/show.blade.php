@@ -53,7 +53,7 @@
                     <p class="text-muted text-center mb-4">
                         Tác giả: <b>{{ $post->author->name ?? 'N/A' }}</b> •
                         {{ $post->created_at->format('d/m/Y H:i') }}
-                        <span class="ms-3"><i class="fa-solid fa-eye me-1"></i> {{ number_format($post->views) }}</span>
+                        
                         <span class="ms-3"><i class="fa-solid fa-heart me-1 text-danger"></i> {{ number_format($post->likes) }}</span>
                     </p>
 
@@ -77,15 +77,19 @@
                     <h4 class="mb-4">💬 Bình luận ({{ $post->comments_count }})</h4>
 
                     @auth
-                        <div class="mb-4 p-3 border rounded bg-light">
-                            <h6 class="fw-bold mb-3">Bạn đang bình luận với tên: {{ Auth::user()->name }}</h6>
-                            {{-- <form action="{{ route('client.posts.store_comment', $post->id) }}" method="POST"> --}}
-                                @csrf
-                                <textarea name="content" class="form-control mb-3" rows="3" placeholder="Viết bình luận của bạn..."></textarea>
-                                <button class="btn btn-primary">Gửi bình luận</button>
-                            </form>
-                        </div>
-                    @else
+    <div class="mb-4 p-3 border rounded bg-light">
+        <h6 class="fw-bold mb-3">Bạn đang bình luận với tên: {{ Auth::user()->name }}</h6>
+        {{-- SỬA LỖI TẠI ĐÂY: Thêm thẻ <form> và sử dụng route 'comments.store' --}}
+        <form action="{{ route('comments.store', ['id' => $post->id]) }}" method="POST"> 
+            @csrf
+            <textarea name="content" class="form-control mb-3 @error('content') is-invalid @enderror" rows="3" placeholder="Viết bình luận của bạn...">{{ old('content') }}</textarea>
+            @error('content')
+                <div class="invalid-feedback mb-2">{{ $message }}</div>
+            @enderror
+            <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+        </form>
+    </div>
+@else
                         <div class="alert alert-warning text-center mb-4">
                             Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để bình luận.
                         </div>
@@ -102,10 +106,10 @@
 
                                 @auth
                                     @if(Auth::id() === $comment->user_id)
-                                        {{-- <form action="{{ route('client.posts.destroy_comment', $comment->id) }}" method="POST" class="ms-auto"> --}}
-                                            @csrf @method('DELETE')
-                                            <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i> Xóa</button>
-                                        </form>
+                                        <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="ms-auto">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?')"><i class="fa-solid fa-trash"></i> Xóa</button>
+        </form>
                                     @endif
                                 @endauth
                             </div>

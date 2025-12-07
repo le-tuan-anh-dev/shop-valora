@@ -13,6 +13,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Models\admin\Review;
 
 class ProductDetailController extends Controller
 { 
@@ -27,6 +30,29 @@ class ProductDetailController extends Controller
         if (!$product) {
             abort(404, 'Product not found');
         }
+
+        $reviews = Review::where('product_id', $product->id)
+                 // Chỉ lấy các đánh giá gốc (không phải phản hồi)
+                 ->whereNull('parent_id') 
+                 // Tải trước user, images, biến thể và cả phản hồi (replies)
+                 ->with(['user', 'productVariant.attributeValues', 'images', 'replies']) 
+                 ->latest()
+                 ->get();
+    
+    $totalReviews = $reviews->count();
+    $averageRating = $reviews->avg('rating');
+    $ratingCounts = $reviews->groupBy('rating')->map->count();
+    
+    // Tính phần trăm cho từng loại sao
+    $ratingPercentages = [];
+    for ($i = 5; $i >= 1; $i--) {
+        $count = $ratingCounts->get($i, 0);
+        $percentage = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+        $ratingPercentages["{$i}star"] = [
+            'count' => $count,
+            'percentage' => $percentage
+        ];
+    }
 
         //  Lấy tất cả attributes của sản phẩm
         $attributes = DB::table('variant_attribute_values as vav')
@@ -121,6 +147,10 @@ class ProductDetailController extends Controller
             'variants' => $variants,
             'relatedProducts' => $relatedProducts,
             'brand' => $brand,
+            'reviews' => $reviews, 
+        'totalReviews' => $totalReviews,
+        'averageRating' => round($averageRating ?? 0, 1),
+        'ratingPercentages' => $ratingPercentages
         ]);
 }
 
