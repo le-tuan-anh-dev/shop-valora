@@ -43,12 +43,12 @@
                         <img class="img-fluid" src="{{ asset('client/assets/images/layout-3/1.jpg') }}" alt="" />
                         <div class="contain-banner">
                             <div>
-                                <h4>Hot Offer <span>START TODAY</span></h4>
-                                <h1>Explore Your True Creative Fashion.</h1>
-                                <p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.</p>
+                                <h4>Ưu đãi hấp dẫn <span>BẮT ĐẦU NGAY HÔM NAY</span></h4>
+                                <h1>Khám phá phong cách thời trang sáng tạo đích thực của bạn.</h1>
+                                
                                 <div class="link-hover-anim underline">
                                     <a class="btn btn_underline link-strong" href="#">
-                                        Show Now
+                                        Mua Ngay
                                         <svg>
                                             <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                         </svg>
@@ -69,8 +69,8 @@
                     <div class="service-block">
                         <img src="https://themes.pixelstrap.net/katie/assets/images/svg-icon/1.svg" alt="" />
                         <div>
-                            <h6>Free Shipping Worldwide</h6>
-                            <p>Apply to all orders over $800</p>
+                            <h6>Miễn phí vận chuyển trên toàn thế giới</h6>
+                            <p>Áp dụng cho tất cả các đơn hàng trên 1.000.000 VND</p>
                         </div>
                     </div>
                 </li>
@@ -78,8 +78,8 @@
                     <div class="service-block">
                         <img src="https://themes.pixelstrap.net/katie/assets/images/svg-icon/2.svg" alt="" />
                         <div>
-                            <h6>Return & Exchanges</h6>
-                            <p>Complete warranty</p>
+                            <h6>Trả & Hoàn hàng</h6>
+                            <p>Bảo hành đầy đủ</p>
                         </div>
                     </div>
                 </li>
@@ -87,8 +87,8 @@
                     <div class="service-block">
                         <img src="https://themes.pixelstrap.net/katie/assets/images/svg-icon/3.svg" alt="" />
                         <div>
-                            <h6>Technical Support</h6>
-                            <p>Service support 24/7</p>
+                            <h6>Hỗ trọ</h6>
+                            <p>Hỗ trợ dịch vụ 24/7</p>
                         </div>
                     </div>
                 </li>
@@ -96,8 +96,8 @@
                     <div class="service-block border-0">
                         <img src="https://themes.pixelstrap.net/katie/assets/images/svg-icon/4.svg" alt="" />
                         <div>
-                            <h6>Daily Gift Vouchers</h6>
-                            <p>Shopping now is more fun</p>
+                            <h6>Phiếu quà tặng hàng ngày</h6>
+                            <p>Mua sắm đầy ưu đãi</p>
                         </div>
                     </div>
                 </li>
@@ -212,10 +212,10 @@
                                                                 {{-- User đã đăng nhập: bấm là thêm vào wishlist --}}
                                                                 <a href="#"
                                                                     onclick="
-                event.preventDefault();
-                showWishlistToast('Đã thêm vào danh sách yêu thích');
-                document.getElementById('wishlist-form-{{ $product->id }}').submit();
-           ">
+                                                                        event.preventDefault();
+                                                                        showWishlistToast('Đã thêm vào danh sách yêu thích');
+                                                                        document.getElementById('wishlist-form-{{ $product->id }}').submit();
+                                                                ">
                                                                     <i class="far fa-heart" data-bs-toggle="tooltip"
                                                                         data-bs-title="Thêm vào yêu thích"></i>
                                                                 </a>
@@ -277,7 +277,7 @@
                                                                             100,
                                                                     );
                                                                 @endphp
-                                                                <span>-{{ $discountPercent }}%</span>
+                                                                <span>{{ $discountPercent }}%</span>
                                                             @else
                                                                 {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                             @endif
@@ -347,7 +347,7 @@
                                                                             100,
                                                                     );
                                                                 @endphp
-                                                                <span>-{{ $discountPercent }}%</span>
+                                                                <span>{{ $discountPercent }}%</span>
                                                             @else
                                                                 {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                             @endif
@@ -417,7 +417,7 @@
                                                                             100,
                                                                     );
                                                                 @endphp
-                                                                <span>-{{ $discountPercent }}%</span>
+                                                                <span>{{ $discountPercent }}%</span>
                                                             @else
                                                                 {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                             @endif
@@ -445,7 +445,7 @@
     <section class="section-t-space">
         <div class="custom-container container">
             <div class="title">
-                <h3>Latest Blog</h3>
+                <h3>Bài viết mới nhất</h3>
                 <svg>
                     <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
                 </svg>
@@ -579,23 +579,21 @@
                 </div>
                 <div class="col-xl-4 col-5">
                     <div class="subscribe-content">
-                        <h6>GET 20% OFF</h6>
-                        <h4>Subscribe to Our Newsletter!</h4>
+                        <h6>Giảm giá tới 30%</h6>
+                        <h4>Đăng ký nhận thông tin của chúng tôi!</h4>
                         <p>
-                            Join the insider list - you’ll be the first to know about new
-                            arrivals, insider - only discounts and receive \$15 off your
-                            first order.
+                            Tham gia danh sách - bạn sẽ là người đầu tiên biết về các sản phẩm mới, các chương trình dành riêng và được giảm giá 30.000 VND cho đơn đầu tiên.
                         </p>
                         <input type="text" name="text" placeholder="Your email address..." />
                         <div class="link-hover-anim underline">
                             <a class="btn btn_underline link-strong link-strong-unhovered"
-                                href="{{ route('home') }}">Subscribe Now
+                                href="{{ route('home') }}">Đăng ký ngay
                                 <svg>
                                     <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                 </svg>
                             </a>
                             <a class="btn btn_underline link-strong link-strong-hovered"
-                                href="{{ route('home') }}">Subscribe Now
+                                href="{{ route('home') }}">Đăng ký ngay
                                 <svg>
                                     <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                 </svg>
@@ -672,7 +670,7 @@
                                                     100,
                                             );
                                         @endphp
-                                        <span>-{{ $discountPercent }}%</span>
+                                        <span>{{ $discountPercent }}%</span>
                                     @else
                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                     @endif
@@ -709,16 +707,16 @@
                                     <svg class="insta-icon">
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#instagram') }}"></use>
                                     </svg>
-                                    <p>Instashop</p>
+                                    <p>KOL Insta</p>
                                     <div class="link-hover-anim underline">
                                         <a class="btn btn_underline link-strong link-strong-unhovered"
-                                            href="product.html">Discover
+                                            href="product.html">Đến ngay
                                             <svg>
                                                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                             </svg>
                                         </a>
                                         <a class="btn btn_underline link-strong link-strong-hovered"
-                                            href="product.html">Discover
+                                            href="product.html">Đến ngay
                                             <svg>
                                                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                             </svg>
@@ -739,16 +737,16 @@
                                     <svg class="insta-icon">
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#instagram') }}"></use>
                                     </svg>
-                                    <p>Instashop</p>
+                                    <p>KOL Insta</p>
                                     <div class="link-hover-anim underline">
                                         <a class="btn btn_underline link-strong link-strong-unhovered"
-                                            href="product.html">Discover
+                                            href="product.html">Đến ngay
                                             <svg>
                                                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                             </svg>
                                         </a>
                                         <a class="btn btn_underline link-strong link-strong-hovered"
-                                            href="product.html">Discover
+                                            href="product.html">Đến ngay
                                             <svg>
                                                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                             </svg>
@@ -767,7 +765,7 @@
                                     <svg>
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#instagram') }}"></use>
                                     </svg>
-                                    <h3>Instashop</h3>
+                                    <h3>KOL Instagram</h3>
                                 </div>
                                 <span></span>
                                 <p>A conscious collection made entirely from food crop waste, recycled cotton, other more
@@ -776,9 +774,9 @@
                             <div>
                                 <div class="link-hover-anim underline">
                                     <a class="btn btn_underline link-strong link-strong-unhovered"
-                                        href="https://www.instagram.com/" target="_blank">Go To Instagram</a>
+                                        href="https://www.instagram.com/" target="_blank">Đến ngay Instagram</a>
                                     <a class="btn btn_underline link-strong link-strong-hovered"
-                                        href="https://www.instagram.com/" target="_blank">Go To Instagram</a>
+                                        href="https://www.instagram.com/" target="_blank">Đến ngay Instagram</a>
                                 </div>
                             </div>
                         </div>

@@ -1,10 +1,11 @@
 @extends('admin.layouts.main_nav')
 
 @section('content')
+<div class="page-content">
 <div class="container-fluid">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h4 class="mb-sm-0">📝 Quản lý Bài Viết</h4>
+        <h4 class="mb-sm-0"> Quản lý Bài Viết</h4>
         <a href="{{ route('admin.posts.create') }}" class="btn btn-primary">
             <i class="bx bx-plus"></i> Tạo Bài Viết
         </a>
@@ -109,12 +110,12 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <a href="{{ route('admin.posts.show', $post->id) }}" class="btn btn-sm btn-secondary">
-                                        <i class="bx bx-show"></i>
+                                    <a href="{{ route('admin.posts.show', $post->id) }}" class="btn btn-sm btn-icon btn-light">
+                                         <iconify-icon icon="solar:eye-bold-duotone"></iconify-icon>
                                     </a>
 
-                                    <a href="{{ route('admin.posts.edit', $post->id) }}" class="btn btn-sm btn-info">
-                                        <i class="bx bx-edit"></i>
+                                    <a href="{{ route('admin.posts.edit', $post->id) }}" class="btn btn-sm btn-icon btn-light">
+                                        <iconify-icon icon="solar:pen-bold-duotone"></iconify-icon>
                                     </a>
 
                                     <form action="{{ route('admin.posts.destroy', $post->id) }}" 
@@ -122,8 +123,8 @@
                                           onsubmit="return confirm('Xóa bài viết này?')">
 
                                         @csrf @method('DELETE')
-                                        <button class="btn btn-sm btn-danger">
-                                            <i class="bx bx-trash"></i>
+                                        <button class="btn btn-sm btn-icon btn-light">
+                                            <iconify-icon icon="solar:trash-bin-trash-bold-duotone"></iconify-icon>
                                         </button>
                                     </form>
                                 </td>
@@ -148,5 +149,6 @@
 
         </div>
     </div>
+</div>
 </div>
 @endsection

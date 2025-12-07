@@ -256,31 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ========== Hiển thị lỗi validation tổng quát ==========
-    function displayValidationErrors(errors) {
-        document.querySelectorAll('.alert-danger.variant-error-alert').forEach(el => el.remove());
-        
-        if (!errors || Object.keys(errors).length === 0) return;
 
-        const errorContainer = document.createElement('div');
-        errorContainer.className = 'alert alert-danger alert-dismissible fade show variant-error-alert';
-        errorContainer.role = 'alert';
-        errorContainer.innerHTML = '<strong>❌ Lỗi nhập liệu:</strong><ul class="mb-0 mt-2">';
-
-        for (const [field, messages] of Object.entries(errors)) {
-            messages.forEach(message => {
-                errorContainer.innerHTML += `<li>${message}</li>`;
-            });
-        }
-        
-        errorContainer.innerHTML += `
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        const form = document.querySelector('form');
-        form.insertBefore(errorContainer, form.firstChild);
-        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
 
     // ========== Highlight input có lỗi ==========
     function highlightErrorFields(errors) {
@@ -510,16 +486,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="0">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm" placeholder="Để trống = mặc định">
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm" >
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][width]" class="form-control form-control-sm" placeholder="Để trống = mặc định">
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][width]" class="form-control form-control-sm">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm" placeholder="Để trống = mặc định">
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm" >
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][weight]" class="form-control form-control-sm" placeholder="Để trống = mặc định">
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][weight]" class="form-control form-control-sm">
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
@@ -572,16 +548,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="${variant.stock || ''}">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm" value="${variant.length || ''}" placeholder="Để trống = mặc định">
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm" value="${variant.length || ''}">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][width]" class="form-control form-control-sm" value="${variant.width || ''}" placeholder="Để trống = mặc định">
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][width]" class="form-control form-control-sm" value="${variant.width || ''}">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm" value="${variant.height || ''}" placeholder="Để trống = mặc định">
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm" value="${variant.height || ''}">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][weight]" class="form-control form-control-sm" value="${variant.weight || ''}" placeholder="Để trống = mặc định">
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][weight]" class="form-control form-control-sm" value="${variant.weight || ''}">
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>

@@ -286,6 +286,9 @@
         border-bottom: 1px solid #e9ecef;
         padding: 1.5rem;
     }
+    .text-sm.text-gray-700 {
+        display: none !important;
+    }
 
     .card-footer {
         background-color: #f8f9fa;
