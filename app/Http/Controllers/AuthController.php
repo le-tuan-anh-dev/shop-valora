@@ -137,12 +137,25 @@ class AuthController extends Controller
             return redirect()->intended(route('home'))->with('success', 'Đăng nhập thành công!');
         }
 
-        // Kiểm tra xem có phải do chưa kích hoạt
+        // Kiểm tra xem có phải do chưa kích hoạt hoặc bị khóa
         $user = User::where('email', $request->email)->first();
+        
         if ($user && $user->status !== 'active') {
-            return back()->withErrors([
-                'email' => 'Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email để xác nhận.',
-            ])->withInput();
+            if (!Hash::check($request->password, $user->password)) {
+                return back()->withErrors([
+                    'email' => 'Email hoặc mật khẩu không đúng.',
+                ])->withInput();
+            }
+            
+            if ($user->status === 'locked' && is_null($user->email_verified_at)) {
+                return back()->withErrors([
+                    'email' => 'Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email để xác nhận.',
+                ])->withInput();
+            } else {
+                return back()->withErrors([
+                    'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin để được hỗ trợ.',
+                ])->withInput();
+            }
         }
 
         return back()->withErrors([
