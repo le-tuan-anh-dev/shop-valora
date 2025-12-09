@@ -185,9 +185,7 @@
                     <h5>{{ $product['name'] }}</h5>
                   </a>
                   <h6>Thương hiệu: <span>{{ $product['brand'] ?? 'Shop' }}</span></h6>
-                  
                   <p>
-                    
                     @if($product['discount_price'])
                     <strong>{{ number_format($product['discount_price'], 0, ',', '.') }} đ</strong>
                       <span>
@@ -200,7 +198,6 @@
                       <strong>{{ number_format($product['base_price'], 0, ',', '.') }} đ</strong>
                     @endif
                   </p>
-                  
                   <a class="btn " href="{{ route('products.detail', $product['id']) }}">
                     <i class="fa-solid fa-plus me-1"></i>Thêm
                   </a>

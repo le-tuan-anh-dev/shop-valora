@@ -331,13 +331,21 @@ class CheckoutController extends Controller
     public function storeAddress(Request $request)
     {
         $validated = $request->validate([
-            'name'       => 'required|string|max:255',
-            'phone'      => 'required|string|max:20',
-            'province_id' => 'nullable|numeric',
-            'district_id' => 'nullable|numeric',
-            'ward_code'   => 'nullable|string',
-            'address'    => 'required|string|max:500',
-            'is_default' => 'nullable|boolean',
+        'name'       => 'required|string|max:255',
+        'phone'      => 'required|regex:/^[0-9]{10}$/',
+        'province_id' => 'required|numeric',
+        'district_id' => 'required|numeric',
+        'ward_code'   => 'required|string',
+        'address'    => 'required|string|max:500',
+        'is_default' => 'nullable|boolean',
+        ], [
+            'name.required' => 'Tên địa chỉ không được để trống',
+            'phone.regex' => 'Số điện thoại không hợp lệ (10 chữ số)',
+            'phone.required' => 'Số điện thoại là bắt buộc',
+            'province_id.required' => 'Vui lòng chọn tỉnh / thành',
+            'district_id.required' => 'Vui lòng chọn quận / huyện',
+            'ward_code.required' => 'Vui lòng chọn phường / xã',
+            'address.required' => 'Vui lòng nhập đại chỉ cụ thể',
         ]);
 
         try {
@@ -373,11 +381,11 @@ class CheckoutController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Lỗi: ' . $e->getMessage()
+                    'message' => 'Lỗi ' ,
                 ], 400);
             }
 
-            return redirect()->back()->with('error', 'Lỗi khi thêm địa chỉ: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Lỗi khi thêm địa chỉ ');
         }
     }
 
@@ -1126,7 +1134,7 @@ public function showOrder(Order $order)
         $order->user->notify(new OrderStatusChanged($order));
     });
 
-    return redirect()->back()->with('success', 'Đã hủy đơn hàng và hoàn lại tồn kho.');
+    return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công');
 }
     
 }

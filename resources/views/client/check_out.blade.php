@@ -194,23 +194,23 @@
             <div class="col-md-6">
                 <div class="mb-3">
                   <label for="addressName" class="form-label">Tên địa chỉ (VD: Nhà riêng, Văn phòng)</label>
-                  <input type="text" class="form-control" id="addressName" name="name" placeholder="VD: Nhà riêng" required>
+                  <input type="text" class="form-control" id="addressName" name="name" placeholder="VD: Nhà riêng" >
                 </div>
 
                 <div class="mb-3">
                   <label for="addressPhone" class="form-label">Số điện thoại</label>
-                  <input type="tel" class="form-control" id="addressPhone" name="phone" placeholder="Nhập số điện thoại" required>
+                  <input type="tel" class="form-control" id="addressPhone" name="phone" placeholder="Nhập số điện thoại" >
                 </div>
 
                 <div class="mb-3">
                   <label for="addressText" class="form-label">Địa chỉ</label>
-                  <textarea class="form-control" id="addressText" name="address" rows="3" placeholder="Nhập địa chỉ đầy đủ" required></textarea>
+                  <textarea class="form-control" id="addressText" name="address" rows="3" placeholder="Nhập địa chỉ đầy đủ" ></textarea>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="mb-3">
                     <label for="province" class="form-label">Tỉnh / Thành</label>
-                    <select name="province_id" id="province" class="form-control" required>
+                    <select name="province_id" id="province" class="form-control" >
                         <option value="">-- Chọn tỉnh --</option>
                         @foreach($provinces as $province)
                             <option value="{{ $province['ProvinceID'] }}">{{ $province['ProvinceName'] }}</option>
@@ -220,14 +220,14 @@
 
                 <div class="mb-3">
                     <label for="district" class="form-label">Quận / Huyện</label>
-                    <select id="district" name="district_id" class="form-control" required disabled>
+                    <select id="district" name="district_id" class="form-control"  disabled>
                         <option value="">-- Chọn quận / huyện --</option>
                     </select>
                 </div>
 
                 <div class="mb-3">
                     <label for="ward" class="form-label">Phường / Xã</label>
-                    <select id="ward" name="ward_code" class="form-control" required disabled>
+                    <select id="ward" name="ward_code" class="form-control"  disabled>
                         <option value="">-- Chọn phường / xã --</option>
                     </select>
                 </div>
@@ -361,7 +361,7 @@
           showNotification(data.message, 'error');
         }
       } catch (error) {
-        console.error('Error:', error);
+
         showNotification('Lỗi khi lưu địa chỉ', 'error');
       }
     });

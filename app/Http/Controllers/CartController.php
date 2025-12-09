@@ -99,16 +99,12 @@ class CartController extends Controller
 
 
         //  LẤY SẢN PHẨM GIẢM GIÁ
-
-        
         $discountProducts = Product::where('discount_price', '!=', null)
             ->where('discount_price', '!=', '')
             ->where('discount_price', '!=', 0)
             ->where('is_active', 1)
             ->limit(4)
             ->get();
-
-  
 
         if ($discountProducts->count() > 0) {
             $discountProducts->each(function ($prod) {
