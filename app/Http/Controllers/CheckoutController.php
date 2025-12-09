@@ -88,6 +88,8 @@ class CheckoutController extends Controller
         // lấy phương thức thanh toán
         $paymentMethods = PaymentMethod::all();
 
+
+        session()->forget('applied_voucher');
         return view('client.check_out', [
             'cartItems'         => $formattedCartItems,
             'shippingAddresses' => $shippingAddresses,
