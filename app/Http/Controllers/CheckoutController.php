@@ -197,6 +197,134 @@ class CheckoutController extends Controller
         }
     }
 
+    // lấy phí ship 
+    public function getShippingFee(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'to_district_id' => 'required|numeric',
+                'to_ward_code' => 'required|string',
+            ]);
+
+            $user = auth()->user();
+            $cart = Cart::where('user_id', $user->id)->first();
+            
+            if (!$cart) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Giỏ hàng trống'
+                ], 400);
+            }
+
+            $cartItems = CartItem::where('cart_id', $cart->id)
+                ->with(['product', 'variant'])
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Giỏ hàng trống'
+                ], 400);
+            }
+
+            $fromDistrictId = (int)env('GHN_FROM_DISTRICT_ID', 3440);
+            $fromWardCode = env('GHN_FROM_WARD_CODE', '13004');
+
+            $items = [];
+            $totalWeight = 0;
+
+            foreach ($cartItems as $item) {
+                $product = $item->product;
+                $variant = $item->variant;
+
+                
+                if ($variant) {
+                    $weight = $variant->weight ?? $product->weight ?? 1000;
+                    $length = $variant->length ?? $product->length ?? 30;
+                    $width = $variant->width ?? $product->width ?? 20;
+                    $height = $variant->height ?? $product->height ?? 15;
+                } else {
+                    $weight = $product->weight ?? 1000;
+                    $length = $product->length ?? 30;
+                    $width = $product->width ?? 20;
+                    $height = $product->height ?? 15;
+                }
+
+                
+                for ($i = 0; $i < $item->quantity; $i++) {
+                    $items[] = [
+                        'name' => $product->name,
+                        'quantity' => 1,
+                        'length' => $length,
+                        'width' => $width,
+                        'height' => $height,
+                        'weight' => $weight
+                    ];
+                }
+
+                $totalWeight += $weight * $item->quantity;
+            }
+
+            // Hàng nặng
+            $requestBody = [
+                'service_type_id' => 2,
+                'from_district_id' => (int)$fromDistrictId,
+                'from_ward_code' => $fromWardCode,
+                'to_district_id' => (int)$validated['to_district_id'],
+                'to_ward_code' => $validated['to_ward_code'],
+                'weight' => $totalWeight,
+                'insurance_value' => 0,
+                'coupon' => null,
+                'items' => $items
+            ];
+            Log::info('Shipping data:', [
+                'total_weight' => $totalWeight,
+                'items_count' => count($items),
+                'to_district_id' => $validated['to_district_id'],
+                'to_ward_code' => $validated['to_ward_code'],
+                'from_district_id' => $fromDistrictId,
+                'from_ward_code' => $fromWardCode,
+                'items' => $items,
+                'request_body' => $requestBody
+            ]);
+
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Token' => env('GHN_TOKEN'),
+                'ShopId' => env('GHN_SHOP_ID')
+            ])->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', $requestBody);
+
+            if ($response->ok()) {
+                $data = $response->json();
+                
+                if (isset($data['code']) && $data['code'] == 200 && isset($data['data']['total'])) {
+                    return response()->json([
+                        'success' => true,
+                        'total' => (int)$data['data']['total']
+                    ]);
+                } else {
+                    $message = $data['message'] ?? 'Không tính được phí vận chuyển';
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message
+                    ], 400);
+                }
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi tính phí giao hàng'
+            ], 500);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     // lưu địa chỉ 
     public function storeAddress(Request $request)
     {
@@ -351,12 +479,12 @@ class CheckoutController extends Controller
             ], 400);
         }
     }
+    
     public function applyCoupon(Request $request)
     {
         return $this->applyVoucher($request);
     }
 
-   
     public function updateAddress(Request $request, $id)
     {
         // Chỉ lấy địa chỉ của user hiện tại, tránh 403 oan
@@ -401,9 +529,6 @@ class CheckoutController extends Controller
         return redirect()->back()->with('success', 'Cập nhật địa chỉ thành công.');
     }
 
-    /**
-     * Xóa địa chỉ (route: DELETE /checkout/address/{id})
-     */
     public function deleteAddress($id)
     {
         $address = UserAddress::where('id', $id)
@@ -427,10 +552,6 @@ class CheckoutController extends Controller
         return redirect()->back()->with('success', 'Xóa địa chỉ thành công.');
     }
 
-    /**
-     * Route riêng để đặt mặc định nếu bạn dùng:
-     * POST /checkout/address/{id}/set-default
-     */
     public function setDefaultAddress($id)
     {
         $userId = auth()->id();
@@ -446,8 +567,6 @@ class CheckoutController extends Controller
 
         return redirect()->back()->with('success', 'Đã đặt địa chỉ mặc định.');
     }
-
-    
 
     // đặt hàng
     public function placeOrder(Request $request)
@@ -896,7 +1015,6 @@ class CheckoutController extends Controller
                 ->with('error', "Thanh toán thất bại: $message");
         }
     }
-
     
     public function orderSuccess(Order $order)
     {
@@ -917,124 +1035,6 @@ class CheckoutController extends Controller
     }
 
 
-
-    // lấy phí ship 
-    public function getShippingFee(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'to_district_id' => 'required|numeric',
-                'to_ward_code' => 'required|string',
-            ]);
-
-            $user = auth()->user();
-            $cart = Cart::where('user_id', $user->id)->first();
-            
-            if (!$cart) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Giỏ hàng trống'
-                ], 400);
-            }
-
-            $cartItems = CartItem::where('cart_id', $cart->id)
-                ->with(['product', 'variant'])
-                ->get();
-
-            if ($cartItems->isEmpty()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Giỏ hàng trống'
-                ], 400);
-            }
-
-            $fromDistrictId = env('GHN_FROM_DISTRICT_ID', 1442);
-            $fromWardCode = env('GHN_FROM_WARD_CODE', '21211');
-
-            $items = [];
-            $totalWeight = 0;
-
-            foreach ($cartItems as $item) {
-                $product = $item->product;
-                $variant = $item->variant;
-
-                
-                if ($variant) {
-                    $weight = $variant->weight ?? $product->weight ?? 1000;
-                    $length = $variant->length ?? $product->length ?? 30;
-                    $width = $variant->width ?? $product->width ?? 20;
-                    $height = $variant->height ?? $product->height ?? 15;
-                } else {
-                    $weight = $product->weight ?? 1000;
-                    $length = $product->length ?? 30;
-                    $width = $product->width ?? 20;
-                    $height = $product->height ?? 15;
-                }
-
-                
-                for ($i = 0; $i < $item->quantity; $i++) {
-                    $items[] = [
-                        'name' => $product->name,
-                        'quantity' => 1,
-                        'length' => $length,
-                        'width' => $width,
-                        'height' => $height,
-                        'weight' => $weight
-                    ];
-                }
-
-                $totalWeight += $weight * $item->quantity;
-            }
-
-            // Hàng nặng
-            $requestBody = [
-                'service_type_id' => 5,
-                'from_district_id' => (int)$fromDistrictId,
-                'from_ward_code' => $fromWardCode,
-                'to_district_id' => (int)$validated['to_district_id'],
-                'to_ward_code' => $validated['to_ward_code'],
-                'weight' => $totalWeight,
-                'insurance_value' => 0,
-                'coupon' => null,
-                'items' => $items
-            ];
-
-
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Token' => env('GHN_TOKEN'),
-                'ShopId' => env('GHN_SHOP_ID')
-            ])->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', $requestBody);
-
-            if ($response->ok()) {
-                $data = $response->json();
-                
-                if (isset($data['code']) && $data['code'] == 200 && isset($data['data']['total'])) {
-                    return response()->json([
-                        'success' => true,
-                        'total' => (int)$data['data']['total']
-                    ]);
-                } else {
-                    $message = $data['message'] ?? 'Không tính được phí vận chuyển';
-                    return response()->json([
-                        'success' => false,
-                        'message' => $message
-                    ], 400);
-                }
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi tính phí giao hàng'
-            ], 500);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi: ' . $e->getMessage()
-            ], 500);
-        }
-    }
 
     // Phần của Dashboard
     /**
