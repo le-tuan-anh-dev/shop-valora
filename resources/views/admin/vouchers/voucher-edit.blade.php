@@ -29,17 +29,7 @@
                     </div>
 
                     <div class="card-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <strong>Có lỗi xảy ra!</strong>
-                                <ul class="mb-0 mt-2">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        @endif
+                       
 
                         <form action="{{ route('admin.vouchers.update', $voucher->id) }}" 
                               method="POST" 
@@ -286,6 +276,10 @@
                                         <span class="badge bg-secondary align-self-center">
                                             Đã chọn: <span id="prd-count">0</span> sản phẩm
                                         </span>
+                                        <br>
+                                        @error('variant_ids')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>

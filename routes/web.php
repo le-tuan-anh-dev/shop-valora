@@ -122,7 +122,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::get('/checkout/get-districts', [CheckoutController::class, 'getDistricts'])->name('checkout.get-districts');
     Route::get('/checkout/get-wards', [CheckoutController::class, 'getWards'])->name('checkout.get-wards');
-
+    Route::post('/checkout/get-shipping-fee', [CheckoutController::class, 'getShippingFee'])->name('checkout.get-shipping-fee');
 
     // Orders (customer)
     Route::get('/orders', [CheckoutController::class, 'myOrders'])->name('orders.index');
