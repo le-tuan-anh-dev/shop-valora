@@ -59,32 +59,32 @@
                             <li>
                                 <button class="nav-link active" id="dashboard-tab" data-bs-toggle="pill"
                                     data-bs-target="#dashboard" role="tab" aria-controls="dashboard"
-                                    aria-selected="true">
+                                    aria-selected="true" onclick="saveTab('dashboard-tab')">
                                     <i class="iconsax" data-icon="home-1"></i> Trang tổng quan
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="notifications-tab" data-bs-toggle="pill"
                                     data-bs-target="#notifications" role="tab" aria-controls="notifications"
-                                    aria-selected="false">
+                                    aria-selected="false" onclick="saveTab('notifications-tab')">
                                     <i class="iconsax" data-icon="lamp-2"></i>Thông báo
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="order-tab" data-bs-toggle="pill" data-bs-target="#order"
-                                    role="tab" aria-controls="order" aria-selected="false">
+                                    role="tab" aria-controls="order" aria-selected="false" onclick="saveTab('order-tab')">
                                     <i class="iconsax" data-icon="receipt-square"></i>Đơn hàng
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="wishlist-tab" data-bs-toggle="pill" data-bs-target="#wishlist"
-                                    role="tab" aria-controls="wishlist" aria-selected="false">
+                                    role="tab" aria-controls="wishlist" aria-selected="false" onclick="saveTab('wishlist-tab')">
                                     <i class="iconsax" data-icon="heart"></i>Danh sách yêu thích
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="address-tab" data-bs-toggle="pill" data-bs-target="#address"
-                                    role="tab" aria-controls="address" aria-selected="false">
+                                    role="tab" aria-controls="address" aria-selected="false" onclick="saveTab('address-tab')">
                                     <i class="iconsax" data-icon="cue-cards"></i>Địa Chỉ
                                 </button>
                             </li>
@@ -826,4 +826,23 @@ Lịch sử đơn hàng của tôi</h4>
         </div>
     </div>
 @endsection
+<script>
+// Lưu tab đã chọn
+function saveTab(tabId) {
+    sessionStorage.setItem('activeDashboardTab', tabId);
+}
 
+// Restore tab khi load lại trang
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTabId = sessionStorage.getItem('activeDashboardTab');
+    
+    if (savedTabId) {
+        const tabButton = document.getElementById(savedTabId);
+        if (tabButton) {
+            // Trigger Bootstrap tab show
+            const tab = new bootstrap.Tab(tabButton);
+            tab.show();
+        }
+    }
+});
+</script>
