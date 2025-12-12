@@ -140,6 +140,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 // MoMo Callback
 
 Route::get('/momo/callback', [CheckoutController::class, 'momoCallback'])->name('momo.callback');
+Route::get('/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('vnpay.callback');
 
 // Admin routes 
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
