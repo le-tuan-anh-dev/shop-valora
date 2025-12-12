@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
@@ -90,5 +91,40 @@ class DashboardController extends Controller
         $user->save();
 
         return back()->with('success', 'Cập nhật thông tin tài khoản thành công.');
+    }
+
+    public function changePassword(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'current_password' => [
+                'required',
+                function ($attribute, $value, $fail) use ($user) {
+                    if (!Hash::check($value, $user->password)) {
+                        $fail('Mật khẩu hiện tại không chính xác.');
+                    }
+                },
+            ],
+            'new_password' => [
+                'required',
+                'string',
+                'min:5',
+                'confirmed',
+                'different:current_password',
+            ],
+            'new_password_confirmation' => ['required'],
+        ], [
+            'new_password.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
+            'new_password.regex' => 'Mật khẩu phải chứa chữ hoa, chữ thường và chữ số.',
+            'new_password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+            'new_password.different' => 'Mật khẩu mới không được giống mật khẩu hiện tại.',
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
+        ]);
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Mật khẩu đã được thay đổi thành công.');
     }
 }

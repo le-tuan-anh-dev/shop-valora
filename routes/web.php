@@ -27,7 +27,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CommentController;
-use App\Http\Controllers\Admin\ReviewController as AdminReviewController; // ĐẶT ALIAS
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController; 
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 
 use App\Http\Controllers\WishlistController;
@@ -90,12 +90,14 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
         ->name('wishlist.remove');
-    // ============================
+   
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])
         ->name('client.dashboard');
 
     Route::post('/dashboard/update-profile', [ClientDashboardController::class, 'updateProfile'])
         ->name('client.dashboard.update-profile');
+    Route::post('/dashboard/change-password', [ClientDashboardController::class, 'changePassword'])
+    ->name('client.dashboard.change-password');
 
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -258,8 +260,6 @@ Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name(
     // Chỉnh sửa voucher
     Route::get('/vouchers/{voucher}/edit', [VoucherController::class, 'edit'])->name('admin.vouchers.edit');
     Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('admin.vouchers.update');
-    // Xem chi tiết voucher
-    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show'])->name('admin.vouchers.show');
     // Xóa voucher
     Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
 

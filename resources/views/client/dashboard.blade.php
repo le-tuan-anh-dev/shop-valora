@@ -645,12 +645,12 @@ Lịch sử đơn hàng của tôi</h4>
                                     <div class="col-md-4">
                                         <label class="form-label">Tên Người đặt</label>
                                         <input type="text" name="name" class="form-control" placeholder="Họ tên"
-                                            value="{{ old('name') }}" required>
+                                            value="{{ old('name') }}"  >
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Số điện thoại</label>
                                         <input type="text" name="phone" class="form-control"
-                                            placeholder="Số điện thoại" value="{{ old('phone') }}" required>
+                                            placeholder="Số điện thoại" value="{{ old('phone') }}"  >
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Mặc định</label><br>
@@ -658,7 +658,7 @@ Lịch sử đơn hàng của tôi</h4>
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Địa chỉ chi tiết</label>
-                                        <textarea name="address" class="form-control" rows="3" placeholder="Địa chỉ chi tiết" required>{{ old('address') }}</textarea>
+                                        <textarea name="address" class="form-control" rows="3" placeholder="Địa chỉ chi tiết" >{{ old('address') }}</textarea>
                                     </div>
                                     <div class="col-12 mt-2">
                                         <button type="submit" class="btn btn_black sm">+ Thêm địa chỉ</button>
@@ -676,53 +676,133 @@ Lịch sử đơn hàng của tôi</h4>
     </section>
 
     {{-- Modal Edit Profile --}}
-    <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <form action="{{ route('client.dashboard.update-profile') }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editProfileLabel">Cập nhật thông tin cá nhân</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Họ tên</label>
-                            <input type="text" name="name" class="form-control"
-                                value="{{ old('name', $user->name) }}" required>
+<div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" id="profileTabs" role="tablist" style="border-bottom: 1px solid #dee2e6;">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
+                        data-bs-target="#profile-content" type="button" role="tab" aria-controls="profile-content"
+                        aria-selected="true">
+                        Thông tin cá nhân
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="password-tab" data-bs-toggle="tab"
+                        data-bs-target="#password-content" type="button" role="tab" aria-controls="password-content"
+                        aria-selected="false">
+                        Đổi mật khẩu
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab content -->
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Profile Tab -->
+                <div class="tab-pane fade show active" id="profile-content" role="tabpanel"
+                    aria-labelledby="profile-tab">
+                    <form action="{{ route('client.dashboard.update-profile') }}" method="POST"
+                        enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cập nhật thông tin cá nhân</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Đóng"></button>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control"
-                                value="{{ old('email', $user->email) }}" required>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Họ tên</label>
+                                <input type="text" name="name" class="form-control"
+                                    value="{{ old('name', $user->name) }}" >
+                                @error('name')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control"
+                                    value="{{ old('email', $user->email) }}" >
+                                @error('email')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" name="phone" class="form-control"
+                                    value="{{ old('phone', $user->phone) }}">
+                                @error('phone')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ảnh đại diện</label>
+                                <input type="file" name="image" class="form-control" accept="image/*">
+                                @if ($user->image)
+                                    <small class="text-muted d-block mt-1">
+                                        Ảnh hiện tại:
+                                        <img src="{{ asset('storage/' . $user->image) }}" alt=""
+                                            style="height:40px;border-radius:50%;">
+                                    </small>
+                                @endif
+                                @error('image')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Số điện thoại</label>
-                            <input type="text" name="phone" class="form-control"
-                                value="{{ old('phone', $user->phone) }}">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn_outline sm"
+                                data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn_black sm">Lưu thay đổi</button>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Ảnh đại diện</label>
-                            <input type="file" name="image" class="form-control">
-                            @if ($user->image)
-                                <small class="text-muted d-block mt-1">
-                                    Ảnh hiện tại:
-                                    <img src="{{ asset('storage/' . $user->image) }}" alt=""
-                                        style="height:40px;border-radius:50%;">
-                                </small>
-                            @endif
+                    </form>
+                </div>
+
+                <!-- Password Tab -->
+                <div class="tab-pane fade" id="password-content" role="tabpanel" aria-labelledby="password-tab">
+                    <form action="{{ route('client.dashboard.change-password') }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title">Đổi mật khẩu</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Đóng"></button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn_outline sm" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn_black sm">Lưu thay đổi</button>
-                    </div>
-                </form>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu hiện tại</label>
+                                <input type="password" name="current_password" class="form-control" >
+                                @error('current_password')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu mới</label>
+                                <input type="password" name="new_password" class="form-control"  >
+                                @error('new_password')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Xác nhận mật khẩu mới</label>
+                                <input type="password" name="new_password_confirmation" class="form-control"
+                                     >
+                                @error('new_password_confirmation')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn_outline sm"
+                                data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn_black sm">Đổi mật khẩu</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
     {{-- Modal Logout --}}
     <div class="modal fade" id="Confirmation-modal" tabindex="-1" aria-hidden="true">
@@ -746,3 +826,4 @@ Lịch sử đơn hàng của tôi</h4>
         </div>
     </div>
 @endsection
+
