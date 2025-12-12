@@ -138,8 +138,7 @@
                 <div class="col-lg-12">
 
                     <div class="card mb-3 p-3 dimensions-card">
-    <h5 class="fw-semibold">Kích thước & Cân nặng sản phẩm</h5>
-    <p class="text-muted small">Dành cho sản phẩm không cos biến thể</p>
+    <h5 class="fw-semibold">Kích thước & Cân nặng sản phẩm chung</h5>
     
     <div class="row">
         <div class="col-md-6 mb-3">
@@ -244,19 +243,43 @@ document.addEventListener('DOMContentLoaded', function () {
     const addVariantGroupBtn = document.querySelector('#add-variant-group');
     const productStockInput = document.querySelector('#product-stock-input');
     const basePriceInput = document.querySelector('#base-price-input');
-
-    // ========== Ẩn/Hiện phần Kích thước & Cân nặng ==========
-    function toggleDimensionsSection() {
-        const variantGroups = document.querySelectorAll('.variant-group-list .border').length;
-        const dimensionsCard = document.querySelector('.dimensions-card');
+    
+    // ========== Hiển thị lỗi validation biến thể ==========
+    function displayVariantErrors(errors) {
+        if (!errors || Object.keys(errors).length === 0) return;
         
-        if (dimensionsCard) {
-            dimensionsCard.style.display = variantGroups > 0 ? 'none' : 'block';
+        // Xóa thông báo lỗi cũ
+        document.querySelectorAll('.variant-error-msg').forEach(el => el.remove());
+        document.querySelectorAll('.variant-error').forEach(el => el.classList.remove('variant-error'));
+        
+        for (const [field, messages] of Object.entries(errors)) {
+            if (field.startsWith('variants.')) {
+                const match = field.match(/variants\.(\d+)\.(\w+)/);
+                if (match) {
+                    const [, idx, fieldName] = match;
+                    const input = document.querySelector(`input[name="variants[${idx}][${fieldName}]"]`);
+                    
+                    if (input) {
+                        // Thêm class lỗi
+                        input.classList.add('variant-error');
+                        
+                        // Tạo thông báo lỗi
+                        const errorMsg = document.createElement('small');
+                        errorMsg.className = 'variant-error-msg';
+                        errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${messages[0]}`;
+                        
+                        // Insert sau input
+                        const cell = input.closest('td');
+                        if (cell) {
+                            const existingError = cell.querySelector('.variant-error-msg');
+                            if (existingError) existingError.remove();
+                            cell.appendChild(errorMsg);
+                        }
+                    }
+                }
+            }
         }
     }
-
-    // ========== Hiển thị lỗi validation tổng quát ==========
-
 
     // ========== Highlight input có lỗi ==========
     function highlightErrorFields(errors) {
@@ -486,13 +509,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="0">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm" >
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm">
                     </td>
                     <td>
                         <input type="number" step="0.01" min="0" name="variants[${idx}][width]" class="form-control form-control-sm">
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm" >
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm">
                     </td>
                     <td>
                         <input type="number" step="0.01" min="0" name="variants[${idx}][weight]" class="form-control form-control-sm">
@@ -569,8 +592,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Hiển thị lỗi validation
-    displayValidationErrors(validationErrors);
     highlightErrorFields(validationErrors);
+    displayVariantErrors(validationErrors); // THÊM DÒNG NÀY
     toggleDimensionsSection();
 });
 
@@ -609,4 +632,6 @@ document.getElementById('image_main').addEventListener('change', function(e) {
     }
 });
 </script>
+
+
 @endpush

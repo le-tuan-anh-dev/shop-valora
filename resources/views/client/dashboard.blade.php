@@ -59,32 +59,32 @@
                             <li>
                                 <button class="nav-link active" id="dashboard-tab" data-bs-toggle="pill"
                                     data-bs-target="#dashboard" role="tab" aria-controls="dashboard"
-                                    aria-selected="true">
+                                    aria-selected="true" onclick="saveTab('dashboard-tab')">
                                     <i class="iconsax" data-icon="home-1"></i> Trang tổng quan
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="notifications-tab" data-bs-toggle="pill"
                                     data-bs-target="#notifications" role="tab" aria-controls="notifications"
-                                    aria-selected="false">
+                                    aria-selected="false" onclick="saveTab('notifications-tab')">
                                     <i class="iconsax" data-icon="lamp-2"></i>Thông báo
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="order-tab" data-bs-toggle="pill" data-bs-target="#order"
-                                    role="tab" aria-controls="order" aria-selected="false">
+                                    role="tab" aria-controls="order" aria-selected="false" onclick="saveTab('order-tab')">
                                     <i class="iconsax" data-icon="receipt-square"></i>Đơn hàng
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="wishlist-tab" data-bs-toggle="pill" data-bs-target="#wishlist"
-                                    role="tab" aria-controls="wishlist" aria-selected="false">
+                                    role="tab" aria-controls="wishlist" aria-selected="false" onclick="saveTab('wishlist-tab')">
                                     <i class="iconsax" data-icon="heart"></i>Danh sách yêu thích
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="address-tab" data-bs-toggle="pill" data-bs-target="#address"
-                                    role="tab" aria-controls="address" aria-selected="false">
+                                    role="tab" aria-controls="address" aria-selected="false" onclick="saveTab('address-tab')">
                                     <i class="iconsax" data-icon="cue-cards"></i>Địa Chỉ
                                 </button>
                             </li>
@@ -101,12 +101,17 @@
 
                 {{-- Nội dung phải --}}
                 <div class="col-xl-9 col-lg-8">
-                    {{-- Flash messages --}}
+                    
+                    <!-- Flash Messages -->
                     @if (session('success'))
-                        <div class="alert alert-success mt-2">{{ session('success') }}</div>
+                        <div class="alert alert-success position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+                            {{ session('success') }}
+                        </div>
                     @endif
                     @if (session('error'))
-                        <div class="alert alert-danger mt-2">{{ session('error') }}</div>
+                        <div class="alert alert-danger position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+                            {{ session('error') }}
+                        </div>
                     @endif
 
                     <div class="tab-content" id="v-pills-tabContent">
@@ -434,7 +439,7 @@ Lịch sử đơn hàng của tôi</h4>
                             </div>
                         </div>
 
-                        {{-- Wishlist Tab (dùng dữ liệu thật) --}}
+                        {{-- Wishlist Tab--}}
                         <div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-tab">
                             <div class="dashboard-right-box">
                                 <div class="wishlist-box ratio1_3">
@@ -447,102 +452,83 @@ Lịch sử đơn hàng của tôi</h4>
 
                                         @forelse($wishlistProducts as $product)
                                             <div class="col">
-                                                <div class="product-box-3 product-wishlist">
+                                                <div class="product-box">
                                                     <div class="img-wrapper">
-                                                        {{-- CHỈ CÒN NÚT THÙNG RÁC Ở GÓC ẢNH --}}
-                                                        <div class="label-block">
+                                                        {{-- Badge Giảm Giá --}}
+                                                        @php
+                                                            $hasDiscount = $product->discount_price && $product->discount_price < $product->base_price;
+                                                        @endphp
+
+                                                        @if($hasDiscount)
+                                                            @php
+                                                                $discountPercent = round((($product->base_price - $product->discount_price) / $product->base_price) * 100);
+                                                            @endphp
+                                                            <div class="label-block">
+                                                                <img src="{{ asset('client/assets/images/product/2.png') }}" alt="label">
+                                                                <span>Giảm <br>giá!</span>
+                                                            </div>
+                                                        @endif
+
+                                                        
+                                                        <div style="position: absolute; top: 10px; right: 10px; z-index: 10;">
                                                             <form action="{{ route('wishlist.remove', $product->id) }}"
                                                                 method="POST" class="d-inline"
                                                                 onsubmit="return confirm('Xóa sản phẩm này khỏi danh sách yêu thích?')">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit"
-                                                                    class="label-2 wishlist-icon delete-button"
+                                                                    class="btn btn-sm"
                                                                     title="Xóa khỏi danh sách yêu thích"
-                                                                    style="border:none;background:transparent;">
-                                                                    {{-- Dùng icon FontAwesome thùng rác --}}
-                                                                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                                                    style="border:none;padding:6px 10px;border-radius:4px;cursor:pointer;">
+                                                                    
+                                                                    <i class="fas fa-trash" style="font-size:14px;"></i>
                                                                 </button>
                                                             </form>
                                                         </div>
 
+                                                        {{-- Ảnh sản phẩm --}}
                                                         <div class="product-image">
-                                                            @php
-                                                                $image = $product->image_main
-                                                                    ? asset(
-                                                                        'storage/' . ltrim($product->image_main, '/'),
-                                                                    )
-                                                                    : asset(
-                                                                        'client/assets/images/product/product-3/1.jpg',
-                                                                    );
-                                                            @endphp
-
-                                                            <a class="pro-first"
-                                                                href="{{ route('products.detail', $product->id) }}">
+                                                            <a href="{{ route('products.detail', $product->id) }}">
+                                                                @php
+                                                                    $image = $product->image_main
+                                                                        ? asset('storage/' . ltrim($product->image_main, '/'))
+                                                                        : asset('client/assets/images/product/product-4/1.jpg');
+                                                                @endphp
                                                                 <img class="bg-img" src="{{ $image }}"
-                                                                    alt="{{ $product->name }}">
-                                                            </a>
-                                                            <a class="pro-sec"
-                                                                href="{{ route('products.detail', $product->id) }}">
-                                                                <img class="bg-img" src="{{ $image }}"
-                                                                    alt="{{ $product->name }}">
+                                                                    alt="{{ $product->name }}"
+                                                                    onerror="this.src='{{ asset('client/assets/images/product/product-4/1.jpg') }}'">
                                                             </a>
                                                         </div>
 
-                                                        {{-- (Tùy chọn) Nút thêm vào giỏ --}}
+                                                        {{-- Icons --}}
                                                         <div class="cart-info-icon">
-                                                            <form action="{{ route('cart.add', $product->id) }}"
-                                                                method="POST">
-                                                                @csrf
-                                                                <button type="submit" title="Thêm vào giỏ"
-                                                                    tabindex="0"
-                                                                    style="border:none;background:transparent;">
-                                                                    <i class="iconsax" data-icon="basket-2"
-                                                                        aria-hidden="true"></i>
-                                                                </button>
-                                                            </form>
+                                                            <a class="wishlist-icon" href="javascript:void(0)" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Thêm vào giỏ">
+                                                                <i class="iconsax" data-icon="basket-2"></i>
+                                                            </a>
                                                         </div>
                                                     </div>
 
-                                                    {{-- Product Detail --}}
+                                                    {{-- Chi tiết sản phẩm --}}
                                                     <div class="product-detail">
-
-                                                        {{-- NÚT XEM CHI TIẾT TO, RÕ --}}
-                                                        <div class="add-button mb-2">
+                                                        <div class="add-button">
                                                             <a href="{{ route('products.detail', $product->id) }}"
-                                                                class="btn btn_black sm w-100 text-center">
-                                                                <i class="fa-solid fa-eye me-1"></i> Xem chi tiết
+                                                                title="Xem chi tiết" tabindex="0">
+                                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
                                                             </a>
                                                         </div>
 
                                                         <a href="{{ route('products.detail', $product->id) }}">
-                                                            <h5>{{ \Illuminate\Support\Str::limit($product->name, 40) }}
-                                                            </h5>
+                                                            <h5>{{ Str::limit($product->name, 40) }}</h5>
                                                         </a>
 
-                                                        @php
-                                                            $hasDiscount =
-                                                                $product->discount_price &&
-                                                                $product->discount_price < $product->base_price;
-                                                            $displayPrice = $hasDiscount
-                                                                ? $product->discount_price
-                                                                : $product->base_price;
-                                                        @endphp
-
+                                                        {{-- Giá sản phẩm --}}
                                                         <p>
-                                                            {{ number_format($displayPrice, 0, ',', '.') }}đ
-
-                                                            @if ($hasDiscount)
-                                                                <del>{{ number_format($product->base_price, 0, ',', '.') }}đ</del>
-                                                                @php
-                                                                    $discountPercent = round(
-                                                                        (($product->base_price -
-                                                                            $product->discount_price) /
-                                                                            $product->base_price) *
-                                                                            100,
-                                                                    );
-                                                                @endphp
+                                                            @if($hasDiscount)
+                                                                {{ number_format($product->discount_price, 0, ',', '.') }}₫ 
+                                                                <del>{{ number_format($product->base_price, 0, ',', '.') }}₫</del>
                                                                 <span>-{{ $discountPercent }}%</span>
+                                                            @else
+                                                                {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                             @endif
                                                         </p>
                                                     </div>
@@ -645,12 +631,12 @@ Lịch sử đơn hàng của tôi</h4>
                                     <div class="col-md-4">
                                         <label class="form-label">Tên Người đặt</label>
                                         <input type="text" name="name" class="form-control" placeholder="Họ tên"
-                                            value="{{ old('name') }}" required>
+                                            value="{{ old('name') }}"  >
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Số điện thoại</label>
                                         <input type="text" name="phone" class="form-control"
-                                            placeholder="Số điện thoại" value="{{ old('phone') }}" required>
+                                            placeholder="Số điện thoại" value="{{ old('phone') }}"  >
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Mặc định</label><br>
@@ -658,7 +644,7 @@ Lịch sử đơn hàng của tôi</h4>
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Địa chỉ chi tiết</label>
-                                        <textarea name="address" class="form-control" rows="3" placeholder="Địa chỉ chi tiết" required>{{ old('address') }}</textarea>
+                                        <textarea name="address" class="form-control" rows="3" placeholder="Địa chỉ chi tiết" >{{ old('address') }}</textarea>
                                     </div>
                                     <div class="col-12 mt-2">
                                         <button type="submit" class="btn btn_black sm">+ Thêm địa chỉ</button>
@@ -676,73 +662,182 @@ Lịch sử đơn hàng của tôi</h4>
     </section>
 
     {{-- Modal Edit Profile --}}
-    <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <form action="{{ route('client.dashboard.update-profile') }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editProfileLabel">Cập nhật thông tin cá nhân</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Họ tên</label>
-                            <input type="text" name="name" class="form-control"
-                                value="{{ old('name', $user->name) }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control"
-                                value="{{ old('email', $user->email) }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Số điện thoại</label>
-                            <input type="text" name="phone" class="form-control"
-                                value="{{ old('phone', $user->phone) }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Ảnh đại diện</label>
-                            <input type="file" name="image" class="form-control">
-                            @if ($user->image)
-                                <small class="text-muted d-block mt-1">
-                                    Ảnh hiện tại:
-                                    <img src="{{ asset('storage/' . $user->image) }}" alt=""
-                                        style="height:40px;border-radius:50%;">
-                                </small>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn_outline sm" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn_black sm">Lưu thay đổi</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+<div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" id="profileTabs" role="tablist" style="border-bottom: 1px solid #dee2e6;">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
+                        data-bs-target="#profile-content" type="button" role="tab" aria-controls="profile-content"
+                        aria-selected="true">
+                        Thông tin cá nhân
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="password-tab" data-bs-toggle="tab"
+                        data-bs-target="#password-content" type="button" role="tab" aria-controls="password-content"
+                        aria-selected="false">
+                        Đổi mật khẩu
+                    </button>
+                </li>
+            </ul>
 
-    {{-- Modal Logout --}}
-    <div class="modal fade" id="Confirmation-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Xác nhận đăng xuất</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    Bạn có chắc chắn muốn đăng xuất không?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn_outline sm" data-bs-dismiss="modal">Hủy</button>
-                    <form action="{{ route('logout') }}" method="POST">
+            <!-- Tab content -->
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Profile Tab -->
+                <div class="tab-pane fade show active" id="profile-content" role="tabpanel"
+                    aria-labelledby="profile-tab">
+                    <form action="{{ route('client.dashboard.update-profile') }}" method="POST"
+                        enctype="multipart/form-data">
                         @csrf
-                        <button type="submit" class="btn btn_black sm">Đăng xuất</button>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cập nhật thông tin cá nhân</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Họ tên</label>
+                                <input type="text" name="name" class="form-control"
+                                    value="{{ old('name', $user->name) }}" >
+                                @error('name')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control"
+                                    value="{{ old('email', $user->email) }}" >
+                                @error('email')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" name="phone" class="form-control"
+                                    value="{{ old('phone', $user->phone) }}">
+                                @error('phone')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ảnh đại diện</label>
+                                <input type="file" name="image" class="form-control" accept="image/*">
+                                @if ($user->image)
+                                    <small class="text-muted d-block mt-1">
+                                        Ảnh hiện tại:
+                                        <img src="{{ asset('storage/' . $user->image) }}" alt=""
+                                            style="height:40px;border-radius:50%;">
+                                    </small>
+                                @endif
+                                @error('image')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn_outline sm"
+                                data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn_black sm">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Password Tab -->
+                <div class="tab-pane fade" id="password-content" role="tabpanel" aria-labelledby="password-tab">
+                    <form action="{{ route('client.dashboard.change-password') }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title">Đổi mật khẩu</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu hiện tại</label>
+                                <input type="password" name="current_password" class="form-control" >
+                                @error('current_password')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu mới</label>
+                                <input type="password" name="new_password" class="form-control"  >
+                                @error('new_password')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Xác nhận mật khẩu mới</label>
+                                <input type="password" name="new_password_confirmation" class="form-control"
+                                     >
+                                @error('new_password_confirmation')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn_outline sm"
+                                data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn_black sm">Đổi mật khẩu</button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+{{-- Modal Logout --}}
+<div class="modal fade" id="Confirmation-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận đăng xuất</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn đăng xuất không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn_outline sm" data-bs-dismiss="modal">Hủy</button>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn_black sm">Đăng xuất</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+<script>
+// Lưu tab đã chọn
+function saveTab(tabId) {
+    sessionStorage.setItem('activeDashboardTab', tabId);
+}
+
+// Restore tab khi load lại trang
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTabId = sessionStorage.getItem('activeDashboardTab');
+    
+    if (savedTabId) {
+        const tabButton = document.getElementById(savedTabId);
+        if (tabButton) {
+            // Trigger Bootstrap tab show
+            const tab = new bootstrap.Tab(tabButton);
+            tab.show();
+        }
+    }
+    const alerts = document.querySelectorAll('.position-fixed.alert');
+    
+    alerts.forEach(alert => {
+        
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 4000);
+    });
+});
+</script>

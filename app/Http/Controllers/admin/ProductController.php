@@ -93,37 +93,57 @@ class ProductController extends Controller
             'image_main.required'=>'Ảnh phải dược thêm',
             'description.required'=>'Mô tả không được trống',
             'product_images.max'   => 'Tối đa 5 ảnh',
+
+            'length.required'      => 'Chiều dài là bắt buộc.',
+            'length.numeric'       => 'Chiều dài phải là số.',
+            'width.required'       => 'Chiều rộng là bắt buộc.',
+            'width.numeric'        => 'Chiều rộng phải là số.',
+            'height.required'      => 'Chiều cao là bắt buộc.',
+            'height.numeric'       => 'Chiều cao phải là số.',
+            'weight.required'      => 'Cân nặng là bắt buộc.',
+            'weight.numeric'       => 'Cân nặng phải là số.',
+            'variants.*.length.required' => 'Chiều dài biến thể là bắt buộc.',
+            'variants.*.width.required'  => 'Chiều rộng biến thể là bắt buộc.',
+            'variants.*.height.required' => 'Chiều cao biến thể là bắt buộc.',
+            'variants.*.weight.required' => 'Cân nặng biến thể là bắt buộc.',
         ];
 
-        // Validate dữ liệu
-        $validated = $request->validate([
+            // Validate dữ liệu
+            $rules = [
             'category_id'      => 'required|exists:categories,id',
             'brand_id'         => 'nullable|exists:brands,id',
-            'name'             => 'required|string|max:150',
-            'description'      => 'nullable|string',
+            'name'            => 'required|string|max:150',
+            'description'      => 'required|string',
             'cost_price'       => 'required|numeric|gt:0',
             'base_price'       => 'required|numeric|gt:cost_price',
             'discount_price'   => 'nullable|numeric|lt:base_price|gt:cost_price',
             'stock'            => 'required|integer|min:0',
-            'image_main'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'variants'         => 'nullable|array',
-            'variants.*.sku'   => 'nullable|string|unique:product_variants,sku',
-            'variants.*.price' => 'nullable|numeric|gte:cost_price',
-            'variants.*.stock' => 'nullable|integer|min:0',
-            'image_main' =>'required',
-            'description'=>'required|string',
+            'image_main'       => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'product_images'   => 'nullable|max:5',
-            'length'                    => 'nullable|numeric|min:0',
-            'width'                     => 'nullable|numeric|min:0',
-            'height'                    => 'nullable|numeric|min:0',
-            'weight'                    => 'nullable|numeric|min:0',
-            'variants'                  => 'nullable|array',
-            'variants.*.length'         => 'nullable|numeric|min:0',
-            'variants.*.width'          => 'nullable|numeric|min:0',
-            'variants.*.height'         => 'nullable|numeric|min:0',
-            'variants.*.weight'         => 'nullable|numeric|min:0',
-        ], $messages);
+        ];
 
+        $hasVariants = $request->has('variants') && is_array($request->variants) && count($request->variants) > 0;
+        if (!$hasVariants) {
+            $rules['length']  = 'required|numeric|min:0';
+            $rules['width']   = 'required|numeric|min:0';
+            $rules['height']  = 'required|numeric|min:0';
+            $rules['weight']  = 'required|numeric|min:0';
+        } else {
+            $rules['length']  = 'nullable|numeric|min:0';
+            $rules['width']   = 'nullable|numeric|min:0';
+            $rules['height']  = 'nullable|numeric|min:0';
+            $rules['weight']  = 'nullable|numeric|min:0';
+            $rules['variants']   = 'required|array|min:1';
+            $rules['variants.*.length']  = 'required|numeric|min:0';
+            $rules['variants.*.width']   = 'required|numeric|min:0';
+            $rules['variants.*.height']  = 'required|numeric|min:0';
+            $rules['variants.*.weight']  = 'required|numeric|min:0';
+            $rules['variants.*.sku']     = 'nullable|string|unique:product_variants,sku';
+            $rules['variants.*.price']   = 'required|numeric|gte:cost_price';
+            $rules['variants.*.stock']   = 'required|integer|min:0';
+        }
+        
+        $validated = $request->validate($rules, $messages);
         DB::beginTransaction();
         try {
             // Upload ảnh (nếu có)

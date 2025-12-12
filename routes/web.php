@@ -2,17 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-
-
-// Khai báo rõ controller cho client vs admin
 use App\Http\Controllers\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BrandController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\ShopController;
@@ -27,7 +22,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CommentController;
-use App\Http\Controllers\Admin\ReviewController as AdminReviewController; // ĐẶT ALIAS
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController; 
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 
 use App\Http\Controllers\WishlistController;
@@ -90,12 +85,14 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])
         ->name('wishlist.remove');
-    // ============================
+   
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])
         ->name('client.dashboard');
 
     Route::post('/dashboard/update-profile', [ClientDashboardController::class, 'updateProfile'])
         ->name('client.dashboard.update-profile');
+    Route::post('/dashboard/change-password', [ClientDashboardController::class, 'changePassword'])
+    ->name('client.dashboard.change-password');
 
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -140,6 +137,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 // MoMo Callback
 
 Route::get('/momo/callback', [CheckoutController::class, 'momoCallback'])->name('momo.callback');
+Route::get('/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('vnpay.callback');
 
 // Admin routes 
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
@@ -257,8 +255,6 @@ Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name(
     // Chỉnh sửa voucher
     Route::get('/vouchers/{voucher}/edit', [VoucherController::class, 'edit'])->name('admin.vouchers.edit');
     Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('admin.vouchers.update');
-    // Xem chi tiết voucher
-    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show'])->name('admin.vouchers.show');
     // Xóa voucher
     Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
 
