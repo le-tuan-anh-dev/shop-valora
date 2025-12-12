@@ -101,12 +101,17 @@
 
                 {{-- Nội dung phải --}}
                 <div class="col-xl-9 col-lg-8">
-                    {{-- Flash messages --}}
+                    
+                    <!-- Flash Messages -->
                     @if (session('success'))
-                        <div class="alert alert-success mt-2">{{ session('success') }}</div>
+                        <div class="alert alert-success position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+                            {{ session('success') }}
+                        </div>
                     @endif
                     @if (session('error'))
-                        <div class="alert alert-danger mt-2">{{ session('error') }}</div>
+                        <div class="alert alert-danger position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+                            {{ session('error') }}
+                        </div>
                     @endif
 
                     <div class="tab-content" id="v-pills-tabContent">
@@ -844,5 +849,14 @@ document.addEventListener('DOMContentLoaded', function() {
             tab.show();
         }
     }
+    const alerts = document.querySelectorAll('.position-fixed.alert');
+    
+    alerts.forEach(alert => {
+        
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 4000);
+    });
 });
 </script>
