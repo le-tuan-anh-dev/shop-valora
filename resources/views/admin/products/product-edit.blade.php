@@ -14,7 +14,6 @@
 
                 {{-- Left: Thông tin cơ bản & hình ảnh & biến thể --}}
                 <div class="col-lg-7">
-
                     {{-- Thông tin cơ bản --}}
                     <div class="card mb-3 p-3">
                         <h5 class="fw-semibold">Thông tin cơ bản</h5>
@@ -30,7 +29,6 @@
                             @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
-
                     {{-- Hình ảnh --}}
                     <div class="card mb-3 p-3">
                         <h5 class="fw-semibold">Hình ảnh sản phẩm</h5>
@@ -45,52 +43,25 @@
                             @error('image_main')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         {{-- Ảnh Phụ Hiện Tại --}}
- {{-- Thêm Ảnh Phụ --}}
-<div class="mb-3">
-    <label for="product_images" class="form-label">Thêm Ảnh Phụ</label>
-    <input type="file" 
-           class="form-control @error('product_images.*') is-invalid @enderror" 
-           id="product_images" 
-           name="product_images[]"
-           multiple
-           accept="image/*">
-    <div id="previewNewImages" class="mt-3 d-flex flex-wrap gap-2"></div>
-    @error('product_images')
-        <div class="invalid-feedback d-block">{{ $message }}</div>
-    @enderror
-</div>
-
-{{-- Hidden input để xóa tất cả ảnh cũ --}}
-<input type="hidden" id="deleteAllImages" name="delete_all_images" value="0">
-                    </div>
-
-                    {{-- Biến thể --}}
-                    <div class="card mb-3 p-3">
-                        <h5 class="fw-semibold mb-3">Biến thể sản phẩm</h5>
-                        
-                        <div id="all-variant-groups" class="mb-3"></div>
-
-                        <button type="button" class="btn btn-sm btn-warning mb-3" id="add-variant-group">
-                            <i class="fas fa-plus me-1"></i> Thêm nhóm phân loại
-                        </button>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="variant-table">
-                                <thead>
-                                    <tr>
-                                        <th>Tên biến thể</th>
-                                        <th>SKU</th>
-                                        <th>Giá bán (đ)</th>
-                                        <th>Tồn kho</th>
-                                        <th>Xóa</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- Variants sẽ được sinh bởi JS --}}
-                                </tbody>
-                            </table>
+                        {{-- Thêm Ảnh Phụ --}}
+                        <div class="mb-3">
+                            <label for="product_images" class="form-label">Thêm Ảnh Phụ</label>
+                            <input type="file" 
+                                class="form-control @error('product_images.*') is-invalid @enderror" 
+                                id="product_images" 
+                                name="product_images[]"
+                                multiple
+                                accept="image/*">
+                            <div id="previewNewImages" class="mt-3 d-flex flex-wrap gap-2"></div>
+                            @error('product_images')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
-                    </div>
+
+                        {{-- Hidden input để xóa tất cả ảnh cũ --}}
+                        <input type="hidden" id="deleteAllImages" name="delete_all_images" value="0"></div>
+
+                    
 
                 </div>
 
@@ -152,17 +123,114 @@
                         </div>
                     </div>
 
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success">Cập nhật sản phẩm</button>
-                    </div>
+                    
 
+                </div>
+
+                <div class="col-lg-12">
+                    {{-- Kích thước & Cân nặng --}}
+                    <div class="card mb-3 p-3 dimensions-card">
+                        <h5 class="fw-semibold">Kích thước & Cân nặng sản phẩm chung</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Chiều dài</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.01" min="0" name="length" 
+                                        class="form-control @error('length') is-invalid @enderror" 
+                                        value="{{ old('length', $product->length) }}" placeholder="0.00">
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                                @error('length')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Chiều rộng</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.01" min="0" name="width" 
+                                        class="form-control @error('width') is-invalid @enderror" 
+                                        value="{{ old('width', $product->width) }}" placeholder="0.00">
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                                @error('width')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Chiều cao</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.01" min="0" name="height" 
+                                        class="form-control @error('height') is-invalid @enderror" 
+                                        value="{{ old('height', $product->height) }}" placeholder="0.00">
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                                @error('height')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cân nặng</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.01" min="0" name="weight" 
+                                        class="form-control @error('weight') is-invalid @enderror" 
+                                        value="{{ old('weight', $product->weight) }}" placeholder="0.00">
+                                    <span class="input-group-text">gr</span>
+                                </div>
+                                @error('weight')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    {{-- Biến thể --}}
+                    <div class="card mb-3 p-3">
+                        <h5 class="fw-semibold mb-3">Biến thể sản phẩm</h5>
+                        
+                        <div id="all-variant-groups" class="mb-3"></div>
+
+                        <button type="button" class="btn btn-sm btn-warning mb-3" id="add-variant-group">
+                            <i class="fas fa-plus me-1"></i> Thêm nhóm phân loại
+                        </button>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="variant-table">
+                            <thead>
+                                <tr>
+                                    <th>Tên biến thể</th>
+                                    <th>SKU</th>
+                                    <th>Giá bán (đ)</th>
+                                    <th>Tồn kho</th>
+                                    <th>Chiều dài (cm)</th>
+                                    <th>Chiều rộng (cm)</th>
+                                    <th>Chiều cao (cm)</th>
+                                    <th>Cân nặng (gr)</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
                 </div>
 
             </div>
 
             {{-- Container ẩn để lưu các variant cần xóa --}}
             <div id="delete-variants-container"></div>
+            <div class="text-end">
+                        <button type="submit" class="btn btn-success">Cập nhật sản phẩm</button>
+                    </div>
         </form>
+
     </div>
 </div>
 
@@ -229,48 +297,72 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Hiển thị các biến thể hiện có
     function displayExistingVariants() {
-        variantTableBody.innerHTML = '';
-        
-        existingVariantsData.forEach((variant) => {
-            const valueIdsStr = variantAttributesMap[variant.id];
-            const label = getVariantLabel(valueIdsStr);
+    variantTableBody.innerHTML = '';
+    
+    existingVariantsData.forEach((variant) => {
+        const valueIdsStr = variantAttributesMap[variant.id];
+        const label = getVariantLabel(valueIdsStr);
 
-            variantTableBody.insertAdjacentHTML('beforeend', `
-                <tr data-variant-type="existing" data-key="existing_${variant.id}">
-                    <td>
-                        <span class="badge bg-success">${label}</span>
-                        <input type="hidden" name="variants[${variant.id}][id]" value="${variant.id}">
-                        <input type="hidden" name="variants[${variant.id}][value_ids]" value="${valueIdsStr}">
-                        <input type="hidden" name="variants[${variant.id}][type]" value="existing">
-                    </td>
-                    <td>
-                        <input type="text" 
-                               name="variants[${variant.id}][sku]" 
-                               class="form-control form-control-sm" 
-                               value="${variant.sku || ''}" 
-                               readonly>
-                    </td>
-                    <td>
-                        <input type="number" 
-                               name="variants[${variant.id}][price]" 
-                               class="form-control form-control-sm" 
-                               value="${variant.price || ''}">
-                    </td>
-                    <td>
-                        <input type="number" 
-                               name="variants[${variant.id}][stock]" 
-                               class="form-control form-control-sm variant-stock" 
-                               value="${variant.stock || ''}">
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm remove-existing-variant" data-id="${variant.id}">Xóa</button>
-                    </td>
-                </tr>
-            `);
-        });
-        
-        updateProductStock();
-    }
+        variantTableBody.insertAdjacentHTML('beforeend', `
+            <tr data-variant-type="existing" data-key="existing_${variant.id}">
+                <td>
+                    <span class="badge bg-success">${label}</span>
+                    <input type="hidden" name="variants[${variant.id}][id]" value="${variant.id}">
+                    <input type="hidden" name="variants[${variant.id}][value_ids]" value="${valueIdsStr}">
+                    <input type="hidden" name="variants[${variant.id}][type]" value="existing">
+                </td>
+                <td>
+                    <input type="text" 
+                           name="variants[${variant.id}][sku]" 
+                           class="form-control form-control-sm" 
+                           value="${variant.sku || ''}" 
+                           readonly>
+                </td>
+                <td>
+                    <input type="number" 
+                           name="variants[${variant.id}][price]" 
+                           class="form-control form-control-sm" 
+                           value="${variant.price || ''}">
+                </td>
+                <td>
+                    <input type="number" 
+                           name="variants[${variant.id}][stock]" 
+                           class="form-control form-control-sm variant-stock" 
+                           value="${variant.stock || ''}">
+                </td>
+                <td>
+                    <input type="number" step="0.01" min="0"
+                           name="variants[${variant.id}][length]" 
+                           class="form-control form-control-sm" 
+                           value="${variant.length || ''}">
+                </td>
+                <td>
+                    <input type="number" step="0.01" min="0"
+                           name="variants[${variant.id}][width]" 
+                           class="form-control form-control-sm" 
+                           value="${variant.width || ''}">
+                </td>
+                <td>
+                    <input type="number" step="0.01" min="0"
+                           name="variants[${variant.id}][height]" 
+                           class="form-control form-control-sm" 
+                           value="${variant.height || ''}">
+                </td>
+                <td>
+                    <input type="number" step="0.01" min="0"
+                           name="variants[${variant.id}][weight]" 
+                           class="form-control form-control-sm" 
+                           value="${variant.weight || ''}">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-existing-variant" data-id="${variant.id}">Xóa</button>
+                </td>
+            </tr>
+        `);
+    });
+    
+    updateProductStock();
+}
 
     // Hàm tạo variant group
     function createVariantGroup() {
@@ -527,6 +619,46 @@ document.getElementById('product_images').addEventListener('change', function(e)
         };
         reader.readAsDataURL(file);
     });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const allGroupsContainer = document.getElementById('all-variant-groups');
+    const dimensionsCard = document.querySelector('.dimensions-card');
+    const addVariantGroupBtn = document.getElementById('add-variant-group');
+
+    // Ẩn/hiện kích thước khi thêm/xóa biến thể
+    function toggleDimensionsSection() {
+        const hasVariantGroups = allGroupsContainer.querySelectorAll('.variant-group').length > 0;
+        if (dimensionsCard) {
+            dimensionsCard.style.display = hasVariantGroups ? 'none' : 'block';
+        }
+    }
+
+    // Lắng nghe sự kiện thêm nhóm
+    const originalAddClick = addVariantGroupBtn.onclick;
+    addVariantGroupBtn.addEventListener('click', () => {
+        setTimeout(toggleDimensionsSection, 100);
+    });
+
+    // Lắng nghe sự kiện xóa nhóm
+    allGroupsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-group')) {
+            setTimeout(toggleDimensionsSection, 100);
+        }
+    });
+
+    // Lắng nghe các hàng biến thể được thêm vào bảng
+    const variantTableBody = document.querySelector('#variant-table tbody');
+    const observer = new MutationObserver(() => {
+        toggleDimensionsSection();
+    });
+
+    observer.observe(variantTableBody, {
+        childList: true
+    });
+
+    // Khởi tạo lần đầu
+    toggleDimensionsSection();
 });
 </script>
 @endpush

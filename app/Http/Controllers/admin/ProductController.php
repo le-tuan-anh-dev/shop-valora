@@ -93,6 +93,10 @@ class ProductController extends Controller
             'image_main.required'=>'Ảnh phải dược thêm',
             'description.required'=>'Mô tả không được trống',
             'product_images.max'   => 'Tối đa 5 ảnh',
+            'length.max'           => 'Chiều dài phải nhỏ hơn 200 cm.',
+            'width.max'            => 'Chiều rộng phải nhỏ hơn 200 cm.',
+            'height.max'           => 'Chiều cao phải nhỏ hơn 200 cm.',
+            'weight.max'           => 'Cân nặng phải nhỏ hơn 1.600.000 gr.',
 
             'length.required'      => 'Chiều dài là bắt buộc.',
             'length.numeric'       => 'Chiều dài phải là số.',
@@ -106,6 +110,10 @@ class ProductController extends Controller
             'variants.*.width.required'  => 'Chiều rộng biến thể là bắt buộc.',
             'variants.*.height.required' => 'Chiều cao biến thể là bắt buộc.',
             'variants.*.weight.required' => 'Cân nặng biến thể là bắt buộc.',
+            'variants.*.length.max'      => 'Chiều dài biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.width.max'       => 'Chiều rộng biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.height.max'      => 'Chiều cao biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.weight.max'      => 'Cân nặng biến thể phải nhỏ hơn 1.600.000 gr.',
         ];
 
             // Validate dữ liệu
@@ -124,20 +132,20 @@ class ProductController extends Controller
 
         $hasVariants = $request->has('variants') && is_array($request->variants) && count($request->variants) > 0;
         if (!$hasVariants) {
-            $rules['length']  = 'required|numeric|min:0';
-            $rules['width']   = 'required|numeric|min:0';
-            $rules['height']  = 'required|numeric|min:0';
-            $rules['weight']  = 'required|numeric|min:0';
+            $rules['length']  = 'required|numeric|min:0|max:199.99';
+            $rules['width']   = 'required|numeric|min:0|max:199.99';
+            $rules['height']  = 'required|numeric|min:0|max:199.99';
+            $rules['weight']  = 'required|numeric|min:0|max:1599999.99';
         } else {
-            $rules['length']  = 'nullable|numeric|min:0';
-            $rules['width']   = 'nullable|numeric|min:0';
-            $rules['height']  = 'nullable|numeric|min:0';
-            $rules['weight']  = 'nullable|numeric|min:0';
+            $rules['length']  = 'nullable|numeric|min:0|max:199.99';
+            $rules['width']   = 'nullable|numeric|min:0|max:199.99';
+            $rules['height']  = 'nullable|numeric|min:0|max:199.99';
+            $rules['weight']  = 'nullable|numeric|min:0|max:1599999.99';
             $rules['variants']   = 'required|array|min:1';
-            $rules['variants.*.length']  = 'required|numeric|min:0';
-            $rules['variants.*.width']   = 'required|numeric|min:0';
-            $rules['variants.*.height']  = 'required|numeric|min:0';
-            $rules['variants.*.weight']  = 'required|numeric|min:0';
+            $rules['variants.*.length']  = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.width']   = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.height']  = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.weight']  = 'required|numeric|min:0|max:1599999.99';
             $rules['variants.*.sku']     = 'nullable|string|unique:product_variants,sku';
             $rules['variants.*.price']   = 'required|numeric|gte:cost_price';
             $rules['variants.*.stock']   = 'required|integer|min:0';
@@ -251,7 +259,7 @@ class ProductController extends Controller
 
     //  Form sửa sản phẩm
  
-  public function edit($id)
+    public function edit($id)
     {
         $product = Product::with('variants', 'images')->findOrFail($id);
         $categories = Category::where('is_active', 1)->get();
