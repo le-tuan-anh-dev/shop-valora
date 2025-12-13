@@ -93,6 +93,10 @@ class ProductController extends Controller
             'image_main.required'=>'Ảnh phải dược thêm',
             'description.required'=>'Mô tả không được trống',
             'product_images.max'   => 'Tối đa 5 ảnh',
+            'length.max'           => 'Chiều dài phải nhỏ hơn 200 cm.',
+            'width.max'            => 'Chiều rộng phải nhỏ hơn 200 cm.',
+            'height.max'           => 'Chiều cao phải nhỏ hơn 200 cm.',
+            'weight.max'           => 'Cân nặng phải nhỏ hơn 1.600.000 gr.',
 
             'length.required'      => 'Chiều dài là bắt buộc.',
             'length.numeric'       => 'Chiều dài phải là số.',
@@ -106,6 +110,10 @@ class ProductController extends Controller
             'variants.*.width.required'  => 'Chiều rộng biến thể là bắt buộc.',
             'variants.*.height.required' => 'Chiều cao biến thể là bắt buộc.',
             'variants.*.weight.required' => 'Cân nặng biến thể là bắt buộc.',
+            'variants.*.length.max'      => 'Chiều dài biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.width.max'       => 'Chiều rộng biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.height.max'      => 'Chiều cao biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.weight.max'      => 'Cân nặng biến thể phải nhỏ hơn 1.600.000 gr.',
         ];
 
             // Validate dữ liệu
@@ -124,20 +132,20 @@ class ProductController extends Controller
 
         $hasVariants = $request->has('variants') && is_array($request->variants) && count($request->variants) > 0;
         if (!$hasVariants) {
-            $rules['length']  = 'required|numeric|min:0';
-            $rules['width']   = 'required|numeric|min:0';
-            $rules['height']  = 'required|numeric|min:0';
-            $rules['weight']  = 'required|numeric|min:0';
+            $rules['length']  = 'required|numeric|min:0|max:199.99';
+            $rules['width']   = 'required|numeric|min:0|max:199.99';
+            $rules['height']  = 'required|numeric|min:0|max:199.99';
+            $rules['weight']  = 'required|numeric|min:0|max:1599999.99';
         } else {
-            $rules['length']  = 'nullable|numeric|min:0';
-            $rules['width']   = 'nullable|numeric|min:0';
-            $rules['height']  = 'nullable|numeric|min:0';
-            $rules['weight']  = 'nullable|numeric|min:0';
+            $rules['length']  = 'nullable|numeric|min:0|max:199.99';
+            $rules['width']   = 'nullable|numeric|min:0|max:199.99';
+            $rules['height']  = 'nullable|numeric|min:0|max:199.99';
+            $rules['weight']  = 'nullable|numeric|min:0|max:1599999.99';
             $rules['variants']   = 'required|array|min:1';
-            $rules['variants.*.length']  = 'required|numeric|min:0';
-            $rules['variants.*.width']   = 'required|numeric|min:0';
-            $rules['variants.*.height']  = 'required|numeric|min:0';
-            $rules['variants.*.weight']  = 'required|numeric|min:0';
+            $rules['variants.*.length']  = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.width']   = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.height']  = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.weight']  = 'required|numeric|min:0|max:1599999.99';
             $rules['variants.*.sku']     = 'nullable|string|unique:product_variants,sku';
             $rules['variants.*.price']   = 'required|numeric|gte:cost_price';
             $rules['variants.*.stock']   = 'required|integer|min:0';
@@ -251,7 +259,7 @@ class ProductController extends Controller
 
     //  Form sửa sản phẩm
  
-  public function edit($id)
+    public function edit($id)
     {
         $product = Product::with('variants', 'images')->findOrFail($id);
         $categories = Category::where('is_active', 1)->get();
@@ -264,7 +272,6 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        // Custom messages tiếng Việt
         $messages = [
             'category_id.required' => 'Bạn phải chọn danh mục.',
             'category_id.exists'   => 'Danh mục không hợp lệ.',
@@ -283,14 +290,43 @@ class ProductController extends Controller
             'stock.integer'        => 'Tồn kho phải là số nguyên.',
             'stock.min'            => 'Tồn kho không được âm.',
             'variants.*.price.numeric' => 'Giá biến thể phải là số.',
-            'variants.*.price.gte'     => 'Giá biến thể phải nhỏ hơn hoặc bằng giá bán.',
+            'variants.*.price.gte'     => 'Giá biến thể phải lớn hơn hoặc bằng giá nhập.',
             'variants.*.stock.integer' => 'Tồn kho biến thể phải là số nguyên.',
             'variants.*.stock.min'     => 'Tồn kho biến thể không được âm.',
             'product_images.max'     => 'Tối đa 5 ảnh.',
+            'length.numeric'       => 'Chiều dài phải là số.',
+            'length.max'           => 'Chiều dài phải nhỏ hơn 200 cm.',
+            'width.numeric'        => 'Chiều rộng phải là số.',
+            'width.max'            => 'Chiều rộng phải nhỏ hơn 200 cm.',
+            'height.numeric'       => 'Chiều cao phải là số.',
+            'height.max'           => 'Chiều cao phải nhỏ hơn 200 cm.',
+            'weight.numeric'       => 'Cân nặng phải là số.',
+            'weight.max'           => 'Cân nặng phải nhỏ hơn 1.600.000 gr.',
+
+            'length.required'      => 'Chiều dài là bắt buộc.',
+            'width.required'       => 'Chiều rộng là bắt buộc.',
+            'height.required'      => 'Chiều cao là bắt buộc.',
+            'weight.required'      => 'Cân nặng là bắt buộc.',
+
+            'variants.*.length.required' => 'Chiều dài biến thể là bắt buộc.',
+            'variants.*.length.numeric'  => 'Chiều dài biến thể phải là số.',
+            'variants.*.length.max'      => 'Chiều dài biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.width.required'  => 'Chiều rộng biến thể là bắt buộc.',
+            'variants.*.width.numeric'   => 'Chiều rộng biến thể phải là số.',
+            'variants.*.width.max'       => 'Chiều rộng biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.height.required' => 'Chiều cao biến thể là bắt buộc.',
+            'variants.*.height.numeric'  => 'Chiều cao biến thể phải là số.',
+            'variants.*.height.max'      => 'Chiều cao biến thể phải nhỏ hơn 200 cm.',
+            'variants.*.weight.required' => 'Cân nặng biến thể là bắt buộc.',
+            'variants.*.weight.numeric'  => 'Cân nặng biến thể phải là số.',
+            'variants.*.weight.max'      => 'Cân nặng biến thể phải nhỏ hơn 1.600.000 gr.',
         ];
 
-        // Validate dữ liệu
-        $validated = $request->validate([
+      
+        $hasVariants = $request->has('variants') && is_array($request->variants) && count($request->variants) > 0;
+
+       
+        $rules = [
             'category_id'      => 'required|exists:categories,id',
             'brand_id'         => 'nullable|exists:brands,id',
             'name'             => 'required|string|max:150',
@@ -305,11 +341,36 @@ class ProductController extends Controller
             'variants.*.price' => 'nullable|numeric|gte:cost_price',
             'variants.*.stock' => 'nullable|integer|min:0',
             'product_images'   => 'nullable|array|max:5',
-        ], $messages);
+        ];
+
+        
+        if (!$hasVariants) {
+            $rules['length']  = 'required|numeric|min:0|max:199.99';
+            $rules['width']   = 'required|numeric|min:0|max:199.99';
+            $rules['height']  = 'required|numeric|min:0|max:199.99';
+            $rules['weight']  = 'required|numeric|min:0|max:1599999.99';
+        } else {
+            
+            $rules['length']  = 'nullable|numeric|min:0|max:199.99';
+            $rules['width']   = 'nullable|numeric|min:0|max:199.99';
+            $rules['height']  = 'nullable|numeric|min:0|max:199.99';
+            $rules['weight']  = 'nullable|numeric|min:0|max:1599999.99';
+            
+            
+            $rules['variants.*.length']  = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.width']   = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.height']  = 'required|numeric|min:0|max:199.99';
+            $rules['variants.*.weight']  = 'required|numeric|min:0|max:1599999.99';
+            $rules['variants.*.price']   = 'required|numeric|gte:cost_price';
+            $rules['variants.*.stock']   = 'required|integer|min:0';
+        }
+
+       
+        $validated = $request->validate($rules, $messages);
 
         DB::beginTransaction();
         try {
-            //  Upload ảnh mới nếu có 
+            
             $mainImagePath = $product->image_main;
             if ($request->hasFile('image_main')) {
                 // Xóa ảnh cũ
@@ -339,6 +400,7 @@ class ProductController extends Controller
                     }
                 }
             }
+            
             //  UPDATE sản phẩm 
             $product->update([
                 'category_id'    => $validated['category_id'],
@@ -350,13 +412,17 @@ class ProductController extends Controller
                 'discount_price' => $validated['discount_price'] ?? null,
                 'image_main'     => $mainImagePath,
                 'is_active'      => $request->has('is_active') ? 1 : 0,
+                'length'         => $validated['length'] ?? null,
+                'width'          => $validated['width'] ?? null,
+                'height'         => $validated['height'] ?? null,
+                'weight'         => $validated['weight'] ?? null,
             ]);
 
             $totalVariantStock = 0;
             $processedVariantIds = [];
 
             //  Xử lý biến thể 
-            if ($request->has('variants') && is_array($request->variants) && count($request->variants) > 0) {
+            if ($hasVariants) {
                 // Lấy tất cả attribute_value_ids
                 $allAttributeValueIds = collect($request->variants)
                     ->flatMap(function ($v) {
@@ -381,9 +447,13 @@ class ProductController extends Controller
                         $variant = ProductVariant::find($variantData['id']);
                         if ($variant && $variant->product_id == $product->id) {
                             $variant->update([
-                                'sku'   => $variantData['sku'] ?? null,
-                                'price' => isset($variantData['price']) ? (float)$variantData['price'] : (float)$validated['base_price'],
-                                'stock' => $variantStock,
+                                'sku'    => $variantData['sku'] ?? null,
+                                'price'  => isset($variantData['price']) ? (float)$variantData['price'] : (float)$validated['base_price'],
+                                'stock'  => $variantStock,
+                                'length' => isset($variantData['length']) ? (float)$variantData['length'] : null,
+                                'width'  => isset($variantData['width']) ? (float)$variantData['width'] : null,
+                                'height' => isset($variantData['height']) ? (float)$variantData['height'] : null,
+                                'weight' => isset($variantData['weight']) ? (float)$variantData['weight'] : null,
                             ]);
                             $processedVariantIds[] = $variant->id;
                         }
@@ -395,11 +465,15 @@ class ProductController extends Controller
                             'price'      => isset($variantData['price']) ? (float)$variantData['price'] : (float)$validated['base_price'],
                             'stock'      => $variantStock,
                             'is_active'  => 1,
+                            'length'     => isset($variantData['length']) ? (float)$variantData['length'] : null,
+                            'width'      => isset($variantData['width']) ? (float)$variantData['width'] : null,
+                            'height'     => isset($variantData['height']) ? (float)$variantData['height'] : null,
+                            'weight'     => isset($variantData['weight']) ? (float)$variantData['weight'] : null,
                         ]);
                         $processedVariantIds[] = $variant->id;
                     }
 
-                    //  UPDATE/DELETE variant_attribute_values (liên kết trực tiếp tới attribute_values)
+                    //  UPDATE/DELETE variant_attribute_values
                     if (!empty($variantData['value_ids'])) {
                         $attributeValueIds = array_filter(explode(',', $variantData['value_ids']));
 
