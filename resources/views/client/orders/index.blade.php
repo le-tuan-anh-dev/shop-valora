@@ -42,7 +42,7 @@
             </div>
         </div>
     @else
-        {{-- Statistics Cards --}}
+        {{-- Statistics Cards - Sử dụng $allOrders để tính thống kê --}}
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm h-100">
@@ -50,7 +50,7 @@
                         <div class="text-primary mb-2">
                             <i class="fas fa-receipt fa-2x"></i>
                         </div>
-                        <h5 class="fw-bold mb-0">{{ $orders->count() }}</h5>
+                        <h5 class="fw-bold mb-0">{{ $allOrders->count() }}</h5>
                         <small class="text-muted">Tổng đơn hàng</small>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                         <div class="text-warning mb-2">
                             <i class="fas fa-clock fa-2x"></i>
                         </div>
-                        <h5 class="fw-bold mb-0">{{ $orders->whereIn('status', ['pending', 'confirmed'])->count() }}</h5>
+                        <h5 class="fw-bold mb-0">{{ $allOrders->whereIn('status', ['pending', 'confirmed'])->count() }}</h5>
                         <small class="text-muted">Đang xử lý</small>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                         <div class="text-info mb-2">
                             <i class="fas fa-truck fa-2x"></i>
                         </div>
-                        <h5 class="fw-bold mb-0">{{ $orders->whereIn('status', ['awaiting_pickup', 'shipping'])->count() }}</h5>
+                        <h5 class="fw-bold mb-0">{{ $allOrders->whereIn('status', ['awaiting_pickup', 'shipping'])->count() }}</h5>
                         <small class="text-muted">Đang giao</small>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                         <div class="text-success mb-2">
                             <i class="fas fa-check-circle fa-2x"></i>
                         </div>
-                        <h5 class="fw-bold mb-0">{{ $orders->whereIn('status', ['delivered', 'completed'])->count() }}</h5>
+                        <h5 class="fw-bold mb-0">{{ $allOrders->whereIn('status', ['delivered', 'completed'])->count() }}</h5>
                         <small class="text-muted">Hoàn thành</small>
                     </div>
                 </div>
@@ -97,7 +97,7 @@
                     <h6 class="fw-bold mb-0">
                         <i class="fas fa-list me-2"></i>Danh sách đơn hàng
                     </h6>
-                    <span class="badge bg-primary rounded-pill">{{ $orders->count() }} đơn</span>
+                    <span class="badge bg-primary rounded-pill">{{ $allOrders->count() }} đơn</span>
                 </div>
             </div>
             <div class="card-body p-0">
@@ -258,14 +258,22 @@
                     @endforeach
                 </div>
             </div>
-        </div>
 
-        {{-- Pagination --}}
-        @if(method_exists($orders, 'links'))
-            <div class="d-flex justify-content-center mt-4">
-                {{ $orders->links() }}
-            </div>
-        @endif
+            {{-- Pagination Footer --}}
+            @if($orders->hasPages())
+                <div class="card-footer bg-white py-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                        <div class="text-muted small">
+                            Hiển thị {{ $orders->firstItem() }} - {{ $orders->lastItem() }} 
+                            trong tổng số {{ $orders->total() }} đơn hàng
+                        </div>
+                        <div>
+                            {{ $orders->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
     @endif
 </div>
 @endsection

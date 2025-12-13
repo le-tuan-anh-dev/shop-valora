@@ -1296,24 +1296,23 @@ class CheckoutController extends Controller
     {
         $userId = auth()->id();
 
+        
         $orders = Order::where('user_id', $userId)
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(10); 
+
+        
+        $allOrders = Order::where('user_id', $userId)->get();
 
         $paymentMethods = PaymentMethod::pluck('name', 'id');
 
         return view('client.orders.index', [
             'orders'         => $orders,
+            'allOrders'      => $allOrders,
             'paymentMethods' => $paymentMethods,
         ]);
     }
-    /**
-     * Chi tiết 1 đơn hàng.
-     */
-   /**
- * Chi tiết 1 đơn hàng.
- * GIỮ NGUYÊN LUỒNG CŨ, CHỈ THÊM LOAD BRAND + VARIANT.
- */
+
     public function showOrder(Order $order)
     {
         if ($order->user_id !== auth()->id()) {
@@ -1337,46 +1336,43 @@ class CheckoutController extends Controller
         ]);
     }
 
-    /**
-     * Hủy đơn hàng (hoàn kho + thông báo).
-     */
   public function cancelOrder(Order $order)
-{
-    if ($order->user_id !== auth()->id()) {
-        return redirect()->route('orders.index')
-            ->with('error', 'Bạn không có quyền hủy đơn hàng này.');
-    }
-
-    if ($order->status !== 'pending') {
-        return redirect()->back()
-            ->with('error', 'Đơn đã xác nhận nên không thể hủy.');
-    }
-
-    DB::transaction(function () use ($order) {
-        $items = $order->items()
-            ->with(['product', 'variant'])
-            ->lockForUpdate()
-            ->get();
-
-        foreach ($items as $item) {
-            if ($item->product) {
-                $item->product->increment('stock', $item->quantity);
-            }
-            if ($item->variant) {
-                $item->variant->increment('stock', $item->quantity);
-            }
+    {
+        if ($order->user_id !== auth()->id()) {
+            return redirect()->route('orders.index')
+                ->with('error', 'Bạn không có quyền hủy đơn hàng này.');
         }
 
-        $order->update([
-            'status'         => 'cancelled_by_customer',
-            // 'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
-            'cancelled_at'   => now(),
-        ]);
+        if ($order->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Đơn đã xác nhận nên không thể hủy.');
+        }
 
-        $order->user->notify(new OrderStatusChanged($order));
-    });
+        DB::transaction(function () use ($order) {
+            $items = $order->items()
+                ->with(['product', 'variant'])
+                ->lockForUpdate()
+                ->get();
 
-    return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công');
-}
+            foreach ($items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+                if ($item->variant) {
+                    $item->variant->increment('stock', $item->quantity);
+                }
+            }
+
+            $order->update([
+                'status'         => 'cancelled_by_customer',
+                // 'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
+                'cancelled_at'   => now(),
+            ]);
+
+            $order->user->notify(new OrderStatusChanged($order));
+        });
+
+        return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công');
+    }
     
 }
