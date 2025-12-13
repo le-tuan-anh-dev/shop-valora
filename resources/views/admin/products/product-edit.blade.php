@@ -42,7 +42,6 @@
                             @endif
                             @error('image_main')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
-                        {{-- Ảnh Phụ Hiện Tại --}}
                         {{-- Thêm Ảnh Phụ --}}
                         <div class="mb-3">
                             <label for="product_images" class="form-label">Thêm Ảnh Phụ</label>
@@ -59,10 +58,8 @@
                         </div>
 
                         {{-- Hidden input để xóa tất cả ảnh cũ --}}
-                        <input type="hidden" id="deleteAllImages" name="delete_all_images" value="0"></div>
-
-                    
-
+                        <input type="hidden" id="deleteAllImages" name="delete_all_images" value="0">
+                    </div>
                 </div>
 
                 {{-- Right: Giá & danh mục --}}
@@ -122,16 +119,12 @@
                             <label class="form-check-label" for="is_active">Hiển thị sản phẩm</label>
                         </div>
                     </div>
-
-                    
-
                 </div>
 
                 <div class="col-lg-12">
                     {{-- Kích thước & Cân nặng --}}
                     <div class="card mb-3 p-3 dimensions-card">
                         <h5 class="fw-semibold">Kích thước & Cân nặng sản phẩm chung</h5>
-                        
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Chiều dài</label>
@@ -193,31 +186,29 @@
                     <div class="card mb-3 p-3">
                         <h5 class="fw-semibold mb-3">Biến thể sản phẩm</h5>
                         
-                        <div id="all-variant-groups" class="mb-3"></div>
+                        <button type="button" class="btn btn-sm btn-warning mb-2" id="add-variant-group">+ Thêm nhóm thuộc tính</button>
 
-                        <button type="button" class="btn btn-sm btn-warning mb-3" id="add-variant-group">
-                            <i class="fas fa-plus me-1"></i> Thêm nhóm phân loại
-                        </button>
+                        {{-- Nơi hiển thị nhóm thuộc tính --}}
+                        <div class="variant-group-list mb-3"></div>
 
                         <div class="table-responsive">
                             <table class="table table-bordered" id="variant-table">
-                            <thead>
-                                <tr>
-                                    <th>Tên biến thể</th>
-                                    <th>SKU</th>
-                                    <th>Giá bán (đ)</th>
-                                    <th>Tồn kho</th>
-                                    <th>Chiều dài (cm)</th>
-                                    <th>Chiều rộng (cm)</th>
-                                    <th>Chiều cao (cm)</th>
-                                    <th>Cân nặng (gr)</th>
-                                    <th>Xóa</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              
-                            </tbody>
-                        </table>
+                                <thead>
+                                    <tr>
+                                        <th>Tên biến thể</th>
+                                        <th>SKU</th>
+                                        <th>Giá bán (đ)</th>
+                                        <th>Tồn kho</th>
+                                        <th>Chiều dài (cm)</th>
+                                        <th>Chiều rộng (cm)</th>
+                                        <th>Chiều cao (cm)</th>
+                                        <th>Cân nặng (gr)</th>
+                                        <th>Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -226,28 +217,29 @@
 
             {{-- Container ẩn để lưu các variant cần xóa --}}
             <div id="delete-variants-container"></div>
+            
             <div class="text-end">
-                        <button type="submit" class="btn btn-success">Cập nhật sản phẩm</button>
-                    </div>
+                <button type="submit" class="btn btn-success">Cập nhật sản phẩm</button>
+            </div>
         </form>
-
     </div>
 </div>
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const attributes = @json($attributes);
-    const existingVariantsData = @json($product->variants->toArray());
-    const variantAttributesMap = {};
-    @foreach($product->variants as $v)
-        variantAttributesMap[{{ $v->id }}] = '{{ $v->attributeValues()->pluck('attribute_value_id')->join(",") }}';
-    @endforeach
+    const existingVariants = @json($product->variants->load('attributeValues')->toArray());
+    const validationErrors = @json($errors->getMessages() ?? []);
     
-    const productId = {{ $product->id }};
-    const productName = "{{ Str::slug($product->name) }}";
+    const variantGroupList = document.querySelector('.variant-group-list');
+    const variantTableBody = document.querySelector('#variant-table tbody');
+    const deleteVariantsContainer = document.getElementById('delete-variants-container');
+    const addVariantGroupBtn = document.querySelector('#add-variant-group');
+    const productStockInput = document.querySelector('#product-stock-input');
+    const basePriceInput = document.querySelector('#base-price-input');
 
-    // Tạo map từ value_id đến name
+    // Tạo map từ value_id đến value name
     const valueMap = {};
     attributes.forEach(attr => {
         attr.values.forEach(val => {
@@ -255,255 +247,301 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    const allGroupsContainer = document.getElementById('all-variant-groups');
-    const variantTableBody = document.querySelector('#variant-table tbody');
-    const deleteVariantsContainer = document.getElementById('delete-variants-container');
-    const addVariantGroupBtn = document.getElementById('add-variant-group');
-    const productStockInput = document.getElementById('product-stock-input');
-    const basePriceInput = document.getElementById('base-price-input');
+    // ========== Hiển thị lỗi validation biến thể ==========
+    function displayVariantErrors(errors) {
+        if (!errors || Object.keys(errors).length === 0) return;
+        
+        document.querySelectorAll('.variant-error-msg').forEach(el => el.remove());
+        document.querySelectorAll('.variant-error').forEach(el => el.classList.remove('variant-error'));
+        
+        for (const [field, messages] of Object.entries(errors)) {
+            if (field.startsWith('variants.')) {
+                const match = field.match(/variants\.(.+?)\.(\w+)/);
+                if (match) {
+                    const [, key, fieldName] = match;
+                    const input = document.querySelector(`input[name="variants[${key}][${fieldName}]"]`);
+                    
+                    if (input) {
+                        input.classList.add('variant-error', 'is-invalid');
+                        
+                        const errorMsg = document.createElement('small');
+                        errorMsg.className = 'variant-error-msg text-danger';
+                        errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${messages[0]}`;
+                        
+                        const cell = input.closest('td');
+                        if (cell) {
+                            const existingError = cell.querySelector('.variant-error-msg');
+                            if (existingError) existingError.remove();
+                            cell.appendChild(errorMsg);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-    let hasAddedNewGroup = false;
+    // ========== Highlight input có lỗi ==========
+    function highlightErrorFields(errors) {
+        document.querySelectorAll('input.is-invalid').forEach(el => {
+            el.classList.remove('is-invalid');
+        });
 
-    // Hàm tạo SKU ngẫu nhiên
+        if (!errors || Object.keys(errors).length === 0) return;
+
+        for (const [field, messages] of Object.entries(errors)) {
+            if (field.startsWith('variants.')) {
+                const match = field.match(/variants\.(.+?)\.(\w+)/);
+                if (match) {
+                    const [, key, fieldName] = match;
+                    const input = document.querySelector(`input[name="variants[${key}][${fieldName}]"]`);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        input.title = messages.join('; ');
+                    }
+                }
+            } else {
+                const input = document.querySelector(`input[name="${field}"], select[name="${field}"], textarea[name="${field}"]`);
+                if (input) {
+                    input.classList.add('is-invalid');
+                }
+            }
+        }
+    }
+
+    // ========== Lấy danh sách attr_id đã được chọn ==========
+    function getSelectedAttrIds() {
+        const selectedIds = [];
+        variantGroupList.querySelectorAll('.attr-select').forEach(select => {
+            if (select.value) {
+                selectedIds.push(select.value);
+            }
+        });
+        return selectedIds;
+    }
+
+    // ========== Tạo options cho select (loại bỏ đã chọn) ==========
+    function createAttrOptions(excludeIds = []) {
+        return attributes
+            .filter(a => !excludeIds.includes(a.id.toString()))
+            .map(a => `<option value="${a.id}" data-attr-name="${a.name}">${a.name}</option>`)
+            .join('');
+    }
+
+    // ========== Cập nhật tất cả select (refresh options) ==========
+    function refreshAllSelects() {
+        const selectedIds = getSelectedAttrIds();
+        
+        variantGroupList.querySelectorAll('.border').forEach(group => {
+            const select = group.querySelector('.attr-select');
+            const currentValue = select.value;
+            
+            const excludeList = selectedIds.filter(id => id !== currentValue);
+            select.innerHTML = `
+                <option value="">-- Chọn phân loại --</option>
+                ${attributes
+                    .filter(a => !excludeList.includes(a.id.toString()))
+                    .map(a => `<option value="${a.id}" data-attr-name="${a.name}" ${a.id == currentValue ? 'selected' : ''}>${a.name}</option>`)
+                    .join('')}
+            `;
+        });
+    }
+
+    // ========== Thêm nhóm thuộc tính ==========
+    addVariantGroupBtn.addEventListener('click', () => {
+        const selectedIds = getSelectedAttrIds();
+        
+        const groupDiv = document.createElement('div');
+        groupDiv.classList.add('border', 'p-3', 'rounded', 'mb-3', 'bg-light');
+        groupDiv.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <select class="form-select attr-select">
+                    <option value="">-- Chọn phân loại --</option>
+                    ${createAttrOptions(selectedIds)}
+                </select>
+                <button type="button" class="btn btn-danger btn-sm remove-group ms-2">X</button>
+            </div>
+            <div class="value-container"></div>
+        `;
+        variantGroupList.appendChild(groupDiv);
+    });
+
+    // ========== Xử lý chọn thuộc tính và checkbox ==========
+    variantGroupList.addEventListener('change', function(e) {
+        if (e.target.classList.contains('attr-select')) {
+            const selectedAttrId = e.target.value;
+            const selectedAttr = attributes.find(a => a.id == selectedAttrId);
+            const container = e.target.closest('.border').querySelector('.value-container');
+            
+            refreshAllSelects();
+            
+            if (selectedAttr && selectedAttr.values.length > 0) {
+                container.innerHTML = `
+                    <label class="fw-semibold">Tùy chọn ${selectedAttr.name}:</label>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        ${selectedAttr.values.map(v => `
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input value-checkbox" type="checkbox" value="${v.id}" data-name="${v.value}">
+                                <span class="form-check-label">${v.value}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '<p class="text-muted">Không có tùy chọn nào</p>';
+            }
+            generateVariants();
+        }
+
+        if (e.target.classList.contains('value-checkbox')) {
+            generateVariants();
+        }
+    });
+
+    // ========== Xóa nhóm thuộc tính ==========
+    variantGroupList.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-group')) {
+            e.target.closest('.border').remove();
+            refreshAllSelects();
+            generateVariants();
+        }
+    });
+
+    // ========== Xóa biến thể ==========
+    variantTableBody.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-variant')) {
+            const tr = e.target.closest('tr');
+            const variantId = tr.dataset.variantId;
+            
+            // Nếu là variant đã tồn tại (có id), thêm vào danh sách xóa
+            if (variantId && variantId !== 'new') {
+                deleteVariantsContainer.innerHTML += `<input type="hidden" name="delete_variants[]" value="${variantId}">`;
+            }
+            
+            tr.remove();
+            updateProductStock();
+        }
+    });
+
+    // ========== Lắng nghe thay đổi stock biến thể ==========
+    variantTableBody.addEventListener('input', function(e) {
+        if (e.target.classList.contains('variant-stock')) {
+            updateProductStock();
+        }
+    });
+
+    // ========== Cartesian product - Tạo tất cả combinations ==========
+    function cartesian(arr) {
+        if (arr.length === 0) return [];
+        return arr.reduce((a, b) => {
+            const ret = [];
+            a.forEach(aElem => {
+                b.forEach(bElem => {
+                    ret.push(aElem.concat ? aElem.concat([bElem]) : [aElem, bElem]);
+                });
+            });
+            return ret;
+        });
+    }
+
+    // ========== Tạo SKU ngẫu nhiên ==========
     function generateSKU() {
-        // Tạo 2-3 chữ cái ngẫu nhiên in hoa
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const lettersLength = Math.random() < 0.5 ? 2 : 3; // Random 2 hoặc 3 chữ
+        const lettersLength = Math.random() < 0.5 ? 2 : 3;
         let randomLetters = '';
         
         for (let i = 0; i < lettersLength; i++) {
             randomLetters += letters.charAt(Math.floor(Math.random() * letters.length));
         }
         
-        // Tạo số ngẫu nhiên (3 chữ số: 100-999)
         const randomNumbers = Math.floor(Math.random() * 900) + 100;
         
         return `${randomLetters}-${randomNumbers}`;
     }
 
-    // Hàm lấy label cho variant từ value_ids
-    function getVariantLabel(valueIdsStr) {
-        if (!valueIdsStr) return 'Biến thể mặc định';
-        const ids = valueIdsStr.split(',').map(id => parseInt(id));
-        const names = ids.map(id => valueMap[id] || 'Unknown').join(' / ');
-        return names || 'Biến thể mặc định';
-    }
-
-    // Hàm sort value_ids
-    function sortValueIds(idsStr) {
-        if (!idsStr) return '';
-        return idsStr.split(',').map(id => parseInt(id)).sort((a, b) => a - b).join(',');
-    }
-
-    // Hiển thị các biến thể hiện có
-    function displayExistingVariants() {
-    variantTableBody.innerHTML = '';
-    
-    existingVariantsData.forEach((variant) => {
-        const valueIdsStr = variantAttributesMap[variant.id];
-        const label = getVariantLabel(valueIdsStr);
-
-        variantTableBody.insertAdjacentHTML('beforeend', `
-            <tr data-variant-type="existing" data-key="existing_${variant.id}">
-                <td>
-                    <span class="badge bg-success">${label}</span>
-                    <input type="hidden" name="variants[${variant.id}][id]" value="${variant.id}">
-                    <input type="hidden" name="variants[${variant.id}][value_ids]" value="${valueIdsStr}">
-                    <input type="hidden" name="variants[${variant.id}][type]" value="existing">
-                </td>
-                <td>
-                    <input type="text" 
-                           name="variants[${variant.id}][sku]" 
-                           class="form-control form-control-sm" 
-                           value="${variant.sku || ''}" 
-                           readonly>
-                </td>
-                <td>
-                    <input type="number" 
-                           name="variants[${variant.id}][price]" 
-                           class="form-control form-control-sm" 
-                           value="${variant.price || ''}">
-                </td>
-                <td>
-                    <input type="number" 
-                           name="variants[${variant.id}][stock]" 
-                           class="form-control form-control-sm variant-stock" 
-                           value="${variant.stock || ''}">
-                </td>
-                <td>
-                    <input type="number" step="0.01" min="0"
-                           name="variants[${variant.id}][length]" 
-                           class="form-control form-control-sm" 
-                           value="${variant.length || ''}">
-                </td>
-                <td>
-                    <input type="number" step="0.01" min="0"
-                           name="variants[${variant.id}][width]" 
-                           class="form-control form-control-sm" 
-                           value="${variant.width || ''}">
-                </td>
-                <td>
-                    <input type="number" step="0.01" min="0"
-                           name="variants[${variant.id}][height]" 
-                           class="form-control form-control-sm" 
-                           value="${variant.height || ''}">
-                </td>
-                <td>
-                    <input type="number" step="0.01" min="0"
-                           name="variants[${variant.id}][weight]" 
-                           class="form-control form-control-sm" 
-                           value="${variant.weight || ''}">
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm remove-existing-variant" data-id="${variant.id}">Xóa</button>
-                </td>
-            </tr>
-        `);
-    });
-    
-    updateProductStock();
-}
-
-    // Hàm tạo variant group
-    function createVariantGroup() {
-        hasAddedNewGroup = true;
+    // ========== Sinh biến thể từ nhóm thuộc tính ==========
+    function generateVariants() {
+        const selectedGroups = [];
         
-        const groupDiv = document.createElement('div');
-        groupDiv.classList.add('border', 'p-3', 'rounded', 'mb-3', 'bg-light', 'variant-group');
-        const selectedAttrIds = Array.from(allGroupsContainer.querySelectorAll('.attr-select')).map(s => s.value);
-
-        groupDiv.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <select class="form-select attr-select">
-                    <option value="">-- Chọn phân loại --</option>
-                    ${attributes.map(a => {
-                        if (!selectedAttrIds.includes(a.id.toString())) {
-                            return `<option value="${a.id}">${a.name}</option>`;
-                        }
-                        return '';
-                    }).join('')}
-                </select>
-                <button type="button" class="btn btn-danger btn-sm remove-group ms-2">X</button>
-            </div>
-            <div class="value-container"></div>
-        `;
-        allGroupsContainer.appendChild(groupDiv);
-    }
-
-    // Hàm render values cho attribute
-    function renderValues(groupDiv, attr) {
-        const container = groupDiv.querySelector('.value-container');
-        container.innerHTML = `
-            <label class="fw-semibold">Tùy chọn ${attr.name}:</label>
-            <div class="d-flex flex-wrap gap-2 mt-2">
-                ${attr.values.map(v => `
-                    <label class="form-check form-check-inline">
-                        <input class="form-check-input value-checkbox" type="checkbox" value="${v.id}" data-name="${v.value}">
-                        <span class="form-check-label">${v.value}</span>
-                    </label>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    // Lấy các nhóm đã chọn
-    function getSelectedGroups() {
-        const groups = [];
-        allGroupsContainer.querySelectorAll('.variant-group').forEach(group => {
+        variantGroupList.querySelectorAll('.border').forEach(group => {
             const attrSelect = group.querySelector('.attr-select');
             const checkboxes = group.querySelectorAll('.value-checkbox:checked');
-            if (attrSelect && attrSelect.value && checkboxes.length) {
-                groups.push({
+            
+            if (attrSelect && attrSelect.value && checkboxes.length > 0) {
+                selectedGroups.push({
                     attr_id: attrSelect.value,
                     attr_name: attrSelect.options[attrSelect.selectedIndex].text,
-                    values: Array.from(checkboxes).map(c => ({ id: c.value, name: c.dataset.name }))
+                    values: Array.from(checkboxes).map(c => ({ 
+                        id: c.value, 
+                        name: c.dataset.name 
+                    }))
                 });
             }
         });
-        return groups;
-    }
 
-    // Cartesian product
-    function cartesian(arrays) {
-        return arrays.reduce((acc, curr) => {
-            const res = [];
-            acc.forEach(a => {
-                curr.forEach(c => {
-                    res.push([...a, c]);
-                });
-            });
-            return res;
-        }, [[]]);
-    }
+        let combos = [];
+        if (selectedGroups.length > 0) {
+            combos = cartesian(selectedGroups.map(g => g.values));
+        }
 
-    // Tạo variants mới hoàn toàn
-    function generateNewVariants() {
-        // Xóa tất cả variants (cũ + mới)
-        variantTableBody.innerHTML = '';
-        
-        // Đánh dấu xóa tất cả variants cũ
+        // Xóa tất cả variants cũ trong database
         deleteVariantsContainer.innerHTML = '';
-        existingVariantsData.forEach(variant => {
-            deleteVariantsContainer.innerHTML += `<input type="hidden" name="delete_variants[]" value="${variant.id}">`;
+        existingVariants.forEach(v => {
+            deleteVariantsContainer.innerHTML += `<input type="hidden" name="delete_variants[]" value="${v.id}">`;
         });
 
-        const basePrice = parseFloat(basePriceInput.value) || 0;
-        const selectedGroups = getSelectedGroups();
+        variantTableBody.innerHTML = '';
 
-        // Nếu không có group nào được chọn
-        if (selectedGroups.length === 0) {
+        if (combos.length === 0) {
             productStockInput.removeAttribute('readonly');
-            productStockInput.value = 0;
             return;
         }
 
-        // Tạo tất cả combinations
-        const combos = cartesian(selectedGroups.map(g => g.values));
-        
-        combos.forEach((combo, index) => {
-            const values = Array.isArray(combo) ? combo : [combo];
-            const valueIds = values.map(v => v.id);
-            const label = values.map(v => v.name).join(' / ');
-            const sku = generateSKU(); // Tạo SKU ngẫu nhiên
-            const newKey = `new_${index}`;
+        const basePrice = parseFloat(basePriceInput.value) || 0;
 
-            variantTableBody.insertAdjacentHTML('beforeend', `
-                <tr data-variant-type="new" data-key="${newKey}">
+        combos.forEach((combo, idx) => {
+            const values = Array.isArray(combo) ? combo : [combo];
+            const label = values.map(v => v.name).join(' / ');
+            const ids = values.map(v => v.id).join(',');
+            const autoSKU = generateSKU();
+
+            variantTableBody.innerHTML += `
+                <tr data-variant-id="new">
                     <td>
-                        <span class="badge bg-primary">${label}</span>
-                        <input type="hidden" name="variants[${newKey}][id]" value="">
-                        <input type="hidden" name="variants[${newKey}][value_ids]" value="${valueIds.join(',')}">
-                        <input type="hidden" name="variants[${newKey}][type]" value="new">
+                        <span class="badge bg-info">${label}</span>
+                        <input type="hidden" name="variants[${idx}][value_ids]" value="${ids}">
                     </td>
                     <td>
-                        <input type="text" 
-                               name="variants[${newKey}][sku]" 
-                               class="form-control form-control-sm sku-input" 
-                               value="${sku}">
+                        <input type="text" name="variants[${idx}][sku]" class="form-control form-control-sm" value="${autoSKU}">
                     </td>
                     <td>
-                        <input type="number" 
-                               name="variants[${newKey}][price]" 
-                               class="form-control form-control-sm" 
-                               value="${basePrice}">
+                        <input type="number" step="1" name="variants[${idx}][price]" class="form-control form-control-sm" value="${basePrice}">
                     </td>
                     <td>
-                        <input type="number" 
-                               name="variants[${newKey}][stock]" 
-                               class="form-control form-control-sm variant-stock" 
-                               >
+                        <input type="number" name="variants[${idx}][stock]" class="form-control form-control-sm variant-stock" value="0">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][length]" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][width]" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][height]" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${idx}][weight]" class="form-control form-control-sm">
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
                     </td>
                 </tr>
-            `);
+            `;
         });
 
         updateProductStock();
     }
 
-    // Cập nhật tổng stock
+    // ========== Cập nhật stock sản phẩm tổng ==========
     function updateProductStock() {
         const variantRows = variantTableBody.querySelectorAll('tr');
         if (variantRows.length > 0) {
@@ -512,87 +550,123 @@ document.addEventListener('DOMContentLoaded', function() {
                 const stockInput = row.querySelector('.variant-stock');
                 if (stockInput) {
                     totalStock += parseInt(stockInput.value) || 0;
-                    stockInput.removeEventListener('input', updateProductStock);
-                    stockInput.addEventListener('input', updateProductStock);
                 }
             });
             productStockInput.value = totalStock;
             productStockInput.setAttribute('readonly', true);
         } else {
             productStockInput.removeAttribute('readonly');
-            productStockInput.value = 0;
         }
     }
 
-    // Sự kiện: Thêm nhóm phân loại
-    addVariantGroupBtn.addEventListener('click', () => {
-        createVariantGroup();
-    });
+    // ========== Lấy label cho variant từ attribute values ==========
+    function getVariantLabel(variant) {
+        if (!variant.attribute_values || variant.attribute_values.length === 0) {
+            return 'Biến thể mặc định';
+        }
+        return variant.attribute_values.map(av => av.value).join(' / ');
+    }
 
-    // Sự kiện: Thay đổi attribute hoặc value
-    allGroupsContainer.addEventListener('change', e => {
-        if (e.target.classList.contains('attr-select')) {
-            const selectedAttr = attributes.find(a => a.id == e.target.value);
-            const container = e.target.closest('.variant-group').querySelector('.value-container');
-            if (selectedAttr) {
-                renderValues(e.target.closest('.variant-group'), selectedAttr);
-            } else {
-                container.innerHTML = '';
-            }
-            if (hasAddedNewGroup) {
-                generateNewVariants();
-            }
-        }
-        if (e.target.classList.contains('value-checkbox')) {
-            if (hasAddedNewGroup) {
-                generateNewVariants();
-            }
-        }
-    });
-
-    // Sự kiện: Xóa nhóm phân loại
-    allGroupsContainer.addEventListener('click', e => {
-        if (e.target.classList.contains('remove-group')) {
-            e.target.closest('.variant-group').remove();
-            
-            if (allGroupsContainer.querySelectorAll('.variant-group').length === 0) {
-                hasAddedNewGroup = false;
-                displayExistingVariants();
-            } else if (hasAddedNewGroup) {
-                generateNewVariants();
-            }
-        }
-    });
-
-    // Sự kiện: Xóa variant
-    variantTableBody.addEventListener('click', e => {
-        if (e.target.closest('.remove-existing-variant')) {
-            const btn = e.target.closest('.remove-existing-variant');
-            const variantId = btn.dataset.id;
-            const tr = btn.closest('tr');
-            
-            deleteVariantsContainer.innerHTML += `<input type="hidden" name="delete_variants[]" value="${variantId}">`;
-            tr.remove();
-            updateProductStock();
-        }
+    // ========== Hiển thị các biến thể hiện có ==========
+    function displayExistingVariants() {
+        variantTableBody.innerHTML = '';
         
-        if (e.target.closest('.remove-variant')) {
-            const tr = e.target.closest('tr');
-            tr.remove();
-            updateProductStock();
-        }
-    });
+        existingVariants.forEach((variant, idx) => {
+            const label = getVariantLabel(variant);
+            const valueIds = variant.attribute_values ? variant.attribute_values.map(av => av.id).join(',') : '';
 
-    // Cập nhật giá base cho tất cả variants mới
-    basePriceInput.addEventListener('change', () => {
-        const basePrice = parseFloat(basePriceInput.value) || 0;
-        variantTableBody.querySelectorAll('tr[data-variant-type="new"] input[name*="[price]"]').forEach(input => {
-            input.value = basePrice;
+            variantTableBody.innerHTML += `
+                <tr data-variant-id="${variant.id}">
+                    <td>
+                        <span class="badge bg-success">${label}</span>
+                        <input type="hidden" name="variants[existing_${variant.id}][id]" value="${variant.id}">
+                        <input type="hidden" name="variants[existing_${variant.id}][value_ids]" value="${valueIds}">
+                    </td>
+                    <td>
+                        <input type="text" name="variants[existing_${variant.id}][sku]" class="form-control form-control-sm" value="${variant.sku || ''}" readonly>
+                    </td>
+                    <td>
+                        <input type="number" step="1" name="variants[existing_${variant.id}][price]" class="form-control form-control-sm" value="${variant.price || ''}">
+                    </td>
+                    <td>
+                        <input type="number" name="variants[existing_${variant.id}][stock]" class="form-control form-control-sm variant-stock" value="${variant.stock || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[existing_${variant.id}][length]" class="form-control form-control-sm" value="${variant.length || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[existing_${variant.id}][width]" class="form-control form-control-sm" value="${variant.width || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[existing_${variant.id}][height]" class="form-control form-control-sm" value="${variant.height || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[existing_${variant.id}][weight]" class="form-control form-control-sm" value="${variant.weight || ''}">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
+                    </td>
+                </tr>
+            `;
         });
-    });
 
-    // Khởi tạo
-    displayExistingVariants();
+        updateProductStock();
+    }
+
+    // ========== Restore old variants khi có lỗi validation ==========
+    const oldVariants = @json(old('variants', []));
+
+    if (oldVariants && Object.keys(oldVariants).length > 0) {
+        // Có lỗi validation - restore dữ liệu cũ
+        Object.entries(oldVariants).forEach(([key, variant]) => {
+            const valueIds = variant.value_ids || '';
+            const label = valueIds ? valueIds.split(',').map(id => valueMap[id] || 'Unknown').join(' / ') : 'Biến thể';
+            const isExisting = key.startsWith('existing_');
+            const variantId = isExisting ? key.replace('existing_', '') : 'new';
+
+            variantTableBody.innerHTML += `
+                <tr data-variant-id="${variantId}">
+                    <td>
+                        <span class="badge ${isExisting ? 'bg-success' : 'bg-info'}">${label}</span>
+                        ${isExisting ? `<input type="hidden" name="variants[${key}][id]" value="${variant.id || ''}">` : ''}
+                        <input type="hidden" name="variants[${key}][value_ids]" value="${valueIds}">
+                    </td>
+                    <td>
+                        <input type="text" name="variants[${key}][sku]" class="form-control form-control-sm" value="${variant.sku || ''}" ${isExisting ? 'readonly' : ''}>
+                    </td>
+                    <td>
+                        <input type="number" step="1" name="variants[${key}][price]" class="form-control form-control-sm" value="${variant.price || ''}">
+                    </td>
+                    <td>
+                        <input type="number" name="variants[${key}][stock]" class="form-control form-control-sm variant-stock" value="${variant.stock || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${key}][length]" class="form-control form-control-sm" value="${variant.length || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${key}][width]" class="form-control form-control-sm" value="${variant.width || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${key}][height]" class="form-control form-control-sm" value="${variant.height || ''}">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" name="variants[${key}][weight]" class="form-control form-control-sm" value="${variant.weight || ''}">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa</button>
+                    </td>
+                </tr>
+            `;
+        });
+        updateProductStock();
+    } else {
+        // Không có lỗi - hiển thị variants hiện có
+        displayExistingVariants();
+    }
+
+    // Hiển thị lỗi validation
+    highlightErrorFields(validationErrors);
+    displayVariantErrors(validationErrors);
 });
 
 // Preview ảnh mới
@@ -619,46 +693,6 @@ document.getElementById('product_images').addEventListener('change', function(e)
         };
         reader.readAsDataURL(file);
     });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const allGroupsContainer = document.getElementById('all-variant-groups');
-    const dimensionsCard = document.querySelector('.dimensions-card');
-    const addVariantGroupBtn = document.getElementById('add-variant-group');
-
-    // Ẩn/hiện kích thước khi thêm/xóa biến thể
-    function toggleDimensionsSection() {
-        const hasVariantGroups = allGroupsContainer.querySelectorAll('.variant-group').length > 0;
-        if (dimensionsCard) {
-            dimensionsCard.style.display = hasVariantGroups ? 'none' : 'block';
-        }
-    }
-
-    // Lắng nghe sự kiện thêm nhóm
-    const originalAddClick = addVariantGroupBtn.onclick;
-    addVariantGroupBtn.addEventListener('click', () => {
-        setTimeout(toggleDimensionsSection, 100);
-    });
-
-    // Lắng nghe sự kiện xóa nhóm
-    allGroupsContainer.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-group')) {
-            setTimeout(toggleDimensionsSection, 100);
-        }
-    });
-
-    // Lắng nghe các hàng biến thể được thêm vào bảng
-    const variantTableBody = document.querySelector('#variant-table tbody');
-    const observer = new MutationObserver(() => {
-        toggleDimensionsSection();
-    });
-
-    observer.observe(variantTableBody, {
-        childList: true
-    });
-
-    // Khởi tạo lần đầu
-    toggleDimensionsSection();
 });
 </script>
 @endpush
