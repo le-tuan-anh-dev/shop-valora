@@ -579,11 +579,11 @@
                                                     <h5 style="margin: 0 0 15px 0; font-weight: 600; font-size: 18px;">{{ $address->name }}</h5>
 
                                                     <div style="color: #666; font-size: 14px; line-height: 1.8; margin-bottom: 15px;">
-                                                        <p style="margin: 0 0 8px 0;"><strong>Address:</strong> {{ $address->address }}</p>
+                                                        <p style="margin: 0 0 8px 0;"><strong>Địa chỉ :</strong> {{ $address->address }}</p>
                                                         @if($address->ward)
                                                             <p style="margin: 0 0 8px 0;">{{ $address->ward->name }}, {{ $address->district->name }}, {{ $address->province->name }}</p>
                                                         @endif
-                                                        <p style="margin: 0;"><strong>Phone:</strong> {{ $address->phone }}</p>
+                                                        <p style="margin: 0;"><strong>Số điện thoại:</strong> {{ $address->phone }}</p>
                                                     </div>
 
                                                     <div style="display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #e9ecef;">
@@ -617,213 +617,216 @@
 
                     
                         <!-- Modal Thêm Địa Chỉ Mới -->
-                        <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="addAddressLabel">Thêm Địa Chỉ Mới</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                                    </div>
-                                    <form action="{{ route('checkout.store-address') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="form_type" value="add">
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <!-- Cột trái -->
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Tên địa chỉ <span class="text-danger">*</span></label>
-                                                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
-                                                            placeholder="Vd: Nhà riêng, Văn phòng" value="{{ old('name') }}">
-                                                        @error('name')
-                                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressLabel">Thêm Địa Chỉ Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <form action="{{ route('checkout.store-address') }}" method="POST">
+                @csrf
+                <input type="hidden" name="form_type" value="add">
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Cột trái -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Tên địa chỉ <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
+                                    placeholder="Vd: Nhà riêng, Văn phòng" value="{{ old('name') }}">
+                                @error('name')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                                        <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" 
-                                                            placeholder="10 chữ số" value="{{ old('phone') }}" maxlength="10">
-                                                        @error('phone')
-                                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
+                            <div class="mb-3">
+                                <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" 
+                                    placeholder="10 chữ số" value="{{ old('phone') }}" maxlength="10">
+                                @error('phone')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Địa chỉ chi tiết <span class="text-danger">*</span></label>
-                                                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" 
-                                                            rows="4" placeholder="Nhập số nhà, tên đường...">{{ old('address') }}</textarea>
-                                                        @error('address')
-                                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!-- Cột phải -->
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
-                                                        <select name="province_id" class="form-control @error('province_id') is-invalid @enderror" id="province_id">
-                                                            <option value="">-- Chọn Tỉnh / Thành phố --</option>
-                                                            @foreach($provinces ?? [] as $province)
-                                                                <option value="{{ $province->id }}" {{ old('province_id') == $province->id ? 'selected' : '' }}>
-                                                                    {{ $province->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                        @error('province_id')
-                                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Quận / Huyện <span class="text-danger">*</span></label>
-                                                        <select name="district_id" class="form-control @error('district_id') is-invalid @enderror" id="district_id">
-                                                            <option value="">-- Chọn Quận / Huyện --</option>
-                                                        </select>
-                                                        @error('district_id')
-                                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Phường / Xã <span class="text-danger">*</span></label>
-                                                        <select name="ward_code" class="form-control @error('ward_code') is-invalid @enderror" id="ward_code">
-                                                            <option value="">-- Chọn Phường / Xã --</option>
-                                                        </select>
-                                                        @error('ward_code')
-                                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="is_default" value="1" id="isDefault">
-                                                            <label class="form-check-label" for="isDefault">
-                                                                Đặt làm địa chỉ mặc định
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
-                                            <button type="submit" class="btn btn-warning" style="background-color: #c9a876; border: none; color: white;">
-                                                <i class="fas fa-save"></i> Thêm Địa Chỉ
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Địa chỉ cụ thể <span class="text-danger">*</span></label>
+                                <textarea name="address" class="form-control @error('address') is-invalid @enderror" 
+                                    rows="4" placeholder="Nhập số nhà, tên đường...">{{ old('address') }}</textarea>
+                                @error('address')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
-                        <!-- Modal Chỉnh Sửa Địa Chỉ -->
-                        @foreach($addresses as $address)
-                            <div class="modal fade" id="editAddressModal-{{ $address->id }}" tabindex="-1" aria-labelledby="editAddressLabel-{{ $address->id }}" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="editAddressLabel-{{ $address->id }}">Chỉnh Sửa Địa Chỉ</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                                        </div>
-                                        <form action="{{ route('checkout.update-address', $address->id) }}" method="POST">
-                                            @csrf
-                                            @method('PUT')
-                                            <input type="hidden" name="form_type" value="edit">
-                                            <input type="hidden" name="edit_address_id" value="{{ $address->id }}">
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Cột trái -->
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Tên địa chỉ <span class="text-danger">*</span></label>
-                                                            <input type="text" name="edit_name" class="form-control @error('edit_name') is-invalid @enderror" 
-                                                                value="{{ old('edit_name', $address->name) }}">
-                                                            @error('edit_name')
-                                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                        
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                                            <input type="text" name="edit_phone" class="form-control @error('edit_phone') is-invalid @enderror" 
-                                                                value="{{ old('edit_phone', $address->phone) }}" maxlength="10">
-                                                            @error('edit_phone')
-                                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                        
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Địa chỉ chi tiết <span class="text-danger">*</span></label>
-                                                            <textarea name="edit_address" class="form-control @error('edit_address') is-invalid @enderror" rows="4">{{ old('edit_address', $address->address) }}</textarea>
-                                                            @error('edit_address')
-                                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
+                        <!-- Cột phải -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+                                <select name="province_id" class="form-control @error('province_id') is-invalid @enderror" id="add_province_id">
+                                    <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                                    @foreach($provinces ?? [] as $province)
+                                        <option value="{{ $province['ProvinceID'] }}" {{ old('province_id') == $province['ProvinceID'] ? 'selected' : '' }}>
+                                            {{ $province['ProvinceName'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('province_id')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                                                    <!-- Cột phải -->
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
-                                                            <select name="edit_province_id" class="form-control @error('edit_province_id') is-invalid @enderror" id="edit_province_{{ $address->id }}">
-                                                                <option value="">-- Chọn Tỉnh / Thành phố --</option>
-                                                                @foreach($provinces ?? [] as $province)
-                                                                    <option value="{{ $province->id }}" {{ old('edit_province_id', $address->province_id) == $province->id ? 'selected' : '' }}>
-                                                                        {{ $province->name }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('edit_province_id')
-                                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Quận / Huyện <span class="text-danger">*</span></label>
+                                <select name="district_id" class="form-control @error('district_id') is-invalid @enderror" id="add_district_id">
+                                    <option value="">-- Chọn Quận / Huyện --</option>
+                                </select>
+                                @error('district_id')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Quận / Huyện <span class="text-danger">*</span></label>
-                                                            <select name="edit_district_id" class="form-control @error('edit_district_id') is-invalid @enderror" id="edit_district_{{ $address->id }}">
-                                                                <option value="">-- Chọn Quận / Huyện --</option>
-                                                            </select>
-                                                            @error('edit_district_id')
-                                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phường / Xã <span class="text-danger">*</span></label>
+                                <select name="ward_code" class="form-control @error('ward_code') is-invalid @enderror" id="add_ward_code">
+                                    <option value="">-- Chọn Phường / Xã --</option>
+                                </select>
+                                @error('ward_code')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Phường / Xã <span class="text-danger">*</span></label>
-                                                            <select name="edit_ward_code" class="form-control @error('edit_ward_code') is-invalid @enderror" id="edit_ward_{{ $address->id }}">
-                                                                <option value="">-- Chọn Phường / Xã --</option>
-                                                            </select>
-                                                            @error('edit_ward_code')
-                                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="is_default" value="1" id="isDefault">
+                                    <label class="form-check-label" for="isDefault">
+                                        Đặt làm địa chỉ mặc định
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                                        <div class="mb-3">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" name="edit_is_default" value="1" 
-                                                                    id="editIsDefault_{{ $address->id }}" {{ $address->is_default ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="editIsDefault_{{ $address->id }}">
-                                                                    Đặt làm địa chỉ mặc định
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
-                                                <button type="submit" class="btn btn-warning" style="background-color: #c9a876; border: none; color: white;">
-                                                    <i class="fas fa-save"></i> Lưu Thay Đổi
-                                                </button>
-                                            </div>
-                                        </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-warning" style="background-color: #c9a876; border: none; color: white;">
+                        <i class="fas fa-save"></i> Thêm Địa Chỉ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chỉnh Sửa Địa Chỉ -->
+@foreach($addresses as $address)
+    <div class="modal fade" id="editAddressModal-{{ $address->id }}" tabindex="-1" aria-labelledby="editAddressLabel-{{ $address->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAddressLabel-{{ $address->id }}">Chỉnh Sửa Địa Chỉ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <form action="{{ route('checkout.update-address', $address->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="form_type" value="edit">
+                    <input type="hidden" name="edit_address_id" value="{{ $address->id }}">
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Cột trái -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Tên địa chỉ <span class="text-danger">*</span></label>
+                                    <input type="text" name="edit_name" class="form-control @error('edit_name') is-invalid @enderror" 
+                                        value="{{ old('edit_name', $address->name) }}">
+                                    @error('edit_name')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="text" name="edit_phone" class="form-control @error('edit_phone') is-invalid @enderror" 
+                                        value="{{ old('edit_phone', $address->phone) }}" maxlength="10">
+                                    @error('edit_phone')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Địa chỉ cụ thể <span class="text-danger">*</span></label>
+                                    <textarea name="edit_address" class="form-control @error('edit_address') is-invalid @enderror" rows="4">{{ old('edit_address', $address->address) }}</textarea>
+                                    @error('edit_address')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Cột phải -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+                                    <select name="edit_province_id" class="form-control @error('edit_province_id') is-invalid @enderror" 
+                                        id="edit_province_{{ $address->id }}">
+                                        <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                                        @foreach($provinces ?? [] as $province)
+                                            <option value="{{ $province['ProvinceID'] }}" {{ old('edit_province_id', $address->province_id) == $province['ProvinceID'] ? 'selected' : '' }}>
+                                                {{ $province['ProvinceName'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('edit_province_id')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Quận / Huyện <span class="text-danger">*</span></label>
+                                    <select name="edit_district_id" class="form-control @error('edit_district_id') is-invalid @enderror" 
+                                        id="edit_district_{{ $address->id }}">
+                                        <option value="">-- Chọn Quận / Huyện --</option>
+                                    </select>
+                                    @error('edit_district_id')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Phường / Xã <span class="text-danger">*</span></label>
+                                    <select name="edit_ward_code" class="form-control @error('edit_ward_code') is-invalid @enderror" 
+                                        id="edit_ward_{{ $address->id }}">
+                                        <option value="">-- Chọn Phường / Xã --</option>
+                                    </select>
+                                    @error('edit_ward_code')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="edit_is_default" value="1" 
+                                            id="editIsDefault_{{ $address->id }}" {{ $address->is_default ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="editIsDefault_{{ $address->id }}">
+                                            Đặt làm địa chỉ mặc định
+                                        </label>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-warning" style="background-color: #c9a876; border: none; color: white;">
+                            <i class="fas fa-save"></i> Lưu Thay Đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
 
                     </div>
                 </div>
@@ -990,16 +993,12 @@
 @if ($errors->any())
 <script>
 (function() {
-    console.log('=== Validation error handler ===');
     
     document.addEventListener('DOMContentLoaded', function() {
         var hasAddFormErrors = {{ $errors->has('name') || $errors->has('phone') || $errors->has('province_id') || $errors->has('district_id') || $errors->has('ward_code') || $errors->has('address') ? 'true' : 'false' }};
         var hasEditFormErrors = {{ $errors->has('edit_name') || $errors->has('edit_phone') || $errors->has('edit_province_id') || $errors->has('edit_district_id') || $errors->has('edit_ward_code') || $errors->has('edit_address') ? 'true' : 'false' }};
         var editAddressId = '{{ old("edit_address_id") }}';
         
-        console.log('Add errors:', hasAddFormErrors);
-        console.log('Edit errors:', hasEditFormErrors);
-        console.log('Edit ID:', editAddressId);
         
         if (hasAddFormErrors || hasEditFormErrors) {
             // Chuyển tab
@@ -1007,7 +1006,6 @@
                 var addressTab = document.getElementById('address-tab');
                 if (addressTab) {
                     addressTab.click();
-                    console.log('Clicked address tab');
                 }
             }, 100);
             
@@ -1015,8 +1013,6 @@
             setTimeout(function() {
                 var modalId = hasAddFormErrors ? 'addAddressModal' : ('editAddressModal-' + editAddressId);
                 var modalEl = document.getElementById(modalId);
-                
-                console.log('Opening modal:', modalId);
                 
                 if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
                     var modal = new bootstrap.Modal(modalEl);
@@ -1031,48 +1027,104 @@
 
 {{-- Xử lý dropdown địa chỉ --}}
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DEBUG PROVINCES ===');
+    
+    // Kiểm tra biến provinces từ Blade
+    var provinces = @json($provinces ?? []);
+    console.log('Provinces data:', provinces);
+    console.log('Provinces count:', provinces.length);
+    
+    // Kiểm tra select element
+    var addProvince = document.getElementById('add_province_id');
+    console.log('Select element found:', addProvince ? 'YES' : 'NO');
+    
+    if (addProvince) {
+        console.log('Current options count:', addProvince.options.length);
+    }
+    
+    // Test gọi API districts
+    console.log('=== TEST API DISTRICTS ===');
+    fetch('{{ route("checkout.get-districts") }}?province_id=201')
+        .then(function(response) {
+            console.log('API Response status:', response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('API Districts data:', data);
+        })
+        .catch(function(error) {
+            console.error('API Error:', error);
+        });
+    
+    // Test gọi API wards
+    console.log('=== TEST API WARDS ===');
+    fetch('{{ route("checkout.get-wards") }}?district_id=1489')
+        .then(function(response) {
+            console.log('API Response status:', response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('API Wards data:', data);
+        })
+        .catch(function(error) {
+            console.error('API Error:', error);
+        });
+});
 document.addEventListener('DOMContentLoaded', function() {
-    // Form Thêm
-    var addProvince = document.getElementById('province_id');
-    var addDistrict = document.getElementById('district_id');
-    var addWard = document.getElementById('ward_code');
+    
+    // ==================== FORM THÊM ĐỊA CHỈ ====================
+    var addProvince = document.getElementById('add_province_id');
+    var addDistrict = document.getElementById('add_district_id');
+    var addWard = document.getElementById('add_ward_code');
 
     if (addProvince) {
         addProvince.addEventListener('change', function() {
-            loadDistricts(this.value, addDistrict, addWard);
+            loadDistricts(this.value, addDistrict, addWard, null, null);
         });
     }
 
     if (addDistrict) {
         addDistrict.addEventListener('change', function() {
-            loadWards(this.value, addWard);
+            loadWards(this.value, addWard, null);
         });
     }
 
+    // Load lại nếu có old value (khi validation fail)
     @if(old('province_id'))
         loadDistricts('{{ old("province_id") }}', addDistrict, addWard, '{{ old("district_id") }}', '{{ old("ward_code") }}');
     @endif
 
-    // Form Sửa
+    // ==================== FORM SỬA ĐỊA CHỈ ====================
     @foreach($addresses as $address)
     (function() {
-        var editProvince = document.getElementById('edit_province_{{ $address->id }}');
-        var editDistrict = document.getElementById('edit_district_{{ $address->id }}');
-        var editWard = document.getElementById('edit_ward_{{ $address->id }}');
+        var addressId = '{{ $address->id }}';
+        var editProvince = document.getElementById('edit_province_' + addressId);
+        var editDistrict = document.getElementById('edit_district_' + addressId);
+        var editWard = document.getElementById('edit_ward_' + addressId);
+        
+        var savedDistrictId = '{{ $address->district_id }}';
+        var savedWardCode = '{{ $address->ward_code }}';
 
         if (editProvince) {
             editProvince.addEventListener('change', function() {
-                loadDistricts(this.value, editDistrict, editWard);
+                loadDistricts(this.value, editDistrict, editWard, null, null);
             });
-            
-            if (editProvince.value) {
-                loadDistricts(editProvince.value, editDistrict, editWard, '{{ $address->district_id }}', '{{ $address->ward_code }}');
+
+            // Load districts khi mở modal
+            var modal = document.getElementById('editAddressModal-' + addressId);
+            if (modal) {
+                modal.addEventListener('shown.bs.modal', function() {
+                    if (editProvince.value) {
+                        loadDistricts(editProvince.value, editDistrict, editWard, savedDistrictId, savedWardCode);
+                    }
+                });
             }
         }
 
         if (editDistrict) {
             editDistrict.addEventListener('change', function() {
-                loadWards(this.value, editWard);
+                loadWards(this.value, editWard, null);
             });
         }
     })();
@@ -1082,44 +1134,76 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadDistricts(provinceId, districtSelect, wardSelect, selectedDistrictId, selectedWardCode) {
     if (!districtSelect) return;
     
-    districtSelect.innerHTML = '<option value="">-- Chọn Quận / Huyện --</option>';
+    districtSelect.innerHTML = '<option value="">-- Đang tải --</option>';
     if (wardSelect) {
         wardSelect.innerHTML = '<option value="">-- Chọn Phường / Xã --</option>';
     }
 
-    if (!provinceId) return;
+    if (!provinceId) {
+        districtSelect.innerHTML = '<option value="">-- Chọn Quận / Huyện --</option>';
+        return;
+    }
 
-    fetch('/api/districts/' + provinceId)
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            data.forEach(function(d) {
-                var opt = document.createElement('option');
-                opt.value = d.id;
-                opt.textContent = d.name;
-                if (selectedDistrictId && d.id == selectedDistrictId) opt.selected = true;
-                districtSelect.appendChild(opt);
-            });
-            if (selectedDistrictId && wardSelect) {
-                loadWards(selectedDistrictId, wardSelect, selectedWardCode);
+    fetch('{{ route("checkout.get-districts") }}?province_id=' + provinceId)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            districtSelect.innerHTML = '<option value="">-- Chọn Quận / Huyện --</option>';
+            
+            if (result.success && result.data) {
+                result.data.forEach(function(district) {
+                    var option = document.createElement('option');
+                    option.value = district.DistrictID;
+                    option.textContent = district.DistrictName;
+                    
+                    if (selectedDistrictId && district.DistrictID == selectedDistrictId) {
+                        option.selected = true;
+                    }
+                    districtSelect.appendChild(option);
+                });
+
+                if (selectedDistrictId && wardSelect) {
+                    loadWards(selectedDistrictId, wardSelect, selectedWardCode);
+                }
             }
+        })
+        .catch(function(error) {
+            districtSelect.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
         });
 }
-
 function loadWards(districtId, wardSelect, selectedWardCode) {
     if (!wardSelect) return;
-    wardSelect.innerHTML = '<option value="">-- Chọn Phường / Xã --</option>';
-    if (!districtId) return;
+    
+    wardSelect.innerHTML = '<option value="">-- Đang tải... --</option>';
 
-    fetch('/api/wards/' + districtId)
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            data.forEach(function(w) {
-                var opt = document.createElement('option');
-                opt.value = w.code;
-                opt.textContent = w.name;
-                if (selectedWardCode && w.code == selectedWardCode) opt.selected = true;
-                wardSelect.appendChild(opt);
-            });
+    if (!districtId) {
+        wardSelect.innerHTML = '<option value="">-- Chọn Phường / Xã --</option>';
+        return;
+    }
+
+    fetch('{{ route("checkout.get-wards") }}?district_id=' + districtId)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+            wardSelect.innerHTML = '<option value="">-- Chọn Phường / Xã --</option>';
+            
+            if (result.success && result.data) {
+                result.data.forEach(function(ward) {
+                    var option = document.createElement('option');
+                    option.value = ward.WardCode;
+                    option.textContent = ward.WardName;
+                    
+                    if (selectedWardCode && ward.WardCode == selectedWardCode) {
+                        option.selected = true;
+                    }
+                    wardSelect.appendChild(option);
+                });
+            }
+        })
+        .catch(function(error) {
+            wardSelect.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
         });
 }
 setTimeout(() => {
