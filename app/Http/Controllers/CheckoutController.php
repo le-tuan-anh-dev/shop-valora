@@ -484,49 +484,66 @@ class CheckoutController extends Controller
         return $this->applyVoucher($request);
     }
 
-    public function updateAddress(Request $request, $id)
-    {
-        // Chỉ lấy địa chỉ của user hiện tại, tránh 403 oan
-        $address = UserAddress::where('id', $id)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+public function updateAddress(Request $request, $id)
+{
+    $address = UserAddress::where('id', $id)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
 
-        $validated = $request->validate([
-            'name'       => 'nullable|string|max:255',
-            'phone'      => 'nullable|string|max:20',
-            'address'    => 'nullable|string|max:500',
-            'is_default' => 'nullable|boolean',
-        ]);
+    $validated = $request->validate([
+        'edit_name'        => 'required|string|max:255',
+        'edit_phone'       => 'required|string|max:11',
+        'edit_province_id' => 'nullable|exists:provinces,id',
+        'edit_district_id' => 'nullable|exists:districts,id',
+        'edit_ward_code'   => 'nullable|string',
+        'edit_address'     => 'required|string|max:500',
+        'edit_is_default'  => 'nullable|boolean',
+        'edit_address_id'  => 'nullable|integer',
+    ], [
+        'edit_name.required'        => 'Tên người nhận không được để trống.',
+        'edit_name.string'          => 'Tên người nhận phải là chuỗi ký tự.',
+        'edit_name.max'             => 'Tên người nhận không được vượt quá 255 ký tự.',
+        
+        'edit_phone.required'       => 'Số điện thoại không được để trống.',
+        'edit_phone.string'         => 'Số điện thoại phải là chuỗi ký tự.',
+        'edit_phone.max'            => 'Số điện thoại không đúng định dạng.',
+        
+        'edit_province_id.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
+        'edit_province_id.exists'   => 'Tỉnh/Thành phố không hợp lệ.',
+        
+        'edit_district_id.required' => 'Vui lòng chọn Quận/Huyện.',
+        'edit_district_id.exists'   => 'Quận/Huyện không hợp lệ.',
+        
+        'edit_ward_code.required'   => 'Vui lòng chọn Phường/Xã.',
+        
+        'edit_address.required'     => 'Địa chỉ chi tiết không được để trống.',
+        'edit_address.string'       => 'Địa chỉ phải là chuỗi ký tự.',
+        'edit_address.max'          => 'Địa chỉ không được vượt quá 500 ký tự.',
+    ]);
 
-        $userId    = auth()->id();
-        $isDefault = $request->boolean('is_default');
+    $userId    = auth()->id();
+    $isDefault = $request->boolean('edit_is_default');
 
-        // Nếu click "Đặt làm mặc định"
-        if ($isDefault) {
-            UserAddress::where('user_id', $userId)
-                ->where('id', '!=', $address->id)
-                ->update(['is_default' => 0]);
-        }
-
-        // Cập nhật thông tin (nếu có truyền)
-        if (isset($validated['name'])) {
-            $address->name = $validated['name'];
-        }
-        if (isset($validated['phone'])) {
-            $address->phone = $validated['phone'];
-        }
-        if (isset($validated['address'])) {
-            $address->address = $validated['address'];
-        }
-
-        if ($request->has('is_default')) {
-            $address->is_default = $isDefault ? 1 : 0;
-        }
-
-        $address->save();
-
-        return redirect()->back()->with('success', 'Cập nhật địa chỉ thành công.');
+    // Nếu đặt làm mặc định, bỏ mặc định của những địa chỉ khác
+    if ($isDefault) {
+        UserAddress::where('user_id', $userId)
+            ->where('id', '!=', $address->id)
+            ->update(['is_default' => 0]);
     }
+
+    // Cập nhật thông tin
+    $address->update([
+        'name'        => $validated['edit_name'],
+        'phone'       => $validated['edit_phone'],
+        'province_id' => $validated['edit_province_id'],
+        'district_id' => $validated['edit_district_id'],
+        'ward_code'   => $validated['edit_ward_code'],
+        'address'     => $validated['edit_address'],
+        'is_default'  => $isDefault ? 1 : 0,
+    ]);
+
+    return redirect()->back()->with('success', 'Cập nhật địa chỉ thành công.');
+}
 
     public function deleteAddress($id)
     {
@@ -1045,7 +1062,6 @@ class CheckoutController extends Controller
     }
 
     // thanh toán vnpay
-
     public function vnpayPayment($orderNumber, $totalAmount ){
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = route('vnpay.callback');;
@@ -1297,87 +1313,83 @@ class CheckoutController extends Controller
     {
         $userId = auth()->id();
 
+        
         $orders = Order::where('user_id', $userId)
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(10); 
+
+        
+        $allOrders = Order::where('user_id', $userId)->get();
 
         $paymentMethods = PaymentMethod::pluck('name', 'id');
 
         return view('client.orders.index', [
             'orders'         => $orders,
+            'allOrders'      => $allOrders,
             'paymentMethods' => $paymentMethods,
         ]);
     }
-    /**
-     * Chi tiết 1 đơn hàng.
-     */
-   /**
- * Chi tiết 1 đơn hàng.
- * GIỮ NGUYÊN LUỒNG CŨ, CHỈ THÊM LOAD BRAND + VARIANT.
- */
-public function showOrder(Order $order)
-{
-    if ($order->user_id !== auth()->id()) {
-        return redirect()->route('orders.index')
-            ->with('error', 'Bạn không có quyền xem đơn hàng này.');
-    }
 
-    $orderItems = OrderItem::where('order_id', $order->id)
-        ->with([
-            'product.brand',                     // sản phẩm + thương hiệu
-            'variant.attributeValues.attribute', // biến thể + giá trị thuộc tính + tên thuộc tính
-        ])
-        ->get();
-
-    $paymentMethod = PaymentMethod::find($order->payment_method_id);
-
-    return view('client.orders.show', [
-        'order'         => $order,
-        'orderItems'    => $orderItems,
-        'paymentMethod' => $paymentMethod,
-    ]);
-}
-
-    /**
-     * Hủy đơn hàng (hoàn kho + thông báo).
-     */
-  public function cancelOrder(Order $order)
-{
-    if ($order->user_id !== auth()->id()) {
-        return redirect()->route('orders.index')
-            ->with('error', 'Bạn không có quyền hủy đơn hàng này.');
-    }
-
-    if ($order->status !== 'pending') {
-        return redirect()->back()
-            ->with('error', 'Đơn đã xác nhận nên không thể hủy.');
-    }
-
-    DB::transaction(function () use ($order) {
-        $items = $order->items()
-            ->with(['product', 'variant'])
-            ->lockForUpdate()
-            ->get();
-
-        foreach ($items as $item) {
-            if ($item->product) {
-                $item->product->increment('stock', $item->quantity);
-            }
-            if ($item->variant) {
-                $item->variant->increment('stock', $item->quantity);
-            }
+    public function showOrder(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            return redirect()->route('orders.index')
+                ->with('error', 'Bạn không có quyền xem đơn hàng này.');
         }
 
-        $order->update([
-            'status'         => 'cancelled_by_customer',
-            // 'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
-            'cancelled_at'   => now(),
+        $orderItems = OrderItem::where('order_id', $order->id)
+            ->with([
+                'product.brand',                     // sản phẩm + thương hiệu
+                'variant.attributeValues.attribute', // biến thể + giá trị thuộc tính + tên thuộc tính
+            ])
+            ->get();
+
+        $paymentMethod = PaymentMethod::find($order->payment_method_id);
+
+        return view('client.orders.show', [
+            'order'         => $order,
+            'orderItems'    => $orderItems,
+            'paymentMethod' => $paymentMethod,
         ]);
+    }
 
-        $order->user->notify(new OrderStatusChanged($order));
-    });
+  public function cancelOrder(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            return redirect()->route('orders.index')
+                ->with('error', 'Bạn không có quyền hủy đơn hàng này.');
+        }
 
-    return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công');
-}
+        if ($order->status !== 'pending') {
+            return redirect()->back()
+                ->with('error', 'Đơn đã xác nhận nên không thể hủy.');
+        }
+
+        DB::transaction(function () use ($order) {
+            $items = $order->items()
+                ->with(['product', 'variant'])
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+                if ($item->variant) {
+                    $item->variant->increment('stock', $item->quantity);
+                }
+            }
+
+            $order->update([
+                'status'         => 'cancelled_by_customer',
+                // 'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
+                'cancelled_at'   => now(),
+            ]);
+
+            $order->user->notify(new OrderStatusChanged($order));
+        });
+
+        return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công');
+    }
     
 }
