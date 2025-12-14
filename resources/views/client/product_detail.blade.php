@@ -260,7 +260,7 @@
         <div class="custom-container container">
             <div class="row"> 
                 <div class="col-12"> 
-                    <h4 class="fw-semibold mb-4" style="color: #rgb(217 184 145);">Reviews</h4>
+                    <h4 class="fw-semibold mb-4" style="color: #rgb(217 184 145);">Dánh giá sản phẩm</h4>
                     <div class="product-content"> 
                         
                         <div id="Reviews-tab-pane" role="tabpanel"> 
@@ -273,7 +273,7 @@
                     <h5>{{ $averageRating }}</h5>
                 </div>
                 <div>
-                    <h6>Average Ratings</h6>
+                    
                     <ul class="rating p-0 mb">
                         {{-- Hiển thị sao trung bình --}}
                         @for($i = 1; $i <= 5; $i++)
@@ -286,7 +286,7 @@
             <ul class="rating-progess">
                 @foreach($ratingPercentages as $star => $data)
                 <li>
-                    <p>{{ str_replace('star', ' Star', $star) }}</p>
+                    <p>{{ str_replace('star', ' Sao', $star) }}</p>
                     <div class="progress" role="progressbar">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" 
                              style="width: {{ $data['percentage'] }}%"></div>
@@ -335,21 +335,7 @@
                         {{-- Tên người dùng --}}
                         <h6><i class="iconsax" data-icon="user-1"></i> {{ $review->user->name ?? 'Người dùng ẩn danh' }}</h6>
                         
-                        {{-- === 2. NÚT XÓA ĐÁNH GIÁ (CHỈ HIỂN THỊ CHO CHỦ REVIEW) === --}}
-                        @auth
-                            {{-- $review->parent_id == null để đảm bảo không xóa phản hồi của Admin --}}
-                            @if(Auth::id() == $review->user_id && $review->parent_id == null) 
-                                <form action="{{ route('products.review.delete', $review) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này không?');" class="ms-auto">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" style="font-size: 12px; padding: 3px 8px;">
-                                        <i class="fa-solid fa-trash-can"></i> Xóa
-                                    </button>
-                                </form>
-                            @endif
-                        @endauth
-                        {{-- END: NÚT XÓA --}}
-                    </div>
+                       
                     
                     {{-- Thời gian đánh giá --}}
                     <span><i class="iconsax" data-icon="clock"></i> {{ $review->created_at->format('d/m/Y') }}</span>
@@ -373,7 +359,9 @@
                     </div>
                 @endif
 
-                <p class="mt-2">{{ $review->comment }}</p>
+                @if(trim($review->content)) 
+    <p class="mt-2">{{ $review->content }}</p>
+@endif
 
                
                 
