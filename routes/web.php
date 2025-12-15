@@ -35,7 +35,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 Route::post('/chatbot/ask', [ChatbotController::class, 'askAI']);
-
+Route::get('/lienhe', function () {
+    return view('client.lienhe.index');
+});
 
 
 // Shop

@@ -50,7 +50,7 @@
                             <li><a class="nav-link" href="{{ route('home') }}">Trang chủ</a></li>
                             <li><a class="nav-link" href="{{ route('shop.index') }}">Cửa hàng</a></li>
                             <li><a class="nav-link" href="{{ route('posts.index') }}">Bài viết</a></li>
-                            <li><a class="nav-link" href="#">Liên hệ</a></li>
+                            <li><a class="nav-link" href="/lienhe">Liên hệ</a></li>
                         </ul>
                     </nav>
                     
