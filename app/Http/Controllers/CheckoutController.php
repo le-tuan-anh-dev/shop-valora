@@ -484,66 +484,72 @@ class CheckoutController extends Controller
         return $this->applyVoucher($request);
     }
 
-public function updateAddress(Request $request, $id)
-{
-    $address = UserAddress::where('id', $id)
-        ->where('user_id', auth()->id())
-        ->firstOrFail();
+    // Cập nhật địa chỉ
+    public function updateAddress(Request $request, $id)
+    {
+        $address = UserAddress::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
-    $validated = $request->validate([
-        'edit_name'        => 'required|string|max:255',
-        'edit_phone'       => 'required|string|max:11',
-        'edit_province_id' => 'nullable|exists:provinces,id',
-        'edit_district_id' => 'nullable|exists:districts,id',
-        'edit_ward_code'   => 'nullable|string',
-        'edit_address'     => 'required|string|max:500',
-        'edit_is_default'  => 'nullable|boolean',
-        'edit_address_id'  => 'nullable|integer',
-    ], [
-        'edit_name.required'        => 'Tên người nhận không được để trống.',
-        'edit_name.string'          => 'Tên người nhận phải là chuỗi ký tự.',
-        'edit_name.max'             => 'Tên người nhận không được vượt quá 255 ký tự.',
-        
-        'edit_phone.required'       => 'Số điện thoại không được để trống.',
-        'edit_phone.string'         => 'Số điện thoại phải là chuỗi ký tự.',
-        'edit_phone.max'            => 'Số điện thoại không đúng định dạng.',
-        
-        'edit_province_id.required' => 'Vui lòng chọn Tỉnh/Thành phố.',
-        'edit_province_id.exists'   => 'Tỉnh/Thành phố không hợp lệ.',
-        
-        'edit_district_id.required' => 'Vui lòng chọn Quận/Huyện.',
-        'edit_district_id.exists'   => 'Quận/Huyện không hợp lệ.',
-        
-        'edit_ward_code.required'   => 'Vui lòng chọn Phường/Xã.',
-        
-        'edit_address.required'     => 'Địa chỉ chi tiết không được để trống.',
-        'edit_address.string'       => 'Địa chỉ phải là chuỗi ký tự.',
-        'edit_address.max'          => 'Địa chỉ không được vượt quá 500 ký tự.',
-    ]);
+        // Xóa rule exists:provinces,id vì dùng API GHN
+        $validated = $request->validate([
+            'edit_name'        => 'required|string|max:255',
+            'edit_phone'       => 'required|regex:/^[0-9]{10}$/',
+            'edit_province_id' => 'required|numeric',
+            'edit_district_id' => 'required|numeric',
+            'edit_ward_code'   => 'required|string',
+            'edit_address'     => 'required|string|max:500',
+            'edit_is_default'  => 'nullable|boolean',
+        ], [
+            'edit_name.required'        => 'Tên địa chỉ không được để trống',
+            'edit_phone.required'       => 'Số điện thoại là bắt buộc',
+            'edit_phone.regex'          => 'Số điện thoại không hợp lệ (10 chữ số)',
+            'edit_province_id.required' => 'Vui lòng chọn tỉnh / thành',
+            'edit_district_id.required' => 'Vui lòng chọn quận / huyện',
+            'edit_ward_code.required'   => 'Vui lòng chọn phường / xã',
+            'edit_address.required'     => 'Vui lòng nhập địa chỉ cụ thể',
+        ]);
 
-    $userId    = auth()->id();
-    $isDefault = $request->boolean('edit_is_default');
+        try {
+            $userId    = auth()->id();
+            $isDefault = $request->boolean('edit_is_default');
+            if ($isDefault) {
+                UserAddress::where('user_id', $userId)
+                    ->where('id', '!=', $id)
+                    ->update(['is_default' => 0]);
+            }
 
-    // Nếu đặt làm mặc định, bỏ mặc định của những địa chỉ khác
-    if ($isDefault) {
-        UserAddress::where('user_id', $userId)
-            ->where('id', '!=', $address->id)
-            ->update(['is_default' => 0]);
+            $address->update([
+                'name'        => $validated['edit_name'],
+                'phone'       => $validated['edit_phone'],
+                'province_id' => $validated['edit_province_id'],
+                'district_id' => $validated['edit_district_id'],
+                'ward_code'   => $validated['edit_ward_code'],
+                'address'     => $validated['edit_address'],
+                'is_default'  => $isDefault ? 1 : 0,
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Địa chỉ đã được cập nhật thành công',
+                    'address' => $address
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Địa chỉ đã được cập nhật thành công');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lỗi khi cập nhật địa chỉ',
+                ], 400);
+            }
+
+            return redirect()->back()->with('error', 'Lỗi khi cập nhật địa chỉ');
+        }
     }
-
-    // Cập nhật thông tin
-    $address->update([
-        'name'        => $validated['edit_name'],
-        'phone'       => $validated['edit_phone'],
-        'province_id' => $validated['edit_province_id'],
-        'district_id' => $validated['edit_district_id'],
-        'ward_code'   => $validated['edit_ward_code'],
-        'address'     => $validated['edit_address'],
-        'is_default'  => $isDefault ? 1 : 0,
-    ]);
-
-    return redirect()->back()->with('success', 'Cập nhật địa chỉ thành công.');
-}
 
     public function deleteAddress($id)
     {

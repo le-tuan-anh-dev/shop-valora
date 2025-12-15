@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
@@ -46,6 +48,9 @@ class DashboardController extends Controller
         $wishlistProducts = $user->wishlistProducts()
             ->orderByDesc('wishlists.created_at')
             ->get();
+            
+        $provinces = $this->getProvinces();
+        
 
         return view('client.dashboard', [
             'user'              => $user,
@@ -56,7 +61,26 @@ class DashboardController extends Controller
             'totalSpent'        => $totalSpent,
             'notifications'     => $notifications,
             'wishlistProducts'  => $wishlistProducts,
+            'provinces' => $provinces,
         ]);
+    }
+
+        // lấy tỉnh
+    public function getProvinces()
+    {
+        try {
+            $response = Http::withHeaders([
+                'Token' => env('GHN_TOKEN'),
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province');
+
+            if ($response->ok() && isset($response->json()['data'])) {
+                return $response->json()['data'];
+            }
+        } catch (\Exception $e) {
+            Log::error('GHN getProvinces error: ' . $e->getMessage());
+        }
+
+        return [];
     }
 
     /**
