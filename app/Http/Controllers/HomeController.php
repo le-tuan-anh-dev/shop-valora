@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admin\Brand;
 use App\Models\Admin\Category;
 use App\Models\Admin\Product;
+use App\Http\Controllers\PostController;
 
 class HomeController extends Controller
 {
@@ -45,13 +46,16 @@ public function index()
     ->orderBy('name', 'asc')
     ->get();
 
+    $latestPosts = PostController::getLatestForHome();
+
     return view('client.home', compact(
         'featuredProducts',
         'latestProducts',
         'bestSellerProducts',
         'diverseProducts',
         'categories',
-        'brands'
+        'brands',
+        'latestPosts'
     ));
 }
 }
