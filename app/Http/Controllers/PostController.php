@@ -168,4 +168,13 @@ $recentPosts = Post::where('is_published', true)->latest()->take(4)->get();
         'message' => $isLiked ? 'Đã thích bài viết!' : 'Đã bỏ thích bài viết.'
     ]);
 }
+
+public static function getLatestForHome()
+{
+    return Post::where('is_published', true)
+                ->with('author')
+                ->latest()
+                ->take(3)
+                ->get();
+}
 }

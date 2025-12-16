@@ -443,91 +443,32 @@
 
     {{-- bài viết --}}
     <section class="section-t-space">
-        <div class="custom-container container">
-            <div class="title">
-                <h3>Bài viết mới nhất</h3>
-                <svg>
-                    <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
-                </svg>
-            </div>
-            <div class="swiper blog-slide">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <div class="blog-main">
-                            <div class="blog-box ratio3_2">
-                                <a class="blog-img" href="#">
-                                    <img class="bg-img" src="{{ asset('client/assets/images/blog/layout-4/1.jpg') }}"
-                                        alt="blog 1">
-                                </a>
-                            </div>
-                            <div class="blog-txt">
-                                <p>By: Admin / 26th aug 2020</p>
-                                <a href="#">
-                                    <h5>Many desktop publishing pack-ages abd page editor...</h5>
-                                </a>
-                                <div class="link-hover-anim underline">
-                                    <a class="btn btn_underline link-strong link-strong-unhovered" href="#">Read
-                                        More
-                                        <svg>
-                                            <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                        </svg>
-                                    </a>
-                                    <a class="btn btn_underline link-strong link-strong-hovered" href="#">Read More
-                                        <svg>
-                                            <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="swiper-slide blog-main">
-                        <div class="blog-box ratio_55">
-                            <a class="blog-img" href="#">
-                                <img class="bg-img" src="{{ asset('client/assets/images/blog/layout-4/2.jpg') }}"
-                                    alt="blog 2">
-                            </a>
-                        </div>
-                        <div class="blog-txt">
-                            <p>By: Admin / 26th aug 2020</p>
-                            <a href="#">
-                                <h5>Many desktop publishing pack-ages abd page editor...</h5>
-                            </a>
-                            <div class="link-hover-anim underline">
-                                <a class="btn btn_underline link-strong link-strong-unhovered" href="#">Read More
-                                    <svg>
-                                        <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                    </svg>
-                                </a>
-                                <a class="btn btn_underline link-strong link-strong-hovered" href="#">Read More
-                                    <svg>
-                                        <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="swiper-slide blog-main">
+    <div class="custom-container container">
+        <div class="title">
+            <h3>Bài viết mới nhất</h3>
+            <svg>
+                <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
+            </svg>
+        </div>
+        <div class="swiper blog-slide">
+            <div class="swiper-wrapper">
+                @foreach($latestPosts as $item)
+                <div class="swiper-slide">
+                    <div class="blog-main">
                         <div class="blog-box ratio3_2">
-                            <a class="blog-img" href="#">
-                                <img class="bg-img" src="{{ asset('client/assets/images/blog/layout-4/3.jpg') }}"
-                                    alt="blog 3">
+                            <a class="blog-img" href="{{ route('posts.show', $item->id) }}">
+                                <img class="bg-img" src="{{ asset($item->thumbnail ?? 'client/assets/images/blog/layout-4/1.jpg') }}"
+                                    alt="{{ $item->title }}">
                             </a>
                         </div>
                         <div class="blog-txt">
-                            <p>By: Admin / 26th aug 2020</p>
-                            <a href="#">
-                                <h5>Many desktop publishing pack-ages abd page editor...</h5>
+                            <p>By: {{ $item->author->name ?? 'Admin' }} / {{ $item->created_at->format('d/m/Y') }}</p>
+                            <a href="{{ route('posts.show', $item->id) }}">
+                                <h5>{{ $item->title }}</h5>
                             </a>
                             <div class="link-hover-anim underline">
-                                <a class="btn btn_underline link-strong link-strong-unhovered" href="#">Read More
-                                    <svg>
-                                        <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                    </svg>
-                                </a>
-                                <a class="btn btn_underline link-strong link-strong-hovered" href="#">Read More
+                                <a class="btn btn_underline link-strong link-strong-unhovered" href="{{ route('posts.show', $item->id) }}">
+                                    Read More
                                     <svg>
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                     </svg>
@@ -535,38 +476,12 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="swiper-slide blog-main">
-                        <div class="blog-box ratio_55">
-                            <a class="blog-img" href="#">
-                                <img class="bg-img" src="{{ asset('client/assets/images/blog/layout-4/4.jpg') }}"
-                                    alt="blog 4">
-                            </a>
-                        </div>
-                        <div class="blog-txt">
-                            <p>By: Admin / 26th aug 2020</p>
-                            <a href="#">
-                                <h5>Many desktop publishing pack-ages abd page editor...</h5>
-                            </a>
-                            <div class="link-hover-anim underline">
-                                <a class="btn btn_underline link-strong link-strong-unhovered" href="#">Read More
-                                    <svg>
-                                        <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                    </svg>
-                                </a>
-                                <a class="btn btn_underline link-strong link-strong-hovered" href="#">Read More
-                                    <svg>
-                                        <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+                @endforeach
             </div>
         </div>
-    </section>
+    </div>
+</section>
     {{-- form nhân thông tin --}}
     <section class="section-t-space ratio3_3">
         <div class="container-fluid subscribe-banner">
