@@ -457,8 +457,9 @@
                     <div class="blog-main">
                         <div class="blog-box ratio3_2">
                             <a class="blog-img" href="{{ route('posts.show', $item->id) }}">
-                                <img class="bg-img" src="{{ asset($item->thumbnail ?? 'client/assets/images/blog/layout-4/1.jpg') }}"
-                                    alt="{{ $item->title }}">
+                                <img class="bg-img" 
+     src="{{ $item->thumbnail ? asset('storage/' . $item->thumbnail) : asset('client/assets/images/blog/layout-4/1.jpg') }}"
+     alt="{{ $item->title }}">
                             </a>
                         </div>
                         <div class="blog-txt">
