@@ -147,10 +147,12 @@
                   <div class="coupon-code"> 
                     <input type="text" id="coupon-input" name="coupon_code" placeholder="Nhập mã giảm giá">
                     <button class="btn" type="button" id="apply-coupon">Áp dụng</button>
-                    <button type="button" id="remove-voucher-btn" class="btn btn-outline-danger mt-2 w-100" style="display:none;">
-                      Hủy mã giảm giá
-                    </button>
+                    
+                    
                   </div>
+                  <button type="button" id="remove-voucher-btn" class="btn btn-outline-danger mt-2 w-100" style="display:none;">
+                      Hủy áp dụng mã giảm giá
+                    </button>
                 </div>
                 <div class="total">
                   <h6>Tổng cộng :</h6>

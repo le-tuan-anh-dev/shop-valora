@@ -1280,7 +1280,7 @@ class CheckoutController extends Controller
                 // Thanh toán thất bại
                 session()->forget('pending_order');
                 return redirect()->route('checkout')
-                    ->with('error', 'Thanh toán thất bại. Mã lỗi: ' . $responseCode);
+                    ->with('error', 'Thanh toán thất bại. ' );
             }
         } else {
             // Signature không hợp lệ
