@@ -21,14 +21,9 @@
     <div class="custom-container container">
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <h4>Cart</h4>
+          <h4>Giỏ hàng</h4>
         </div>
-        <div class="col-sm-6">
-          <ul class="breadcrumb float-end">
-            <li class="breadcrumb-item"><a href="">Home</a></li>
-            <li class="breadcrumb-item active"><a href="#">Cart</a></li>
-          </ul>
-        </div>
+        
       </div>
     </div>
   </div>
@@ -40,7 +35,7 @@
       <div class="col-xxl-9 col-xl-8">
         <div class="cart-table">
           <div class="table-title"> 
-            <h5>Cart<span id="cartTitle">({{ $itemCount }})</span></h5>
+            <h5>Giỏ hàng<span id="cartTitle">({{ $itemCount }})</span></h5>
             <button class="btn btn-outline-danger btn-sm" id="clearAllButton" {{ $itemCount == 0 ? 'disabled' : '' }}>Xóa tất cả</button>
           </div>
           <div class="table-responsive theme-scrollbar">

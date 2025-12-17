@@ -21,14 +21,9 @@
     <div class="custom-container container">
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <h4>Check Out</h4>
+          <h4>Đặt hàng</h4>
         </div>
-        <div class="col-sm-6">
-          <ul class="breadcrumb float-end">
-            <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
-            <li class="breadcrumb-item active"><a href="#">Check Out</a></li>
-          </ul>
-        </div>
+       
       </div>
     </div>
   </div>

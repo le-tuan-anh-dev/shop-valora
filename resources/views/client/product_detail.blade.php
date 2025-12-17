@@ -93,7 +93,7 @@
                             {{ $product->description }}
                         </h6>
 
-                        <!-- Quick Links -->
+                        {{-- <!-- Quick Links -->
                         <div class="buy-box border-buttom">
                             <ul> 
                                 <li>
@@ -107,7 +107,7 @@
                                     </span>
                                 </li>
                             </ul>
-                        </div>
+                        </div> --}}
 
                         <!-- Attributes Selection + Cart Form -->
                         <form id="variantForm" action="{{ route('cart.add') }}" method="POST">
@@ -227,12 +227,7 @@
                                     </li>
                                 @endauth
 
-                                <li>
-                                    <a href="compare.html">
-                                        <i class="fa-solid fa-arrows-rotate me-2"></i>
-                                        Add To Compare
-                                    </a>
-                                </li>
+                                
                                 <li>
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#social-box">
                                         <i class="fa-solid fa-share-nodes me-2"></i>
@@ -418,7 +413,7 @@
 <section class="section-b-space pt-0">
     <div class="custom-container container product-contain">
         <div class="title text-start"> 
-            <h3>Related Products</h3>
+            <h3>Sản phẩm liên quan</h3>
             <svg>
                 <use href="{{ asset('client/assets/svg/icon-sprite.svg#main-line') }}"></use>
             </svg>
