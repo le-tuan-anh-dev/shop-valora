@@ -14,20 +14,17 @@
         </a>
     </div>
 
-    {{-- ALERT --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-            <button class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
-            <button class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    <!-- Flash Messages -->
+@if (session('success'))
+    <div class="alert alert-success position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        {{ session('success') }}
+    </div>
+@endif
+@if (session('error'))
+    <div class="alert alert-danger position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        {{ session('error') }}
+    </div>
+@endif
 
     <div class="row g-4">
 
