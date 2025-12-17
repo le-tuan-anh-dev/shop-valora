@@ -48,7 +48,7 @@
                                     <h6>{{ $user->email }}</h6>
                                     <span data-bs-toggle="modal" data-bs-target="#edit-profile-modal" title="Chỉnh sửa"
                                         tabindex="0">
-                                        Edit Profile
+                                        Sửa thông tin
                                     </span>
                                 </div>
                             </div>
@@ -93,7 +93,7 @@
                         <div class="logout-button">
                             <a class="btn btn_black sm" data-bs-toggle="modal" data-bs-target="#Confirmation-modal"
                                 title="Logout" tabindex="0">
-                                <i class="iconsax me-1" data-icon="logout-1"></i> Logout
+                                <i class="iconsax me-1" data-icon="logout-1"></i> Đăng xuất
                             </a>
                         </div>
                     </div>
@@ -126,12 +126,12 @@
                                 <div class="my-dashboard-tab">
                                     <div class="sidebar-title">
                                         <div class="loader-line"></div>
-                                        <h4>My Dashboard</h4>
+                                        <h4>Của tôi</h4>
                                     </div>
 
                                     <div class="dashboard-user-name">
-                                        <h6>Hello, <b>{{ $user->name }}</b></h6>
-                                        <p>Từ trang Dashboard, bạn có thể xem nhanh lịch sử đơn hàng, cập nhật thông tin cá
+                                        <h6>Xin chào, <b>{{ $user->name }}</b></h6>
+                                        <p>Từ trang này, bạn có thể xem nhanh lịch sử đơn hàng, cập nhật thông tin cá
                                             nhân và quản lý địa chỉ giao hàng.</p>
 
                                         <div class="mt-3">
@@ -153,8 +153,8 @@
                                                             alt="">
                                                     </div>
                                                     <div class="totle-detail">
-                                                        <h6>Total Spent</h6>
-                                                        <h4>${{ number_format($totalSpent, 2) }}</h4>
+                                                        <h6>Tổng tiền đã chi</h6>
+                                                        <h4>{{ number_format($totalSpent) }}</h4>
                                                     </div>
                                                 </div>
                                             </div>
@@ -168,7 +168,7 @@
                                                             alt="">
                                                     </div>
                                                     <div class="totle-detail">
-                                                        <h6>Total Orders</h6>
+                                                        <h6>Tổng đơn hàng</h6>
                                                         <h4>{{ $totalOrders }}</h4>
                                                     </div>
                                                 </div>
@@ -183,8 +183,8 @@
                                                             alt="">
                                                     </div>
                                                     <div class="totle-detail">
-                                                        <h6>Balance</h6>
-                                                        <h4>${{ number_format(0, 2) }}</h4>
+                                                        <h6>Số dư</h6>
+                                                        <h4>{{ number_format(0) }}</h4>
                                                     </div>
                                                 </div>
                                             </div>
@@ -196,19 +196,19 @@
                                             <div class="col-xl-7">
                                                 <div class="sidebar-title">
                                                     <div class="loader-line"></div>
-                                                    <h5>Profile Information</h5>
+                                                    <h5>Thông tin</h5>
                                                 </div>
                                                 <ul class="profile-information">
                                                     <li>
-                                                        <h6>Name :</h6>
+                                                        <h6>Tên :</h6>
                                                         <p>{{ $user->name }}</p>
                                                     </li>
                                                     <li>
-                                                        <h6>Phone:</h6>
+                                                        <h6>Số điện thoai:</h6>
                                                         <p>{{ $user->phone ?? 'Chưa cập nhật' }}</p>
                                                     </li>
                                                     <li>
-                                                        <h6>Address:</h6>
+                                                        <h6>Địa chỉ:</h6>
                                                         <p>
                                                             @if ($defaultAddress)
                                                                 {{ $defaultAddress->name }} -
@@ -242,7 +242,7 @@
                                 <div class="notification-tab">
                                     <div class="sidebar-title">
                                         <div class="loader-line"></div>
-                                        <h4>Notifications</h4>
+                                        <h4>Thông báo</h4>
                                     </div>
                                     <ul class="notification-body">
                                         @forelse($notifications as $notification)
@@ -441,7 +441,7 @@
                                 <div class="wishlist-box ratio1_3">
                                     <div class="sidebar-title">
                                         <div class="loader-line"></div>
-                                        <h4>Wishlist</h4>
+                                        <h4>Danh sách yêu thích</h4>
                                     </div>
 
                                     <div class="row-cols-md-3 row-cols-2 grid-section view-option row gy-4 g-xl-4">
@@ -591,14 +591,14 @@
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#editAddressModal-{{ $address->id }}"
                                                             style="color: #c9a876; border-color: #c9a876;">
-                                                            Edit
+                                                            Sửa
                                                         </button>
                                                         <form action="{{ route('checkout.delete-address', $address->id) }}" method="POST" 
                                                             style="flex-grow: 1;" onsubmit="return confirm('Xóa địa chỉ này?')">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="btn btn-outline-danger w-100">
-                                                                Delete
+                                                                Xóa
                                                             </button>
                                                         </form>
                                                     </div>
@@ -835,81 +835,68 @@
     </section>
 
     {{-- Modal Edit Profile --}}
-    <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <ul class="nav nav-tabs" id="profileTabs" role="tablist" style="border-bottom: 1px solid #dee2e6;">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
-                            data-bs-target="#profile-content" type="button" role="tab" aria-controls="profile-content"
-                            aria-selected="true">
+                        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-content" type="button" role="tab" aria-controls="profile-content" aria-selected="true">
                             Thông tin cá nhân
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="password-tab" data-bs-toggle="tab"
-                            data-bs-target="#password-content" type="button" role="tab" aria-controls="password-content"
-                            aria-selected="false">
+                        <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password-content" type="button" role="tab" aria-controls="password-content" aria-selected="false">
                             Đổi mật khẩu
                         </button>
                     </li>
                 </ul>
 
                 <div class="tab-content" id="profileTabsContent">
-                    <div class="tab-pane fade show active" id="profile-content" role="tabpanel"
-                        aria-labelledby="profile-tab">
-                        <form action="{{ route('client.dashboard.update-profile') }}" method="POST"
-                            enctype="multipart/form-data">
+                    <div class="tab-pane fade show active" id="profile-content" role="tabpanel" aria-labelledby="profile-tab">
+                        <form action="{{ route('client.dashboard.update-profile') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title">Cập nhật thông tin cá nhân</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Đóng"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="form-label">Họ tên</label>
-                                    <input type="text" name="name" class="form-control"
-                                        value="{{ old('name', $user->name) }}" >
-                                    @error('name')
+                                    <input type="text" name="profile_name" class="form-control" value="{{ old('profile_name', $user->name) }}">
+                                    @error('profile_name')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-control"
-                                        value="{{ old('email', $user->email) }}" >
-                                    @error('email')
+                                    <input type="email" name="profile_email" class="form-control" value="{{ old('profile_email', $user->email) }}">
+                                    @error('profile_email')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Số điện thoại</label>
-                                    <input type="text" name="phone" class="form-control"
-                                        value="{{ old('phone', $user->phone) }}">
-                                    @error('phone')
+                                    <input type="text" name="profile_phone" class="form-control" value="{{ old('profile_phone', $user->phone) }}">
+                                    @error('profile_phone')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Ảnh đại diện</label>
-                                    <input type="file" name="image" class="form-control" accept="image/*">
+                                    <input type="file" name="profile_image" class="form-control" accept="image/*">
                                     @if ($user->image)
                                         <small class="text-muted d-block mt-1">
                                             Ảnh hiện tại:
-                                            <img src="{{ asset('storage/' . $user->image) }}" alt=""
-                                                style="height:40px;border-radius:50%;">
+                                            <img src="{{ asset('storage/' . $user->image) }}" alt="" style="height:40px;border-radius:50%;">
                                         </small>
                                     @endif
-                                    @error('image')
+                                    @error('profile_image')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn_outline sm"
-                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="button" class="btn btn_outline sm" data-bs-dismiss="modal">Hủy</button>
                                 <button type="submit" class="btn btn_black sm">Lưu thay đổi</button>
                             </div>
                         </form>
@@ -920,20 +907,19 @@
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title">Đổi mật khẩu</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Đóng"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="form-label">Mật khẩu hiện tại</label>
-                                    <input type="password" name="current_password" class="form-control" >
+                                    <input type="password" name="current_password" class="form-control">
                                     @error('current_password')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Mật khẩu mới</label>
-                                    <input type="password" name="new_password" class="form-control"  >
+                                    <input type="password" name="new_password" class="form-control">
                                     @error('new_password')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
@@ -947,8 +933,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn_outline sm"
-                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="button" class="btn btn_outline sm" data-bs-dismiss="modal">Hủy</button>
                                 <button type="submit" class="btn btn_black sm">Đổi mật khẩu</button>
                             </div>
                         </form>

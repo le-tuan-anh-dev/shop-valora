@@ -91,24 +91,39 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'name'  => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'max:100', 'unique:users,email,' . $user->id],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            'profile_name'  => ['required', 'string', 'max:100'],
+            'profile_email' => ['required', 'email', 'max:100', 'unique:users,email,' . $user->id],
+            'profile_phone' => ['nullable', 'string', 'max:10'],
+            'profile_image' => ['nullable', 'image',],
+        ], [
+            'profile_name.required'    => 'Vui lòng nhập họ tên.',
+            'profile_name.string'      => 'Họ tên phải là ký tự.',
+            'profile_name.max'         => 'Họ tên không được vượt quá 100 ký tự.',
+            
+            'profile_email.required'   => 'Vui lòng nhập địa chỉ email.',
+            'profile_email.email'      => 'Địa chỉ email không hợp lệ.',
+            'profile_email.max'        => 'Email không được vượt quá 100 ký tự.',
+            'profile_email.unique'     => 'Email này đã được sử dụng.',
+            
+            'profile_phone.string'     => 'Số điện thoại phải là ký tự.',
+            'profile_phone.max'        => 'Số điện thoại không đúng định dạng',
+            
+            'profile_image.image'      => 'Tệp tải lên phải là hình ảnh.',
         ]);
 
-        $user->name  = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
 
-        if ($request->hasFile('image')) {
+        $user->name  = $request->profile_name;
+        $user->email = $request->profile_email;
+        $user->phone = $request->profile_phone;
+
+        if ($request->hasFile('profile_image')) {
             // Xoá ảnh cũ nếu có
             if ($user->image && Storage::disk('public')->exists($user->image)) {
                 Storage::disk('public')->delete($user->image);
             }
 
             // Lưu ảnh mới
-            $path        = $request->file('image')->store('avatars', 'public');
+            $path        = $request->file('profile_image')->store('avatars', 'public');
             $user->image = $path;
         }
 
@@ -117,38 +132,46 @@ class DashboardController extends Controller
         return back()->with('success', 'Cập nhật thông tin tài khoản thành công.');
     }
 
-    public function changePassword(Request $request)
-    {
-        $user = auth()->user();
+   public function changePassword(Request $request)
+{
+    $user = auth()->user();
 
-        $request->validate([
-            'current_password' => [
-                'required',
-                function ($attribute, $value, $fail) use ($user) {
-                    if (!Hash::check($value, $user->password)) {
-                        $fail('Mật khẩu hiện tại không chính xác.');
-                    }
-                },
-            ],
-            'new_password' => [
-                'required',
-                'string',
-                'min:5',
-                'confirmed',
-                'different:current_password',
-            ],
-            'new_password_confirmation' => ['required'],
-        ], [
-            'new_password.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
-            'new_password.regex' => 'Mật khẩu phải chứa chữ hoa, chữ thường và chữ số.',
-            'new_password.confirmed' => 'Xác nhận mật khẩu không khớp.',
-            'new_password.different' => 'Mật khẩu mới không được giống mật khẩu hiện tại.',
-            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
-        ]);
+    $request->validate([
+        'current_password' => [
+            'required',
+            function ($attribute, $value, $fail) use ($user) {
+                if (!Hash::check($value, $user->password)) {
+                    $fail('Mật khẩu hiện tại không chính xác.');
+                }
+            },
+        ],
+        'new_password' => [
+            'required',
+            'string',
+            'min:6',
+            'confirmed',
+            'different:current_password',
+        ],
+        'new_password_confirmation' => [
+            'required',
+            'string',
+        ],
+    ], [
+        'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
+        
+        'new_password.required' => 'Vui lòng nhập mật khẩu mới.',
+        'new_password.string' => 'Mật khẩu mới phải là ký tự.',
+        'new_password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự.',
+        'new_password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+        'new_password.different' => 'Mật khẩu mới không được giống mật khẩu hiện tại.',
+        
+        'new_password_confirmation.required' => 'Vui lòng xác nhận mật khẩu mới.',
+        'new_password_confirmation.string' => 'Xác nhận mật khẩu phải là ký tự.',
+    ]);
 
-        $user->password = Hash::make($request->new_password);
-        $user->save();
+    $user->password = Hash::make($request->new_password);
+    $user->save();
 
-        return back()->with('success', 'Mật khẩu đã được thay đổi thành công.');
-    }
+    return back()->with('success', 'Mật khẩu đã được thay đổi thành công.');
+}
 }

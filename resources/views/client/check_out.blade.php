@@ -21,14 +21,9 @@
     <div class="custom-container container">
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <h4>Check Out</h4>
+          <h4>Đặt hàng</h4>
         </div>
-        <div class="col-sm-6">
-          <ul class="breadcrumb float-end">
-            <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
-            <li class="breadcrumb-item active"><a href="#">Check Out</a></li>
-          </ul>
-        </div>
+       
       </div>
     </div>
   </div>
@@ -147,10 +142,12 @@
                   <div class="coupon-code"> 
                     <input type="text" id="coupon-input" name="coupon_code" placeholder="Nhập mã giảm giá">
                     <button class="btn" type="button" id="apply-coupon">Áp dụng</button>
-                    <button type="button" id="remove-voucher-btn" class="btn btn-outline-danger mt-2 w-100" style="display:none;">
-                      Hủy mã giảm giá
-                    </button>
+                    
+                    
                   </div>
+                  <button type="button" id="remove-voucher-btn" class="btn btn-outline-danger mt-2 w-100" style="display:none;">
+                      Hủy áp dụng mã giảm giá
+                    </button>
                 </div>
                 <div class="total">
                   <h6>Tổng cộng :</h6>
