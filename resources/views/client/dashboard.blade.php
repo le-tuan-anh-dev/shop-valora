@@ -48,7 +48,7 @@
                                     <h6>{{ $user->email }}</h6>
                                     <span data-bs-toggle="modal" data-bs-target="#edit-profile-modal" title="Chỉnh sửa"
                                         tabindex="0">
-                                        Edit Profile
+                                        Sửa thông tin
                                     </span>
                                 </div>
                             </div>
@@ -835,81 +835,68 @@
     </section>
 
     {{-- Modal Edit Profile --}}
-    <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <ul class="nav nav-tabs" id="profileTabs" role="tablist" style="border-bottom: 1px solid #dee2e6;">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
-                            data-bs-target="#profile-content" type="button" role="tab" aria-controls="profile-content"
-                            aria-selected="true">
+                        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-content" type="button" role="tab" aria-controls="profile-content" aria-selected="true">
                             Thông tin cá nhân
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="password-tab" data-bs-toggle="tab"
-                            data-bs-target="#password-content" type="button" role="tab" aria-controls="password-content"
-                            aria-selected="false">
+                        <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password-content" type="button" role="tab" aria-controls="password-content" aria-selected="false">
                             Đổi mật khẩu
                         </button>
                     </li>
                 </ul>
 
                 <div class="tab-content" id="profileTabsContent">
-                    <div class="tab-pane fade show active" id="profile-content" role="tabpanel"
-                        aria-labelledby="profile-tab">
-                        <form action="{{ route('client.dashboard.update-profile') }}" method="POST"
-                            enctype="multipart/form-data">
+                    <div class="tab-pane fade show active" id="profile-content" role="tabpanel" aria-labelledby="profile-tab">
+                        <form action="{{ route('client.dashboard.update-profile') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title">Cập nhật thông tin cá nhân</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Đóng"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="form-label">Họ tên</label>
-                                    <input type="text" name="name" class="form-control"
-                                        value="{{ old('name', $user->name) }}" >
-                                    @error('name')
+                                    <input type="text" name="profile_name" class="form-control" value="{{ old('profile_name', $user->name) }}">
+                                    @error('profile_name')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-control"
-                                        value="{{ old('email', $user->email) }}" >
-                                    @error('email')
+                                    <input type="email" name="profile_email" class="form-control" value="{{ old('profile_email', $user->email) }}">
+                                    @error('profile_email')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Số điện thoại</label>
-                                    <input type="text" name="phone" class="form-control"
-                                        value="{{ old('phone', $user->phone) }}">
-                                    @error('phone')
+                                    <input type="text" name="profile_phone" class="form-control" value="{{ old('profile_phone', $user->phone) }}">
+                                    @error('profile_phone')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Ảnh đại diện</label>
-                                    <input type="file" name="image" class="form-control" accept="image/*">
+                                    <input type="file" name="profile_image" class="form-control" accept="image/*">
                                     @if ($user->image)
                                         <small class="text-muted d-block mt-1">
                                             Ảnh hiện tại:
-                                            <img src="{{ asset('storage/' . $user->image) }}" alt=""
-                                                style="height:40px;border-radius:50%;">
+                                            <img src="{{ asset('storage/' . $user->image) }}" alt="" style="height:40px;border-radius:50%;">
                                         </small>
                                     @endif
-                                    @error('image')
+                                    @error('profile_image')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn_outline sm"
-                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="button" class="btn btn_outline sm" data-bs-dismiss="modal">Hủy</button>
                                 <button type="submit" class="btn btn_black sm">Lưu thay đổi</button>
                             </div>
                         </form>
@@ -920,20 +907,19 @@
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title">Đổi mật khẩu</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Đóng"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="form-label">Mật khẩu hiện tại</label>
-                                    <input type="password" name="current_password" class="form-control" >
+                                    <input type="password" name="current_password" class="form-control">
                                     @error('current_password')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Mật khẩu mới</label>
-                                    <input type="password" name="new_password" class="form-control"  >
+                                    <input type="password" name="new_password" class="form-control">
                                     @error('new_password')
                                         <small class="text-danger d-block mt-1">{{ $message }}</small>
                                     @enderror
@@ -947,8 +933,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn_outline sm"
-                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="button" class="btn btn_outline sm" data-bs-dismiss="modal">Hủy</button>
                                 <button type="submit" class="btn btn_black sm">Đổi mật khẩu</button>
                             </div>
                         </form>
