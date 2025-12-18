@@ -19,11 +19,11 @@ class OrderController extends Controller
 
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%")
-                  ->orWhere('customer_phone', 'like', "%{$search}%");
+                    ->orWhere('customer_name', 'like', "%{$search}%")
+                    ->orWhere('customer_email', 'like', "%{$search}%")
+                    ->orWhere('customer_phone', 'like', "%{$search}%");
             });
         }
 
@@ -121,6 +121,8 @@ class OrderController extends Controller
             if ($order->payment_status === 'unpaid') {
                 $order->payment_status = 'paid';
             }
+
+            $this->updateProductSoldCount($order);
         }
 
         if ($newStatus === 'cancelled_by_admin' && !$order->cancelled_at) {
@@ -159,6 +161,26 @@ class OrderController extends Controller
             DB::rollBack();
             Log::error('Error restoring product stock for order #' . $order->order_number . ': ' . $e->getMessage());
             throw $e;
+        }
+    }
+
+    private function updateProductSoldCount(Order $order)
+    {
+        try {
+            DB::beginTransaction();
+
+            foreach ($order->orderItems as $orderItem) {
+                if ($orderItem->product_id) {
+                    $product = Product::find($orderItem->product_id);
+                    if ($product) {
+                        $product->increment('sold_count', $orderItem->quantity);
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
         }
     }
 
