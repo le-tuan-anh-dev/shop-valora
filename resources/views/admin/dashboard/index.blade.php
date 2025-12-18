@@ -333,7 +333,7 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <span class="badge bg-light-success text-success">
-                                                        {{ number_format($product->sold_count) }}
+                                                        {{ number_format($product->filtered_sold_count ?? $product->sold_count) }}
                                                     </span>
                                                 </td>
                                                 <td class="text-end fw-semibold">
