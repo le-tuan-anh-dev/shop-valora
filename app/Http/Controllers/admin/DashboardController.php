@@ -132,7 +132,7 @@ class DashboardController extends Controller
                     $query->whereBetween('created_at', [$startDateQuery, $endDateQuery]);
                 })
                 ->count(),
-            'completed_orders' => Order::where('status', 'completed')
+            'completed_orders' => Order::whereIn('status', ['delivered', 'completed'])
                 ->when($startDateQuery && $endDateQuery, function ($query) use ($startDateQuery, $endDateQuery) {
                     $query->whereBetween('created_at', [$startDateQuery, $endDateQuery]);
                 })
@@ -140,61 +140,60 @@ class DashboardController extends Controller
         ];
 
         // Sản phẩm bán chạy (top 10)
-        $best_selling_products = Product::orderBy('sold_count', 'desc')
-            ->take(10)
-            ->with('category')
-            ->get();
+        if ($startDateQuery && $endDateQuery) {
+            $soldCountSubquery = DB::table('order_items')
+                ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                ->whereIn('orders.status', ['delivered', 'completed'])
+                ->whereBetween('orders.created_at', [$startDateQuery, $endDateQuery])
+                ->select('order_items.product_id', DB::raw('SUM(order_items.quantity) as total_sold'))
+                ->groupBy('order_items.product_id');
+
+            $best_selling_products = Product::select('products.*')
+                ->leftJoinSub($soldCountSubquery, 'sold_data', function ($join) {
+                    $join->on('products.id', '=', 'sold_data.product_id');
+                })
+                ->selectRaw('COALESCE(sold_data.total_sold, 0) as filtered_sold_count')
+                ->orderByDesc('filtered_sold_count')
+                ->with('category')
+                ->take(10)
+                ->get();
+        } else {
+            $best_selling_products = Product::orderBy('sold_count', 'desc')
+                ->take(10)
+                ->with('category')
+                ->get();
+        }
 
         // Tính số tháng cần hiển thị dựa trên khoảng thời gian
-        $monthsToShow = 12;
-        if ($startDateQuery && $endDateQuery) {
-            $diffInMonths = $startDateQuery->diffInMonths($endDateQuery);
-            if ($diffInMonths < 12) {
-                $monthsToShow = max(1, $diffInMonths + 1);
-            }
+        $months = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $months[] = [
+                'year' => $date->year,
+                'month' => $date->month,
+            ];
         }
 
-        // Tạo mảng tháng để hiển thị
-        $months = [];
-        if ($startDateQuery && $endDateQuery && $monthsToShow <= 12) {
-            // Nếu có filter và khoảng thời gian <= 12 tháng, hiển thị các tháng trong khoảng đó
-            $current = $startDateQuery->copy()->startOfMonth();
-            $end = $endDateQuery->copy()->endOfMonth();
-            while ($current <= $end) {
-                $months[] = [
-                    'year' => $current->year,
-                    'month' => $current->month,
-                ];
-                $current->addMonth();
-            }
-        } else {
-            // Mặc định: 12 tháng gần nhất
-            for ($i = 11; $i >= 0; $i--) {
-                $date = Carbon::now()->subMonths($i);
-                $months[] = [
-                    'year' => $date->year,
-                    'month' => $date->month,
-                ];
-            }
-        }
 
         // Doanh thu theo tháng
+        $chartStartDate = Carbon::now()->subMonths(11)->startOfMonth();
+        $chartEndDate = Carbon::now()->endOfMonth();
+
+
         $revenue_data = Order::whereIn('status', ['delivered', 'completed'])
             ->select(
                 DB::raw('YEAR(created_at) as year'),
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('SUM(total_amount) as revenue')
             )
-            ->when($startDateQuery && $endDateQuery, function ($query) use ($startDateQuery, $endDateQuery) {
-                $query->whereBetween('created_at', [$startDateQuery->startOfMonth(), $endDateQuery->endOfMonth()]);
-            }, function ($query) {
-                $query->where('created_at', '>=', Carbon::now()->subMonths(11)->startOfMonth());
-            })
+            ->where('created_at', '>=', $chartStartDate)
+            ->where('created_at', '<=', $chartEndDate)
             ->groupBy('year', 'month')
             ->get()
             ->keyBy(function ($item) {
                 return $item->year . '-' . $item->month;
             });
+
 
         $revenue_by_month = collect($months)->map(function ($month) use ($revenue_data) {
             $key = $month['year'] . '-' . $month['month'];
@@ -211,11 +210,8 @@ class DashboardController extends Controller
             DB::raw('MONTH(created_at) as month'),
             DB::raw('COUNT(*) as count')
         )
-            ->when($startDateQuery && $endDateQuery, function ($query) use ($startDateQuery, $endDateQuery) {
-                $query->whereBetween('created_at', [$startDateQuery->startOfMonth(), $endDateQuery->endOfMonth()]);
-            }, function ($query) {
-                $query->where('created_at', '>=', Carbon::now()->subMonths(11)->startOfMonth());
-            })
+            ->where('created_at', '>=', $chartStartDate)
+            ->where('created_at', '<=', $chartEndDate)
             ->groupBy('year', 'month')
             ->get()
             ->keyBy(function ($item) {
@@ -238,11 +234,8 @@ class DashboardController extends Controller
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('COUNT(*) as count')
             )
-            ->when($startDateQuery && $endDateQuery, function ($query) use ($startDateQuery, $endDateQuery) {
-                $query->whereBetween('created_at', [$startDateQuery->startOfMonth(), $endDateQuery->endOfMonth()]);
-            }, function ($query) {
-                $query->where('created_at', '>=', Carbon::now()->subMonths(11)->startOfMonth());
-            })
+            ->where('created_at', '>=', $chartStartDate)
+            ->where('created_at', '<=', $chartEndDate)
             ->groupBy('year', 'month')
             ->get()
             ->keyBy(function ($item) {
