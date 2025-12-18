@@ -259,5 +259,6 @@ Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name(
     Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('admin.vouchers.update');
     // Xóa voucher
     Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
+    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show'])->name('admin.vouchers.show');
 
 });
