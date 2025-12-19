@@ -30,30 +30,30 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $messages = [
-        'name.required' => 'Họ và tên không được để trống.',
-        'name.string'   => 'Họ và tên phải là chuỗi ký tự.',
-        'name.max'      => 'Họ và tên không được vượt quá 100 ký tự.',
+            'name.required' => 'Họ và tên không được để trống.',
+            'name.string'   => 'Họ và tên phải là chuỗi ký tự.',
+            'name.max'      => 'Họ và tên không được vượt quá 100 ký tự.',
 
-        'email.required' => 'Email không được để trống.',
-        'email.email'    => 'Email không đúng định dạng.',
-        'email.unique'   => 'Email đã tồn tại.',
-        'email.max'      => 'Email không được vượt quá 100 ký tự.',
+            'email.required' => 'Email không được để trống.',
+            'email.email'    => 'Email không đúng định dạng.',
+            'email.unique'   => 'Email đã tồn tại.',
+            'email.max'      => 'Email không được vượt quá 100 ký tự.',
 
-        'password.required'  => 'Mật khẩu không được để trống.',
-        'password.string'    => 'Mật khẩu phải là chuỗi ký tự.',
-        'password.min'       => 'Mật khẩu phải có ít nhất 6 ký tự.',
-        'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+            'password.required'  => 'Mật khẩu không được để trống.',
+            'password.string'    => 'Mật khẩu phải là chuỗi ký tự.',
+            'password.min'       => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
 
-        'phone.string' => 'Số điện thoại phải là chuỗi ký tự.',
-        'phone.max'    => 'Số điện thoại không được vượt quá 20 ký tự.',
-    ];
+            'phone.string' => 'Số điện thoại phải là chuỗi ký tự.',
+            'phone.max'    => 'Số điện thoại không được vượt quá 20 ký tự.',
+        ];
 
-    $request->validate([
-        'name'     => 'required|string|max:100',
-        'email'    => 'required|email|unique:users,email|max:100',
-        'password' => 'required|string|min:6|confirmed',
-        'phone'    => 'nullable|string|max:20',
-    ], $messages);
+        $request->validate([
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|email|unique:users,email|max:100',
+            'password' => 'required|string|min:6|confirmed',
+            'phone'    => 'nullable|string|max:20',
+        ], $messages);
 
         // Tạo token xác thực
         $token = Str::random(60);
@@ -63,8 +63,8 @@ class AuthController extends Controller
             'email'              => $request->email,
             'password'           => Hash::make($request->password),
             'phone'              => $request->phone,
-            'role'               => 'customer',   
-            'status'             => 'locked',     
+            'role'               => 'customer',
+            'status'             => 'locked',
             'email_verified_at'  => null,
             'verification_token' => $token,
         ]);
@@ -74,7 +74,6 @@ class AuthController extends Controller
         Mail::to($user->email)->send(new VerifyEmailMail($verifyUrl));
 
         return view('client.register_success');
-            
     }
 
     // ==== XÁC NHẬN EMAIL (DÙNG CHUNG CHO CẢ FORM & GOOGLE) ====
@@ -112,12 +111,12 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-       $messages = [
-                'email.required'    => 'Email không được để trống.',
-                'email.email'       => 'Email không đúng định dạng.',
-                'password.required' => 'Mật khẩu không được để trống.',
-                'password.string'   => 'Mật khẩu phải là chuỗi ký tự.',
-            ];
+        $messages = [
+            'email.required'    => 'Email không được để trống.',
+            'email.email'       => 'Email không đúng định dạng.',
+            'password.required' => 'Mật khẩu không được để trống.',
+            'password.string'   => 'Mật khẩu phải là chuỗi ký tự.',
+        ];
 
         $request->validate([
             'email'    => 'required|email',
@@ -139,17 +138,21 @@ class AuthController extends Controller
 
         // Kiểm tra xem có phải do chưa kích hoạt hoặc bị khóa
         $user = User::where('email', $request->email)->first();
-        
+
         if ($user && $user->status !== 'active') {
             if (!Hash::check($request->password, $user->password)) {
                 return back()->withErrors([
                     'email' => 'Email hoặc mật khẩu không đúng.',
                 ])->withInput();
             }
-            
+
             if ($user->status === 'locked' && is_null($user->email_verified_at)) {
                 return back()->withErrors([
                     'email' => 'Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email để xác nhận.',
+                ])->withInput();
+            } elseif ($user->status === 'banned') {
+                return back()->withErrors([
+                    'email' => 'Tài khoản của bạn đã bị cấm. Vui lòng liên hệ admin để được hỗ trợ.',
                 ])->withInput();
             } else {
                 return back()->withErrors([
