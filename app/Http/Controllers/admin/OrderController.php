@@ -37,6 +37,15 @@ class OrderController extends Controller
             $query->where('payment_status', $request->payment_status);
         }
 
+        // Lọc theo ngày đặt
+        if ($request->has('date_from') && $request->date_from) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->has('date_to') && $request->date_to) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
         $orders = $query->paginate(15);
 
         foreach ($orders as $order) {
