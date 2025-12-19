@@ -467,14 +467,14 @@
                             <a href="{{ route('posts.show', $item->id) }}">
                                 <h5>{{ $item->title }}</h5>
                             </a>
-                            <div class="link-hover-anim underline">
+                            {{-- <div class="link-hover-anim underline">
                                 <a class="btn btn_underline link-strong link-strong-unhovered" href="{{ route('posts.show', $item->id) }}">
                                     Đọc thêm
                                     <svg>
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                     </svg>
                                 </a>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>

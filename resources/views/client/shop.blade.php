@@ -478,7 +478,7 @@
                                                                     100,
                                                             );
                                                         @endphp
-                                                        <span>-{{ $discountPercent }}%</span>
+                                                        <span>{{ $discountPercent }}%</span>
                                                     @else
                                                         {{ number_format($product->base_price, 0, ',', '.') }}₫
                                                     @endif

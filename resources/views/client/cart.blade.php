@@ -142,7 +142,7 @@
               
             </div>
             
-            <a class="btn btn_black w-100 rounded sm" href="{{ url('/checkout') }}">Check Out</a>
+            <a class="btn btn_black w-100 rounded sm" href="{{ url('/checkout') }}">Mua hàng</a>
           </div>
         </div>
       @endif
