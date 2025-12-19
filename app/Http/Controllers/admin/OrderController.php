@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderCancelledMail;
 use App\Models\Admin\Order;
 use App\Models\Admin\Product;
 use App\Models\Admin\ProductVariant;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -19,11 +21,11 @@ class OrderController extends Controller
 
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%")
-                  ->orWhere('customer_phone', 'like', "%{$search}%");
+                    ->orWhere('customer_name', 'like', "%{$search}%")
+                    ->orWhere('customer_email', 'like', "%{$search}%")
+                    ->orWhere('customer_phone', 'like', "%{$search}%");
             });
         }
 
@@ -121,6 +123,8 @@ class OrderController extends Controller
             if ($order->payment_status === 'unpaid') {
                 $order->payment_status = 'paid';
             }
+
+            $this->updateProductSoldCount($order);
         }
 
         if ($newStatus === 'cancelled_by_admin' && !$order->cancelled_at) {
@@ -162,6 +166,26 @@ class OrderController extends Controller
         }
     }
 
+    private function updateProductSoldCount(Order $order)
+    {
+        try {
+            DB::beginTransaction();
+
+            foreach ($order->orderItems as $orderItem) {
+                if ($orderItem->product_id) {
+                    $product = Product::find($orderItem->product_id);
+                    if ($product) {
+                        $product->increment('sold_count', $orderItem->quantity);
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+    }
+
     private function getStatusLabel($status)
     {
         $labels = [
@@ -178,4 +202,96 @@ class OrderController extends Controller
 
         return $labels[$status] ?? $status;
     }
+
+public function cancel(Request $request, $orderId)
+    {
+        $validated = $request->validate(
+            [
+                'admin_note' => 'required|string|min:10|max:1000',
+                'send_email' => 'boolean'
+            ],
+            [
+                'admin_note.required' => 'Vui lòng nhập lý do hủy đơn hàng',
+                'admin_note.min' => 'Lý do hủy phải có ít nhất 10 ký tự',
+                'admin_note.max' => 'Lý do hủy không được vượt quá 1000 ký tự'
+            ]
+        );
+
+        try {
+            $order = Order::findOrFail($orderId);
+            $cancellableStatuses = ['pending', 'confirmed', 'awaiting_pickup'];
+            
+            if (!in_array($order->status, $cancellableStatuses)) {
+                return redirect()->back()->with('error', 'Không thể hủy đơn hàng ở trạng thái hiện tại. Chỉ có thể hủy đơn hàng ở trạng thái: Chờ xác nhận, Đã xác nhận, Chờ lấy hàng.');
+            }
+            DB::beginTransaction();
+
+            try {
+                foreach ($order->orderItems as $orderItem) {
+                    if (!empty($orderItem->variant_id)) {
+                        $variant = ProductVariant::find($orderItem->variant_id);
+                        
+                        if ($variant) {
+                            $variant->increment('stock', $orderItem->quantity);
+                            
+                            Log::info(
+                                'Hoàn lại stock variant - Product: ' . $orderItem->product_name . 
+                                ', Variant ID: ' . $orderItem->variant_id . 
+                                ', Số lượng: ' . $orderItem->quantity
+                            );
+                        } else {
+                            Log::warning('Không tìm thấy variant ID: ' . $orderItem->variant_id);
+                        }
+                    } else {
+                        
+                        $product = Product::find($orderItem->product_id);
+                        
+                        if ($product) {
+                            $product->increment('stock', $orderItem->quantity);
+                            
+                            Log::info(
+                                'Hoàn lại stock product - Product: ' . $orderItem->product_name . 
+                                ', Product ID: ' . $orderItem->product_id . 
+                                ', Số lượng: ' . $orderItem->quantity
+                            );
+                        } else {
+                            Log::warning('Không tìm thấy product ID: ' . $orderItem->product_id);
+                        }
+                    }
+                }
+
+                $order->update([
+                    'status' => 'cancelled_by_admin',
+                    'admin_note' => $validated['admin_note'],
+                    'cancelled_at' => now(),
+                ]);
+
+                DB::commit();
+
+                
+                    try {
+                        Mail::to($order->customer_email)->send(new OrderCancelledMail($order));
+                        $emailStatus = ' và email thông báo đã được gửi';
+                    } catch (\Exception $e) {
+                        Log::error('Lỗi gửi email hủy đơn hàng: ' . $e->getMessage());
+                        $emailStatus = ' nhưng lỗi khi gửi email thông báo';
+                    }
+                
+
+                return redirect()->back()->with('success', 'Đơn hàng #' . $order->order_number . ' đã được hủy thành công' . $emailStatus);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Lỗi hoàn lại stock: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Có lỗi xảy ra khi hoàn lại sản phẩm: ' . $e->getMessage());
+            }
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Không tìm thấy đơn hàng');
+        } catch (\Exception $e) {
+            Log::error('Lỗi hủy đơn hàng: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+        }
+    }
+
 }

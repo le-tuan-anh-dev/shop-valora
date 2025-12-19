@@ -43,8 +43,19 @@
             @endif
 
             <div class="row">
+                <div class="d-flex justify-content-end">
+                    <a href="{{ route('admin.orders.list') }}"
+                    class="btn btn-outline-secondary btn-sm">
+                        <iconify-icon icon="solar:arrow-left-bold-duotone" class="me-1"></iconify-icon>
+                        Quay lại
+                    </a>
+                </div>
+
+
                 <div class="col-xl-9 col-lg-8">
+                    
                     <div class="row">
+                        
                         <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-body">
@@ -138,11 +149,7 @@
                                                 {{ $order->created_at->format('d/m/Y \lú\c H:i') }}</p>
                                         </div>
                                         <div>
-                                            <a href="{{ route('admin.orders.list') }}" class="btn btn-outline-secondary">
-                                                <iconify-icon icon="solar:arrow-left-bold-duotone"
-                                                    class="me-1"></iconify-icon>
-                                                Quay lại
-                                            </a>
+                                            
                                             <div class="dropdown d-inline">
                                                 <button class="btn btn-primary dropdown-toggle" type="button"
                                                     data-bs-toggle="dropdown">
@@ -184,22 +191,33 @@
                                                                 </li>
                                                             @endif
                                                             <li>
-                                                                <form
-                                                                    action="{{ route('admin.orders.updateStatus', $order->id) }}"
-                                                                    method="POST" class="d-inline">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <input type="hidden" name="status"
-                                                                        value="{{ $statusKey }}">
-                                                                    <button type="submit"
-                                                                        class="dropdown-item {{ $isCurrent ? 'active' : '' }} {{ $isCancelStatus ? 'text-danger' : '' }}"
+                                                                @if ($statusKey === 'cancelled_by_admin')
+                                                                    <button type="button" 
+                                                                        class="dropdown-item text-danger"
+                                                                        data-bs-toggle="modal" 
+                                                                        data-bs-target="#cancelOrderModal"
                                                                         {{ $isCurrent ? 'disabled' : '' }}>
                                                                         {{ $statusLabel }}
                                                                         @if ($isCurrent)
                                                                             <span class="float-end">✓</span>
                                                                         @endif
                                                                     </button>
-                                                                </form>
+                                                                @else
+                                                                    <form action="{{ route('admin.orders.updateStatus', $order->id) }}"
+                                                                        method="POST" class="d-inline">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <input type="hidden" name="status" value="{{ $statusKey }}">
+                                                                        <button type="submit"
+                                                                            class="dropdown-item {{ $isCurrent ? 'active' : '' }} {{ $isCancelStatus ? 'text-danger' : '' }}"
+                                                                            {{ $isCurrent ? 'disabled' : '' }}>
+                                                                            {{ $statusLabel }}
+                                                                            @if ($isCurrent)
+                                                                                <span class="float-end">✓</span>
+                                                                            @endif
+                                                                        </button>
+                                                                    </form>
+                                                                @endif
                                                             </li>
                                                         @endif
                                                     @endforeach
@@ -750,4 +768,91 @@
         </div>
 
     </div>
+{{-- Modal Hủy Đơn Hàng --}}
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelOrderModalLabel">
+                    <iconify-icon icon="solar:close-circle-bold-duotone" class="me-2"></iconify-icon>
+                    Hủy đơn hàng #{{ $order->order_number }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="cancelOrderForm" action="{{ route('admin.orders.cancel', $order->id) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Email thông báo sẽ được gửi đến khách hàng.
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="adminNote" class="form-label">
+                            Lý do hủy đơn hàng 
+                            <span class="text-danger">*</span>
+                        </label>
+                        <textarea 
+                            class="form-control @error('admin_note') is-invalid @enderror" 
+                            id="adminNote" 
+                            name="admin_note" 
+                            rows="5" 
+                            placeholder="Ví dụ: Hàng hết tồn kho, Khách không liên lạc được, v.v..." 
+                            required
+                            minlength="10"
+                            maxlength="1000">{{ old('admin_note') }}</textarea>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted d-block">
+                                Lý do này sẽ được gửi cho khách hàng qua email
+                            </small>
+                            <small class="text-muted">
+                                <span id="charCount">0</span>/1000
+                            </small>
+                        </div>
+                        @error('admin_note')
+                            <div class="invalid-feedback d-block mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-danger">
+                        <iconify-icon icon="solar:trash-bin-trash-bold-duotone" class="me-1"></iconify-icon>
+                        Xác nhận hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('adminNote');
+    const charCount = document.getElementById('charCount');
+    
+    // Đếm ký tự
+    textarea.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+    });
+    
+    // Reset form khi modal mở
+    const cancelModal = document.getElementById('cancelOrderModal');
+    cancelModal.addEventListener('show.bs.modal', function() {
+        if (!document.querySelector('.invalid-feedback')) {
+            document.getElementById('cancelOrderForm').reset();
+            charCount.textContent = '0';
+        }
+    });
+
+    // Validate form trước khi submit
+    document.getElementById('cancelOrderForm').addEventListener('submit', function(e) {
+        if (!textarea.value.trim() || textarea.value.length < 10) {
+            e.preventDefault();
+            textarea.classList.add('is-invalid');
+            alert('Vui lòng nhập lý do hủy (tối thiểu 10 ký tự)');
+        }
+    });
+});
+</script>
 @endsection

@@ -38,7 +38,7 @@
             <div class="col-12">
                 <div class="main-menu">     
                     <a class="brand-logo" href="{{ route('home') }}"> 
-                        <img class="img-fluid for-light"  src="{{ asset('storage/logo5.png')}}" alt="logo"/>
+                        <img class="img-fluid for-light"  src="{{ asset('storage/logo1.png')}}" alt="logo"/>
                         <img class="img-fluid for-dark" src="{{ asset('client/assets/images/logo/logo-white-1.png')}}" alt="logo"/>
                     </a>
                     
