@@ -81,12 +81,9 @@
                             @endif
                         </p>
                         <ul class="rating">      
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star-half-stroke"></i></li>
-                            <li><i class="fa-regular fa-star"></i></li>
-                            <li>{{ $averageRating }}</li>
+                            @for($i = 1; $i <= 5; $i++)
+                            <li><i class="fa-solid fa-star {{ $i <= round($averageRating) ? 'text-warning' : 'text-muted' }}"></i></li>
+                        @endfor
                         </ul>
 
                         <h6>
