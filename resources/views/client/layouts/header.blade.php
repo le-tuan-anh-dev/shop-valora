@@ -1,9 +1,7 @@
 <header> 
     <div class="top_header"> 
         <p>
-            Mã giảm giá miễn phí: Giảm giá mùa hè cho các mặt hàng được chọn Sử dụng:
-            <span>26 sản phẩm </span>
-            <a href="#"> MUA NGAY</a>
+            Mã giảm giá miễn phí: Giảm giá mùa hè cho các mặt hàng được chọn Sử dụng
         </p>
     </div>
     
@@ -61,11 +59,11 @@
 
                         <ul class="justify-content-end">
                             {{-- Search --}}
-                            <li> 
+                            {{-- <li> 
                                 <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </button>
-                            </li>
+                            </li> --}}
 
                             {{-- Wishlist icon --}}
                             <li>

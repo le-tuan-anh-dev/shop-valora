@@ -155,7 +155,7 @@
                             @foreach($topPosts as $topPost)
                                 <li class="mb-3 pb-3 border-bottom">
                                     <div class="d-flex">
-                                        <img src="{{ asset('storage/' . $topPost->image) }}" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
+                                        <img src="{{ asset('storage/' . $topPost->thumbnail) }}" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
                                         <div>
                                             <h6 class="mb-1 fw-bold">
                                                 <a href="{{ route('posts.show', $topPost->id) }}" class="text-dark text-decoration-none">
@@ -188,7 +188,7 @@
         @foreach($relatedPosts as $relatedPost)
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ asset('storage/' . $relatedPost->image) }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                    <img src="{{ asset('storage/' . $relatedPost->thumbnail) }}" class="card-img-top" style="height: 150px; object-fit: cover;">
                     <div class="card-body d-flex flex-column">
                         <h6 class="fw-bold">
                             <a href="{{ route('posts.show', $relatedPost->id) }}" class="text-dark text-decoration-none">
