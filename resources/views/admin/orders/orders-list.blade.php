@@ -354,7 +354,7 @@
                                                                         'shipping' => 'Đang giao',
                                                                         'delivered' => 'Đã giao hàng',
                                                                         'completed' => 'Đã hoàn thành',
-                                                                        'cancelled_by_admin' => 'Admin hủy',
+                                                                        // 'cancelled_by_admin' => 'Admin hủy',
                                                                         'delivery_failed' => 'Giao thất bại',
                                                                     ];
                                                                     $allowedStatuses = $order->allowedStatuses ?? [];

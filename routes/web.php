@@ -176,6 +176,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.list');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+     Route::post('{id}/cancel', [OrderController::class, 'cancel'])->name('admin.orders.cancel');
 
     // Comments
     Route::get('/comments', [CommentController::class, 'indexComments'])
@@ -259,5 +260,6 @@ Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name(
     Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('admin.vouchers.update');
     // Xóa voucher
     Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
+    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show'])->name('admin.vouchers.show');
 
 });

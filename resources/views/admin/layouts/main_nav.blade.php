@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('admin/assets/images/favicon.ico') }}" />
+    <link rel="shortcut icon" href="{{ asset('storage/logo1.png')}}" />
 
     <!-- Vendor css (Require in all Page) -->
     <link href="{{ asset('admin/assets/css/vendor.min.css') }}" rel="stylesheet" type="text/css')}}" />
@@ -72,7 +72,7 @@
                                 <iconify-icon icon="solar:bell-bing-bold-duotone"
                                     class="fs-24 align-middle"></iconify-icon>
                                 <span
-                                    class="position-absolute topbar-badge fs-10 translate-middle badge bg-danger rounded-pill">3<span
+                                    class="position-absolute topbar-badge fs-10 translate-middle badge bg-danger rounded-pill">0<span
                                         class="visually-hidden">unread messages</span></span>
                             </button>
                             <div class="dropdown-menu py-0 dropdown-lg dropdown-menu-end"
@@ -89,7 +89,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div data-simplebar style="max-height: 280px">
+                                {{-- <div data-simplebar style="max-height: 280px">
                                     <!-- Item -->
                                     <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom text-wrap">
                                         <div class="d-flex">
@@ -175,7 +175,7 @@
                                             </div>
                                         </div>
                                     </a>
-                                </div>
+                                </div> --}}
                                 <div class="text-center py-3">
                                     <a href="javascript:void(0);" class="btn btn-primary btn-sm">View All Notification
                                         <i class="bx bx-right-arrow-alt ms-1"></i></a>
@@ -204,7 +204,7 @@
         <div>
             <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-settings-offcanvas">
                 <div class="d-flex align-items-center bg-primary p-3 offcanvas-header">
-                    <h5 class="text-white m-0">Theme Settings</h5>
+                    <h5 class="text-white m-0">Cài đặt</h5>
                     <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"
                         aria-label="Close"></button>
                 </div>
@@ -213,44 +213,44 @@
                     <div data-simplebar class="h-100">
                         <div class="p-3 settings-bar">
                             <div>
-                                <h5 class="mb-3 font-16 fw-semibold">Color Scheme</h5>
+                                <h5 class="mb-3 font-16 fw-semibold">Màu nền</h5>
 
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="data-bs-theme"
                                         id="layout-color-light" value="light" />
-                                    <label class="form-check-label" for="layout-color-light">Light</label>
+                                    <label class="form-check-label" for="layout-color-light">Sáng</label>
                                 </div>
 
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="data-bs-theme"
                                         id="layout-color-dark" value="dark" />
-                                    <label class="form-check-label" for="layout-color-dark">Dark</label>
+                                    <label class="form-check-label" for="layout-color-dark">Tối</label>
                                 </div>
                             </div>
 
                             <div>
-                                <h5 class="my-3 font-16 fw-semibold">Topbar Color</h5>
+                                <h5 class="my-3 font-16 fw-semibold">Màu thanh trên</h5>
 
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="data-topbar-color"
                                         id="topbar-color-light" value="light" />
-                                    <label class="form-check-label" for="topbar-color-light">Light</label>
+                                    <label class="form-check-label" for="topbar-color-light">Sáng</label>
                                 </div>
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="data-topbar-color"
                                         id="topbar-color-dark" value="dark" />
-                                    <label class="form-check-label" for="topbar-color-dark">Dark</label>
+                                    <label class="form-check-label" for="topbar-color-dark">Tối</label>
                                 </div>
                             </div>
 
                             <div>
-                                <h5 class="my-3 font-16 fw-semibold">Menu Color</h5>
+                                <h5 class="my-3 font-16 fw-semibold">Màu Menu</h5>
 
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="data-menu-color"
                                         id="leftbar-color-light" value="light" />
                                     <label class="form-check-label" for="leftbar-color-light">
-                                        Light
+                                        Sáng
                                     </label>
                                 </div>
 
@@ -258,19 +258,19 @@
                                     <input class="form-check-input" type="radio" name="data-menu-color"
                                         id="leftbar-color-dark" value="dark" />
                                     <label class="form-check-label" for="leftbar-color-dark">
-                                        Dark
+                                        Tối
                                     </label>
                                 </div>
                             </div>
 
                             <div>
-                                <h5 class="my-3 font-16 fw-semibold">Sidebar Size</h5>
+                                <h5 class="my-3 font-16 fw-semibold">Kích thước thanh bên</h5>
 
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="data-menu-size"
                                         id="leftbar-size-default" value="default" />
                                     <label class="form-check-label" for="leftbar-size-default">
-                                        Default
+                                        Mặc định
                                     </label>
                                 </div>
 
@@ -278,7 +278,7 @@
                                     <input class="form-check-input" type="radio" name="data-menu-size"
                                         id="leftbar-size-small" value="condensed" />
                                     <label class="form-check-label" for="leftbar-size-small">
-                                        Condensed
+                                        Thu gọn
                                     </label>
                                 </div>
 
@@ -286,7 +286,7 @@
                                     <input class="form-check-input" type="radio" name="data-menu-size"
                                         id="leftbar-hidden" value="hidden" />
                                     <label class="form-check-label" for="leftbar-hidden">
-                                        Hidden
+                                        Ẩn
                                     </label>
                                 </div>
 
@@ -294,7 +294,7 @@
                                     <input class="form-check-input" type="radio" name="data-menu-size"
                                         id="leftbar-size-small-hover-active" value="sm-hover-active" />
                                     <label class="form-check-label" for="leftbar-size-small-hover-active">
-                                        Small Hover Active
+                                        Hiển thị nhỏ khi rê chuột
                                     </label>
                                 </div>
 
@@ -302,7 +302,7 @@
                                     <input class="form-check-input" type="radio" name="data-menu-size"
                                         id="leftbar-size-small-hover" value="sm-hover" />
                                     <label class="form-check-label" for="leftbar-size-small-hover">
-                                        Small Hover
+                                        Hiển thị nhỏ khi rê chuột
                                     </label>
                                 </div>
                             </div>
@@ -313,7 +313,7 @@
                     <div class="row">
                         <div class="col">
                             <button type="button" class="btn btn-danger w-100" id="reset-layout">
-                                Reset
+                                Lưu
                             </button>
                         </div>
                     </div>
@@ -327,13 +327,13 @@
             <!-- Sidebar Logo -->
             <div class="logo-box">
                 <a href="index.html" class="logo-dark">
-                    <img src="{{ asset('admin/assets/images/logo-sm.png') }}" class="logo-sm" alt="logo sm" />
-                    <img src="{{ asset('admin/assets/images/logo-dark.png') }}" class="logo-lg" alt="logo dark" />
+                    <img src="{{ asset('storage/logo2.png')}}" class="logo-sm" alt="logo sm" />
+                    <img src="{{ asset('storage/logo2.png')}}" class="logo-lg" alt="logo dark" />
                 </a>
 
                 <a href="index.html" class="logo-light">
-                    <img src="{{ asset('admin/assets/images/logo-sm.png') }}" class="logo-sm" alt="logo sm" />
-                    <img src="{{ asset('admin/assets/images/logo-light.png') }}" class="logo-lg" alt="logo light" />
+                    <img src="{{ asset('storage/logo2.png')}}" class="logo-sm" alt="logo sm" />
+                    <img src="{{ asset('storage/logo2.png')}}" class="logo-lg" alt="logo light" />
                 </a>
             </div>
 
@@ -345,7 +345,6 @@
 
             <div class="scrollbar" data-simplebar>
                 <ul class="navbar-nav" id="navbar-nav">
-                    <li class="menu-title">General</li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.dashboard') }}">
@@ -353,6 +352,37 @@
                                 <iconify-icon icon="solar:widget-5-bold-duotone"></iconify-icon>
                             </span>
                             <span class="nav-text"> Trang chủ </span>
+                        </a>
+                    </li>
+
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.categories.list') }}" role="button"
+                            aria-expanded="false" aria-controls="sidebarCategory">
+                            <span class="nav-icon">
+                                <iconify-icon icon="solar:clipboard-list-bold-duotone"></iconify-icon>
+                            </span>
+                            <span class="nav-text"> Danh mục </span>
+                        </a>
+
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link " href="{{ route('admin.brands.index') }}" 
+                             aria-expanded="false" >
+                            <span class="nav-icon">
+                                <iconify-icon icon="solar:leaf-bold-duotone"></iconify-icon>
+                            </span>
+                            <span class="nav-text"> Thương hiệu </span>
+                        </a>
+                        
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.attributes.list') }}" role="button"
+                            aria-expanded="false" aria-controls="sidebarAttributes">
+                            <span class="nav-icon">
+                                <iconify-icon icon="solar:confetti-minimalistic-bold-duotone"></iconify-icon>
+                            </span>
+                            <span class="nav-text"> Thuộc tính </span>
                         </a>
                     </li>
 
@@ -377,28 +407,10 @@
                         </div>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.categories.list') }}" role="button"
-                            aria-expanded="false" aria-controls="sidebarCategory">
-                            <span class="nav-icon">
-                                <iconify-icon icon="solar:clipboard-list-bold-duotone"></iconify-icon>
-                            </span>
-                            <span class="nav-text"> Danh mục </span>
-                        </a>
+                    
+                    
 
-                    </li>
-                     <li class="nav-item">
-                        <a class="nav-link " href="{{ route('admin.brands.index') }}" 
-                             aria-expanded="false" >
-                            <span class="nav-icon">
-                                <iconify-icon icon="solar:leaf-bold-duotone"></iconify-icon>
-                            </span>
-                            <span class="nav-text"> Thương hiệu </span>
-                        </a>
-                        
-                    </li>
-
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link " href="#sidebarInventory" data-bs-toggle="collapse"
                             role="button" aria-expanded="false" aria-controls="sidebarInventory">
                             <span class="nav-icon">
@@ -407,7 +419,7 @@
                             <span class="nav-text"> Hoàn trả </span>
                         </a>
                         
-                    </li>
+                    </li> --}}
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.orders.list') }}"
@@ -421,15 +433,7 @@
                     </li>
 
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.attributes.list') }}" role="button"
-                            aria-expanded="false" aria-controls="sidebarAttributes">
-                            <span class="nav-icon">
-                                <iconify-icon icon="solar:confetti-minimalistic-bold-duotone"></iconify-icon>
-                            </span>
-                            <span class="nav-text"> Thuộc tính </span>
-                        </a>
-                    </li>
+                    
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.users.list') }}" role="button">
@@ -441,21 +445,21 @@
                     </li>
 
                     <li class="nav-item">
-    <a
-        class="nav-link"
-        href="{{ route('admin.posts.index') }}"
-        role="button"
-        aria-expanded="false"
-        aria-controls="sidebarPosts"
-    >
-        <span class="nav-icon">
-            <iconify-icon icon="solar:document-add-bold-duotone"></iconify-icon>
-        </span>
-        <span class="nav-text"> Bài viết </span>
-    </a>
-</li>
+                        <a
+                            class="nav-link"
+                            href="{{ route('admin.posts.index') }}"
+                            role="button"
+                            aria-expanded="false"
+                            aria-controls="sidebarPosts"
+                        >
+                            <span class="nav-icon">
+                                <iconify-icon icon="solar:document-add-bold-duotone"></iconify-icon>
+                            </span>
+                            <span class="nav-text"> Bài viết </span>
+                        </a>
+                    </li>
 
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a
                             class="nav-link"
                             href="{{ route('admin.comments.list') }}"
@@ -468,7 +472,7 @@
                             </span>
                             <span class="nav-text"> Bình luận </span>
                         </a>
-                        </li>
+                        </li> --}}
 
                         <li class="nav-item">
                         <a
@@ -496,17 +500,17 @@
                         
                     </li>
 
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link" href="settings.html">
                             <span class="nav-icon">
                                 <iconify-icon icon="solar:settings-bold-duotone"></iconify-icon>
                             </span>
                             <span class="nav-text"> Settings </span>
                         </a>
-                    </li>
+                    </li> --}}
                    
 
-                    <li class="menu-title mt-2">Users</li>
+                    {{-- <li class="menu-title mt-2">Users</li>
                     <li class="nav-item">
                         <a class="nav-link" href="apps-chat.html">
                             <span class="nav-icon">
@@ -514,7 +518,7 @@
                             </span>
                             <span class="nav-text"> Chat </span>
                         </a>
-                    </li>
+                    </li> --}}
 
 
             </div>

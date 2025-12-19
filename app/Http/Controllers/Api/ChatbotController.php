@@ -192,7 +192,7 @@ class ChatbotController extends Controller
             
             if (isset($result['error'])) {
                  return response()->json([
-                     'message' => 'Lỗi API: ' . ($result['error']['message'] ?? 'Không rõ')
+                     'message' => 'Lỗi kết lỗi' . ($result['error']['message'] ?? 'Không rõ')
                  ], 500);
             }
             
