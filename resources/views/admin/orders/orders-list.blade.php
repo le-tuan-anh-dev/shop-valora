@@ -177,10 +177,17 @@
                                 <h4 class="card-title">Danh sách đơn hàng</h4>
                             </div>
                             <div>
-                                <form method="GET" action="{{ route('admin.orders.list') }}" class="d-flex gap-2">
+                                <form method="GET" action="{{ route('admin.orders.list') }}" class="d-flex gap-2 flex-wrap align-items-end">
                                     <input type="text" name="search" class="form-control form-control-sm"
-                                        placeholder="Tìm kiếm..." value="{{ request('search') }}" style="width: 200px;">
-                                    <select name="status" class="form-select form-select-sm" style="width: 150px;">
+                                        placeholder="Tìm kiếm..." value="{{ request('search') }}" style="width: 150px;">
+                                    <div class="d-flex gap-1 align-items-center">
+                                        <input type="date" name="date_from" class="form-control form-control-sm"
+                                            value="{{ request('date_from') }}" title="Từ ngày" style="width: 140px;">
+                                        <span class="text-muted">-</span>
+                                        <input type="date" name="date_to" class="form-control form-control-sm"
+                                            value="{{ request('date_to') }}" title="Đến ngày" style="width: 140px;">
+                                    </div>
+                                    <select name="status" class="form-select form-select-sm" style="width: 140px;">
                                         <option value="">Tất cả trạng thái</option>
                                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ
                                             xác nhận</option>
@@ -208,6 +215,11 @@
                                     <button type="submit" class="btn btn-sm btn-primary">
                                         <iconify-icon icon="solar:magnifer-linear"></iconify-icon>
                                     </button>
+                                    @if(request('search') || request('date_from') || request('date_to') || request('status'))
+                                        <a href="{{ route('admin.orders.list') }}" class="btn btn-sm btn-outline-secondary" title="Xóa bộ lọc">
+                                            <iconify-icon icon="solar:close-circle-linear"></iconify-icon>
+                                        </a>
+                                    @endif
                                 </form>
                             </div>
                         </div>
