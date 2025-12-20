@@ -467,14 +467,14 @@
                             <a href="{{ route('posts.show', $item->id) }}">
                                 <h5>{{ $item->title }}</h5>
                             </a>
-                            <div class="link-hover-anim underline">
+                            {{-- <div class="link-hover-anim underline">
                                 <a class="btn btn_underline link-strong link-strong-unhovered" href="{{ route('posts.show', $item->id) }}">
                                     Đọc thêm
                                     <svg>
                                         <use href="{{ asset('client/assets/svg/icon-sprite.svg#arrow') }}"></use>
                                     </svg>
                                 </a>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -791,7 +791,7 @@
         position: fixed;
         bottom: 30px; right: 30px;
         width: 60px; height: 60px;
-        background: #007bff;
+        background: #1a1a1a !important;
         border-radius: 50%;
         color: white;
         display: flex; align-items: center; justify-content: center;
@@ -820,13 +820,24 @@
 
     /* Header */
     .chat-header {
-        background: #007bff; color: white;
-        padding: 15px;
-        font-weight: bold;
-        display: flex; justify-content: space-between; align-items: center;
-        border-radius: 12px 12px 0 0;
-    }
-    .chat-close { cursor: pointer; font-size: 20px; }
+    background: #1a1a1a !important; /* Đổi sang đen */
+    color: #ffffff !important;
+    padding: 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px 12px 0 0;
+}
+.chat-header span {
+    color: #ffffff !important; /* Chữ trắng rõ nét */
+}
+
+.chat-close { 
+    cursor: pointer; 
+    font-size: 20px; 
+    color: #ffffff !important; 
+}
 
     /* Vùng tin nhắn */
     #messages {
@@ -847,8 +858,10 @@
         line-height: 1.5;
     }
     .user {
-        background: #007bff; color: white;
-        align-self: flex-end; /* Căn phải */
+        background: #1a1a1a !important; /* Đổi từ xanh sang đen sang trọng */
+    color: white !important;
+    align-self: flex-end;
+    border-radius: 15px 15px 0 15px;
     }
     .ai {
         background: #fff; color: #333;
@@ -883,28 +896,33 @@
     /* --- THẺ SẢN PHẨM INLINE (Hiện ngay trong dòng) --- */
     .inline-product-card {
         display: block;
-        margin: 8px 0;
+        margin: 15px 0;
         border: 1px solid #eee;
         border-radius: 8px;
         overflow: hidden;
         background: white;
         max-width: 250px; /* Giới hạn chiều rộng ảnh cho gọn */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        clear: both;
     }
     .inline-product-card img {
         width: 100%; height: 150px; object-fit: cover;
     }
     .inline-product-card .btn-view {
-        display: block;
-        text-align: center;
-        padding: 6px;
-        background: #f8f9fa;
-        color: #007bff;
-        text-decoration: none;
-        font-size: 12px;
-        font-weight: bold;
-    }
-    .inline-product-card .btn-view:hover { background: #e9ecef; }
+    display: block;
+    text-align: center;
+    padding: 8px;
+    background: #f8f9fa;
+    color: #1a1a1a !important; /* Chữ đen cho chuyên nghiệp */
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    border-top: 1px solid #eeeeee;
+}
+
+.inline-product-card .btn-view:hover {
+    background: #eeeeee;
+}
 
     /* Input */
     .input-area {
@@ -915,9 +933,19 @@
         flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none;
     }
     #btn-send {
-        margin-left: 10px; padding: 0 15px;
-        background: #007bff; color: white; border: none; border-radius: 20px; cursor: pointer;
-    }
+    margin-left: 10px; 
+    padding: 0 15px;
+    background: #1a1a1a !important; /* Đen đồng bộ header */
+    color: white !important; 
+    border: none; 
+    border-radius: 20px; 
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#btn-send:hover {
+    background: #333333 !important;
+}
 </style>
 
 <div id="chat-circle" onclick="toggleChat()">
@@ -925,7 +953,7 @@
 
 <div class="chat-box" id="chat-box">
     <div class="chat-header">
-        <span>AI Trợ Lý</span>
+        <span>AI Tư vấn sản phẩm</span>
         <span class="chat-close" onclick="toggleChat()">×</span>
     </div>
     
@@ -1002,38 +1030,45 @@
 
     // 3. LOGIC CHÈN ẢNH VÀO SAU TÊN SẢN PHẨM (CORE)
     function processMessageWithImages(text, productLinks) {
-        let processedText = text.replace(/\n/g, '<br>'); // Xuống dòng
+    // 1. Chuyển đổi xuống dòng của văn bản gốc
+    let processedText = text.replace(/\n/g, '<br>'); 
+    
+    // Sắp xếp tên từ dài đến ngắn để replace chính xác
+    const sortedNames = Object.keys(productLinks).sort((a, b) => b.length - a.length);
+
+    sortedNames.forEach(name => {
+        const prod = productLinks[name];
         
-        // Sắp xếp tên dài trước để replace chính xác
-        const sortedNames = Object.keys(productLinks).sort((a, b) => b.length - a.length);
+        // Tạo HTML cho thẻ ảnh
+        const cardHtml = `
+            <div class="inline-product-card">
+                <a href="${prod.product_url}" target="_blank" style="text-decoration: none; color: inherit;">
+                    <img src="${prod.image_url}" style="width:100%; height:150px; object-fit:cover;" onerror="this.src='https://placehold.co/300?text=No+Image'">
+                    <div class="btn-view" style="padding:8px; text-align:center; color:#007bff; font-weight:bold; font-size:12px; background:#f8f9fa;">
+                        Xem chi tiết ${prod.name}
+                    </div>
+                </a>
+            </div>
+        `;
 
-        sortedNames.forEach(name => {
-            // Lấy data sản phẩm
-            const prod = productLinks[name];
-            
-            // Tạo thẻ HTML cho ảnh
-            const cardHtml = `
-                <div class="inline-product-card">
-                    <a href="${prod.product_url}" target="_blank">
-                        <img src="${prod.image_url}" onerror="this.src='https://placehold.co/300?text=No+Image'">
-                        <div class="btn-view">Xem chi tiết ${prod.name}</div>
-                    </a>
-                </div>
-            `;
+        // Regex tìm: Tên sản phẩm + (dấu phẩy/dấu chấm/khoảng trắng thừa phía sau)
+        const safeName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const regex = new RegExp(`${safeName}([,.\\s]+)?`, 'gi');
 
-            // Regex tìm tên (không phân biệt hoa thường)
-            // Replace tên sản phẩm = Tên sản phẩm + Thẻ ảnh
-            const safeName = name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            const regex = new RegExp(`(${safeName})`, 'gi');
-            
-            // Chỉ replace lần xuất hiện đầu tiên hoặc tất cả tuỳ ý. 
-            // Ở đây dùng replace (thay thế lần đầu) để tránh spam ảnh nếu tên lặp lại nhiều lần.
-            // Nếu muốn tất cả thì dùng replaceAll hoặc regex g
-            processedText = processedText.replace(regex, `<b>$1</b><br>${cardHtml}`);
-        });
+        /**
+         * Logic thay thế:
+         * <b>${name}</b>: Bôi đậm tên
+         * ${cardHtml}: Chèn ảnh ngay dưới (vì card có display: block nên nó tự xuống dòng)
+         * <br>: Thêm một dấu xuống dòng nhẹ để AI nói tiếp phần văn bản sau đó
+         */
+        processedText = processedText.replace(regex, `<b>${name}</b>${cardHtml}<br>`);
+    });
 
-        return processedText;
-    }
+    // Dọn dẹp: Nếu lỡ có quá nhiều thẻ <br> dính nhau thì rút gọn lại
+    processedText = processedText.replace(/(<br>\s*){3,}/g, '<br><br>');
+
+    return processedText;
+}
 
     // Hỗ trợ UI
     function appendMessage(content, role, isHtml = false) {
