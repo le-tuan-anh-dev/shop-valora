@@ -344,18 +344,16 @@
                 </div>
 
                 {{-- === HIỂN THỊ BIẾN THỂ (SIZE/MÀU) === --}}
-                @if($review->productVariant)
-                    <div class="variant-info mt-1" style="font-size: 0.85rem; color: #777; background: #f9f9f9; padding: 5px; border-radius: 4px; display: inline-block;">
-                        <strong>Phân loại:</strong>
-                        @foreach($review->productVariant->attributeValues as $attrValue)
-                            <span>{{ $attrValue->attribute->name }}: {{ $attrValue->value }}</span>
-                            @if(!$loop->last) | @endif
-                        @endforeach
-                    </div>
-                @endif
-
-                @if(trim($review->content)) 
-    <p class="mt-2">{{ $review->content }}</p>
+@if($review->variant && $review->variant->attributeValues->isNotEmpty())
+    <div class="variant-info mt-2" style="font-size: 0.85rem; color: #777;">
+        <span style="background: #f1f1f1; padding: 3px 8px; border-radius: 4px;">
+            <strong>Phân loại:</strong> 
+            @foreach($review->variant->attributeValues as $attrValue)
+                {{ $attrValue->attribute->name }}: {{ $attrValue->value }}
+                @if(!$loop->last) | @endif
+            @endforeach
+        </span>
+    </div>
 @endif
 
                

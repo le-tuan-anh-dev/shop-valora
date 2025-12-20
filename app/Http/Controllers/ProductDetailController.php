@@ -32,12 +32,12 @@ class ProductDetailController extends Controller
         }
 
         $reviews = Review::where('product_id', $product->id)
-                 // Chỉ lấy các đánh giá gốc (không phải phản hồi)
-                 ->whereNull('parent_id') 
-                 // Tải trước user, images, biến thể và cả phản hồi (replies)
-                 ->with(['user', 'productVariant.attributeValues', 'images', 'replies']) 
-                 ->latest()
-                 ->get();
+                ->whereNull('parent_id') 
+                // 1. Đổi productVariant thành variant
+                // 2. Thêm .attribute để lấy được tên "Màu", "Size"
+                ->with(['user', 'variant.attributeValues.attribute', 'images', 'replies.user']) 
+                ->latest()
+                ->get();
     
     $totalReviews = $reviews->count();
     $averageRating = $reviews->avg('rating');
