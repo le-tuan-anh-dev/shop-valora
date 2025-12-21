@@ -123,7 +123,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="max_discount_value" class="form-label">
-                                            Mức giảm tối đa (₫) - áp dụng với mã giảm %
+                                            Mức giảm tối đa (₫)
                                         </label>
                                         <input type="number"
                                             class="form-control @error('max_discount_value') is-invalid @enderror"
