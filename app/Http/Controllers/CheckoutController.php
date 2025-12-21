@@ -11,6 +11,7 @@ use App\Models\Admin\OrderItem;
 use App\Models\UserAddress;
 use App\Models\PaymentMethod;
 use App\Models\Voucher;
+use App\Models\VoucherUse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -452,12 +453,15 @@ class CheckoutController extends Controller
         }
     }
 
+    public function applyCoupon(Request $request)
+    {
+        return $this->applyVoucher($request);
+    }
+
     public function removeVoucher(Request $request)
     {
         try {
             $appliedVoucher = session('applied_voucher');
-            
-            Log::info('Removing voucher', ['voucher' => $appliedVoucher]);
             
             if ($appliedVoucher && isset($appliedVoucher['voucher_id'])) {
                 $this->voucherService->removeVoucher($appliedVoucher['voucher_id']);
@@ -479,10 +483,7 @@ class CheckoutController extends Controller
         }
     }
     
-    public function applyCoupon(Request $request)
-    {
-        return $this->applyVoucher($request);
-    }
+
 
     // Cập nhật địa chỉ
     public function updateAddress(Request $request, $id)
@@ -681,9 +682,23 @@ class CheckoutController extends Controller
                     $promotionId,
                     $orderNumber
                 );
+                
 
                 CartItem::where('cart_id', $cart->id)->delete();
                 $this->sendOrderEmail($order);
+                $appliedVoucher = session('applied_voucher');
+                if ($appliedVoucher && isset($appliedVoucher['voucher_id'])) {
+                    VoucherUse::create([
+                        'voucher_id' => $appliedVoucher['voucher_id'],
+                        'user_id' => auth()->user()->id, 
+                        'order_id' => $order->id,
+                        'used_at' => now()
+                    ]);
+                    $voucher = Voucher::find($appliedVoucher['voucher_id']);
+                    if ($voucher) {
+                        $voucher->increment('used_count');
+                    }
+                }
                 session()->forget('applied_voucher'); 
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Đơn hàng đã được tạo! Vui lòng thanh toán khi nhận hàng.');
@@ -1045,6 +1060,7 @@ class CheckoutController extends Controller
                     Log::error('Lỗi gửi email: ' . $mailException->getMessage());
                 }
 
+                
                 // xóa session
                 session()->forget('pending_order');
                 session()->forget('applied_voucher');
@@ -1265,6 +1281,19 @@ class CheckoutController extends Controller
                         Log::error('Lỗi gửi email: ' . $mailException->getMessage());
                     }
 
+                    $appliedVoucher = session('applied_voucher');
+                    if ($appliedVoucher && isset($appliedVoucher['voucher_id'])) {
+                        VoucherUse::create([
+                            'voucher_id' => $appliedVoucher['voucher_id'],
+                            'user_id' => auth()->user()->id, 
+                            'order_id' => null,
+                            'used_at' => now()
+                        ]);
+                        $voucher = Voucher::find($appliedVoucher['voucher_id']);
+                        if ($voucher) {
+                            $voucher->increment('used_count');
+                        }
+                    }
                     session()->forget('pending_order');
                     session()->forget('applied_voucher');
 

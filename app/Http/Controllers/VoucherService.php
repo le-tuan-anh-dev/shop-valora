@@ -65,7 +65,7 @@ class VoucherService
             if ($voucher->hasUserExceededLimit($userId)) {
                 return [
                     'success' => false,
-                    'message' => "Bạn đã sử dụng voucher này {$voucher->per_user_limit} lần rồi"
+                    'message' => "Bạn đã sử dụng hết lượt dùng voucher này"
                 ];
             }
 

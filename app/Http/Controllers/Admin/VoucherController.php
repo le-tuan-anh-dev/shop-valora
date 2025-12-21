@@ -38,7 +38,7 @@ class VoucherController
             'variant_ids' => 'nullable|array|required_if:variant_type,specific',
             'variant_ids.*' => 'exists:product_variants,id',
             'min_order_value' => 'nullable|numeric|min:0',
-            'max_discount_value' => 'nullable|numeric|min:0',
+            'max_discount_value' => 'required|numeric|min:0',
         ], [
             'code.required' => 'Mã voucher là bắt buộc',
             'code.string' => 'Mã voucher phải là chuỗi ký tự',
@@ -68,6 +68,7 @@ class VoucherController
             'min_order_value.min' => 'Giá trị đơn hàng tối thiểu không được âm',
             'max_discount_value.numeric' => 'Giá trị giảm giá tối đa phải là số',
             'max_discount_value.min' => 'Giá trị giảm giá tối đa không được âm',
+            'max_discount_value.required' => 'Giá trị giảm giá tối đa là bắt buộc',
         ]);
 
         if ($request->type === 'percent' && $validated['value'] > 100) {
@@ -127,7 +128,7 @@ public function update(Request $request, $id)
             'variant_ids' => 'nullable|array|required_if:variant_type,specific',
             'variant_ids.*' => 'exists:product_variants,id',
             'min_order_value' => 'nullable|numeric|min:0',
-            'max_discount_value' => 'nullable|numeric|min:0',
+            'max_discount_value' => 'required|numeric|min:0',
         ], [
             'code.required' => 'Mã voucher là bắt buộc',
             'code.string' => 'Mã voucher phải là chuỗi ký tự',
@@ -157,6 +158,7 @@ public function update(Request $request, $id)
             'min_order_value.min' => 'Giá trị đơn hàng tối thiểu không được âm',
             'max_discount_value.numeric' => 'Giá trị giảm giá tối đa phải là số',
             'max_discount_value.min' => 'Giá trị giảm giá tối đa không được âm',
+            'max_discount_value.required' => 'Giá trị giảm giá tối đa là bắt buộc',
         ]);
     
     if ($request->type === 'percent' && $validated['value'] > 100) {

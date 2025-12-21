@@ -27,7 +27,7 @@ class ChatbotController extends Controller
         }
 
         // --- BẮT ĐẦU LẤY DỮ LIỆU TỪ TẤT CẢ CÁC MODEL (GIỮ NGUYÊN LOGIC CŨ) ---
-        $limit = 5;
+        $limit = 10;
         $contextData = [];
         
         // 2.1. SẢN PHẨM
@@ -148,7 +148,7 @@ class ChatbotController extends Controller
         - Khi nói về sản phẩm, hãy ưu tiên giới thiệu sản phẩm mới nhất.
         - Khi khách hỏi về chất lượng, hãy dùng số sao trung bình để trả lời.
         - Tuyệt đối KHÔNG sử dụng ký tự đánh dấu in đậm (double asterisks) trong câu trả lời.
-        - **KHÔNG** đề cập đến ID, Link ảnh hoặc Link chi tiết sản phẩm trong câu trả lời văn bản.
+        - KHÔNG đề cập đến ID sản phẩm, Link ảnh hoặc Link chi tiết sản phẩm trong câu trả lời văn bản.
         ");
 
         // 4. CHUYỂN CẤU TRÚC MESSAGE SANG CHUẨN OPENAI (Cho Groq)
