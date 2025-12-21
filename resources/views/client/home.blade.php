@@ -857,12 +857,13 @@
         font-size: 14px;
         line-height: 1.5;
     }
-    .user {
-        background: #1a1a1a !important; /* Đổi từ xanh sang đen sang trọng */
-    color: white !important;
+    .message.user {
+    background: #1a1a1a !important; 
+    color: #ffffff !important; /* Chữ luôn là trắng */
     align-self: flex-end;
     border-radius: 15px 15px 0 15px;
-    }
+    margin-left: auto; /* Đảm bảo căn phải */
+}
     .ai {
         background: #fff; color: #333;
         border: 1px solid #e1e1e1;
