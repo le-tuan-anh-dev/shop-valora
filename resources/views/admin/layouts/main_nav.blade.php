@@ -351,7 +351,7 @@
                             <span class="nav-icon">
                                 <iconify-icon icon="solar:widget-5-bold-duotone"></iconify-icon>
                             </span>
-                            <span class="nav-text"> Trang chủ </span>
+                            <span class="nav-text"> Thống Kê </span>
                         </a>
                     </li>
 
