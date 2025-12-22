@@ -32,10 +32,10 @@
                             <div class="footer-title d-md-block"> 
                                 <h5>Về chúng tôi</h5>
                                 <ul class="footer-details accordion-hidden"> 
-                                    <li> <a class="nav" href="#">Trang chủ</a></li>
-                                    <li> <a class="nav" href="#">Cửa hàng</a></li>
-                                    <li> <a class="nav" href="#">Bài viết</a></li>
-                                    <li> <a class="nav" href="#">Liên hệ</a></li>
+                                    <li> <a class="nav" href="#">Giới thiệu về Valora</a></li>
+                                    <li> <a class="nav" href="#">Sản phẩm & Bộ sưu tập</a></li>
+                                    <li> <a class="nav" href="#">Tin tức & Blog thời trang</a></li>
+                                    <li> <a class="nav" href="#">Liên hệ & Hỗ trợ khách hàng</a></li>
                                 </ul>
                             </div>
                         </div>
