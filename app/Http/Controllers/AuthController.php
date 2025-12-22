@@ -45,14 +45,14 @@ class AuthController extends Controller
             'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
 
             'phone.string' => 'Số điện thoại phải là chuỗi ký tự.',
-            'phone.max'    => 'Số điện thoại không được vượt quá 20 ký tự.',
+            'phone.regex'  => 'Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.',
         ];
 
         $request->validate([
             'name'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users,email|max:100',
             'password' => 'required|string|min:6|confirmed',
-            'phone'    => 'nullable|string|max:20',
+            'phone'    => 'nullable|string|regex:/^0\d{9}$/',
         ], $messages);
 
         // Tạo token xác thực
