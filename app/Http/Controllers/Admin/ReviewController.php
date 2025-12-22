@@ -44,9 +44,15 @@ class ReviewController extends Controller
         $product = Product::findOrFail($id);
 
         // Query đánh giá của sản phẩm này
-        $query = Review::with(['user', 'images', 'replies.user', 'variant'])
-            ->where('product_id', $id) // Chỉ lấy của sản phẩm này
-            ->whereNull('parent_id'); // Chỉ lấy đánh giá gốc
+        $query = Review::with([
+        'user', 
+        'images', 
+        'replies.user', 
+        // Nạp variant -> giá trị thuộc tính -> tên thuộc tính
+        'variant.attributeValues.attribute' 
+    ])
+    ->where('product_id', $id)
+    ->whereNull('parent_id');
 
         // --- BỘ LỌC (Filter) ---
         
@@ -71,7 +77,10 @@ class ReviewController extends Controller
         $reviews = $query->latest()->cursorPaginate(10)->withQueryString();
 
         // Lấy danh sách biến thể để làm dropdown filter
-        $variants = ProductVariant::where('product_id', $id)->select('id', 'title')->get();
+        $variants = ProductVariant::where('product_id', $id)
+                ->has('attributeValues') 
+                ->with(['attributeValues.attribute'])
+                ->get();
 
         return view('admin.reviews.show', compact('product', 'reviews', 'variants'));
     }
