@@ -22,16 +22,22 @@
                     
                     {{-- Lọc Biến thể --}}
                     <div class="col-md-3">
-                        <label class="form-label">Biến thể</label>
-                        <select name="variant_id" class="form-select">
-                            <option value="">-- Tất cả biến thể --</option>
-                            @foreach($variants as $var)
-                                <option value="{{ $var->id }}" {{ request('variant_id') == $var->id ? 'selected' : '' }}>
-                                    {{ $var->title }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+    <label class="form-label fw-bold">Biến thể</label>
+    <select name="variant_id" class="form-select">
+        <option value="">-- Tất cả biến thể --</option>
+        @foreach($variants as $var)
+            {{-- CHỈ HIỂN THỊ nếu biến thể có giá trị thuộc tính --}}
+            @if($var->attributeValues->isNotEmpty())
+                <option value="{{ $var->id }}" {{ request('variant_id') == $var->id ? 'selected' : '' }}>
+                    @foreach($var->attributeValues as $attrValue)
+                        {{ $attrValue->attribute->name }}: {{ $attrValue->value }}
+                        @if(!$loop->last) - @endif
+                    @endforeach
+                </option>
+            @endif
+        @endforeach
+    </select>
+</div>
 
                     {{-- Lọc Số sao --}}
                     <div class="col-md-2">
@@ -71,8 +77,8 @@
                                 <th style="width: 50px;">#</th>
                                 <th style="width: 150px;">Biến thể</th>
                                 <th style="width: 150px;">Khách hàng</th>
-                                <th style="width: 300px;">Nội dung & Ảnh</th>
-                                <th>Phản hồi từ Admin</th>
+                                <th style="width: 300px;">Nội dung</th>
+                                <th>Phản hồi từ cửa hàng</th>
                                 <th style="width: 120px;">Thời gian</th>
                                 <th style="width: 100px;">Hành động</th>
                             </tr>
@@ -84,14 +90,19 @@
                                     
                                     {{-- Cột Biến thể --}}
                                     <td>
-                                        @if(optional($review->variant)->title)
-                                            <span class="badge bg-light text-dark border">
-                                                {{ $review->variant->title }}
-                                            </span>
-                                        @else
-                                            <span class="text-muted small">Không có</span>
-                                        @endif
-                                    </td>
+    @if($review->variant && $review->variant->attributeValues->isNotEmpty())
+        <div class="variant-info">
+            <span style="background: #f1f1f1; padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;">
+                @foreach($review->variant->attributeValues as $attrValue)
+                    <strong>{{ $attrValue->attribute->name }}:</strong> {{ $attrValue->value }}
+                    @if(!$loop->last) | @endif
+                @endforeach
+            </span>
+        </div>
+    @else
+        <span class="text-muted small">Không có biến thể</span>
+    @endif
+</td>
 
                                     {{-- Cột Khách hàng --}}
                                     <td>
