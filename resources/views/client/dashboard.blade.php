@@ -868,12 +868,43 @@
                                     @enderror
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="profile_email" class="form-control" value="{{ old('profile_email', $user->email) }}">
-                                    @error('profile_email')
-                                        <small class="text-danger d-block mt-1">{{ $message }}</small>
-                                    @enderror
-                                </div>
+    <label for="profile_email" class="form-label">Email</label>
+    <input 
+        type="email" 
+        id="profile_email"
+        name="profile_email" 
+        class="form-control @error('profile_email') is-invalid @enderror" 
+        value="{{ old('profile_email', $user->email) }}"
+        data-original-email="{{ $user->email }}"
+        required
+    >
+    
+    {{-- Cảnh báo khi thay đổi email --}}
+    <div id="email-warning" class="alert alert-warning mt-2" style="display: none;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        Vui lòng kiểm tra kỹ email trước khi thay đổi!
+    </div>
+    
+    @error('profile_email')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.getElementById('profile_email');
+        const emailWarning = document.getElementById('email-warning');
+        const originalEmail = emailInput.dataset.originalEmail;
+        
+        emailInput.addEventListener('input', function() {
+            if (this.value !== originalEmail && this.value !== '') {
+                emailWarning.style.display = 'block';
+            } else {
+                emailWarning.style.display = 'none';
+            }
+        });
+    });
+</script>
                                 <div class="mb-3">
                                     <label class="form-label">Số điện thoại</label>
                                     <input type="text" name="profile_phone" class="form-control" value="{{ old('profile_phone', $user->phone) }}">
