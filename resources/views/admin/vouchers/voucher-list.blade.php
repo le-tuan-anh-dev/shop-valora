@@ -137,12 +137,6 @@
                                         </td>
                                         <td>
                                             <div class="d-flex gap-2">
-                                                <a href="{{ route('admin.vouchers.show', $voucher->id) }}" 
-                                                   class="btn btn-sm btn-icon btn-light" 
-                                                   data-bs-toggle="tooltip" 
-                                                   data-bs-title="Xem chi tiết">
-                                                    <iconify-icon icon="solar:eye-bold-duotone"></iconify-icon>
-                                                </a>
                                                 <a href="{{ route('admin.vouchers.edit', $voucher->id) }}" 
                                                    class="btn btn-sm btn-icon btn-light" 
                                                    data-bs-toggle="tooltip" 

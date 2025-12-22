@@ -93,7 +93,7 @@ class DashboardController extends Controller
         $request->validate([
             'profile_name'  => ['required', 'string', 'max:100'],
             'profile_email' => ['required', 'email', 'max:100', 'unique:users,email,' . $user->id],
-            'profile_phone' => ['nullable', 'string', 'max:10'],
+            'profile_phone' => ['nullable', 'string', 'regex:/^0\d{9}$/'],
             'profile_image' => ['nullable', 'image',],
         ], [
             'profile_name.required'    => 'Vui lòng nhập họ tên.',
@@ -106,7 +106,7 @@ class DashboardController extends Controller
             'profile_email.unique'     => 'Email này đã được sử dụng.',
             
             'profile_phone.string'     => 'Số điện thoại phải là ký tự.',
-            'profile_phone.max'        => 'Số điện thoại không đúng định dạng',
+            'profile_phone.regex'      => 'Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.',
             
             'profile_image.image'      => 'Tệp tải lên phải là hình ảnh.',
         ]);

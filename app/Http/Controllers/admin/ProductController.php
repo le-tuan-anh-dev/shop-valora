@@ -73,7 +73,7 @@ class ProductController extends Controller
             'category_id.exists'   => 'Danh mục không hợp lệ.',
             'brand_id.exists'      => 'Thương hiệu không hợp lệ.',
             'name.required'        => 'Bạn phải nhập tên sản phẩm.',
-            'name.max'             => 'Tên sản phẩm không được quá 150 ký tự.',
+            'name.max'             => 'Tên sản phẩm không được quá 225 ký tự.',
             'cost_price.required'  => 'Bạn phải nhập giá nhập.',
             'cost_price.numeric'   => 'Giá nhập phải là số.',
             'cost_price.gt'        => 'Giá nhập phải lớn hơn 0.',
@@ -95,6 +95,7 @@ class ProductController extends Controller
             'variants.*.price.max'    => 'Giá bán phải nhỏ hơn 100.000.000',   
             'image_main.required'=>'Ảnh phải dược thêm',
             'description.required'=>'Mô tả không được trống',
+            'description.max'=>'Mô tả chỉ được 250 kí tự',
             'product_images.max'   => 'Tối đa 5 ảnh',
             'length.max'           => 'Chiều dài phải nhỏ hơn 200 cm.',
             'width.max'            => 'Chiều rộng phải nhỏ hơn 200 cm.',
@@ -123,8 +124,8 @@ class ProductController extends Controller
             $rules = [
             'category_id'      => 'required|exists:categories,id',
             'brand_id'         => 'nullable|exists:brands,id',
-            'name'            => 'required|string|max:150',
-            'description'      => 'required|string',
+            'name'            => 'required|string|max:225',
+            'description'      => 'required|string|max:250',
             'cost_price'       => 'required|numeric|gt:0|max:100000000',
             'base_price'       => 'required|numeric|gt:cost_price|max:100000000',
             'discount_price'   => 'nullable|numeric|lt:base_price|gt:cost_price|max:100000000',
@@ -327,6 +328,8 @@ class ProductController extends Controller
             'variants.*.weight.required' => 'Cân nặng biến thể là bắt buộc.',
             'variants.*.weight.numeric'  => 'Cân nặng biến thể phải là số.',
             'variants.*.weight.max'      => 'Cân nặng biến thể phải nhỏ hơn 1.600.000 gr.',
+            'description.required' => 'Mô tả sản phẩm không được để trống',
+            'description.max' => 'Mô tả sản phẩm không quá 250 kí tự',
         ];
 
       
@@ -337,7 +340,7 @@ class ProductController extends Controller
             'category_id'      => 'required|exists:categories,id',
             'brand_id'         => 'nullable|exists:brands,id',
             'name'             => 'required|string|max:150',
-            'description'      => 'nullable|string',
+            'description'      => 'required|string|max:250',
             'cost_price'       => 'required|numeric|gt:0|max:100000000',
             'base_price'       => 'required|numeric|gt:cost_price|max:100000000',
             'discount_price'   => 'nullable|numeric|lt:base_price|gt:cost_price|max:100000000',
