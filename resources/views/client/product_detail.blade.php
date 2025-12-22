@@ -308,7 +308,7 @@
             <div class="user-img">
                 @php
                     // Thiết lập URL mặc định nếu không có ảnh
-                    $avatarUrl = asset('client/assets/images/user/1.jpg'); 
+                    $avatarUrl = asset('client/assets/images/user/12.jpg'); 
 
                     if (!empty($review->user->image)) {
                         // Kiểm tra nếu ảnh user có tồn tại trong storage
