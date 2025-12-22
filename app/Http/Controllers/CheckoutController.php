@@ -1388,7 +1388,7 @@ class CheckoutController extends Controller
         ]);
     }
 
-  public function cancelOrder(Order $order)
+    public function cancelOrder(Order $order)
     {
         if ($order->user_id !== auth()->id()) {
             return redirect()->route('orders.index')
@@ -1417,11 +1417,16 @@ class CheckoutController extends Controller
 
             $order->update([
                 'status'         => 'cancelled_by_customer',
-                // 'payment_status' => $order->payment_status === 'paid' ? 'refunded' : $order->payment_status,
                 'cancelled_at'   => now(),
             ]);
 
             $order->user->notify(new OrderStatusChanged($order));
+
+             // Gửi email thông báo hủy đơn
+            Mail::send('emails.order-cancelled', ['order' => $order], function ($message) use ($order) {
+                $message->to($order->user->email)
+                        ->subject('Đơn hàng đã bị hủy');
+            });
         });
 
         return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công');

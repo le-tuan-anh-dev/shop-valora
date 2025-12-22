@@ -168,7 +168,7 @@
         <div class="content">
             <!-- Greeting -->
             <div class="greeting">
-                <p>Xin chào <strong>{{ $customerName }}</strong>,</p>
+                <p>Xin chào <strong>{{ $customerName ?? $order->user->name }} </strong>,</p>
                 <p>Chúng tôi xin thông báo rằng đơn hàng của bạn đã bị hủy.</p>
             </div>
 
@@ -179,15 +179,15 @@
                     <table>
                         <tr>
                             <td>Mã đơn hàng:</td>
-                            <td><strong>#{{ $orderNumber }}</strong></td>
+                            <td><strong>#{{ $orderNumber ?? $order->order_number }}</strong></td>
                         </tr>
                         <tr>
                             <td>Ngày hủy:</td>
-                            <td>{{ $cancelledAt }}</td>
+                            <td>{{ $cancelledAt ?? $order->cancelled_at }}</td>
                         </tr>
                         <tr>
                             <td>Tổng giá trị:</td>
-                            <td><strong>{{ $totalAmount }}₫</strong></td>
+                            <td><strong>{{ $totalAmount ?? $order->total_amount }}₫</strong></td>
                         </tr>
                     </table>
                 </div>
@@ -197,7 +197,7 @@
             <div class="reason-box">
                 <div class="reason-title"> Lý do hủy đơn hàng</div>
                 <div class="reason-text">
-                    {{ $cancelReason }}
+                    {{ $cancelReason ?? 'Khách Hủy' }}
                 </div>
             </div>
 

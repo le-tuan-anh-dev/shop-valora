@@ -86,10 +86,13 @@ class ProductController extends Controller
             'stock.required'       => 'Bạn phải nhập số lượng tồn kho.',
             'stock.integer'        => 'Tồn kho phải là số nguyên.',
             'stock.min'            => 'Tồn kho không được âm.',
-            'variants.*.price.numeric' => 'Giá biến thể phải là số.',
+            'variants.*.price.integer' => 'Giá biến thể phải là số.',
+            'variants.*.price.min' => 'Giá biến thể phải lớn hơn 0.',
             'variants.*.stock.integer' => 'Tồn kho biến thể phải là số nguyên.',
             'variants.*.stock.min'     => 'Tồn kho biến thể phải lớn hơn không.',
-            'variants.*.sku.unique'    => 'SKU biến thể đã tồn tại.',   
+            'variants.*.sku.unique'    => 'SKU biến thể đã tồn tại.',  
+            'variants.*.price.gt'    => 'Giá bán phải lớn giá nhập',  
+            'variants.*.price.max'    => 'Giá bán phải nhỏ hơn 100.000.000',   
             'image_main.required'=>'Ảnh phải dược thêm',
             'description.required'=>'Mô tả không được trống',
             'product_images.max'   => 'Tối đa 5 ảnh',
@@ -122,9 +125,9 @@ class ProductController extends Controller
             'brand_id'         => 'nullable|exists:brands,id',
             'name'            => 'required|string|max:150',
             'description'      => 'required|string',
-            'cost_price'       => 'required|numeric|gt:0',
-            'base_price'       => 'required|numeric|gt:cost_price',
-            'discount_price'   => 'nullable|numeric|lt:base_price|gt:cost_price',
+            'cost_price'       => 'required|numeric|gt:0|max:100000000',
+            'base_price'       => 'required|numeric|gt:cost_price|max:100000000',
+            'discount_price'   => 'nullable|numeric|lt:base_price|gt:cost_price|max:100000000',
             'stock'            => 'required|integer|min:0',
             'image_main'       => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'product_images'   => 'nullable|max:5',
@@ -147,7 +150,7 @@ class ProductController extends Controller
             $rules['variants.*.height']  = 'required|numeric|min:0|max:199.99';
             $rules['variants.*.weight']  = 'required|numeric|min:0|max:1599999.99';
             $rules['variants.*.sku']     = 'nullable|string|unique:product_variants,sku';
-            $rules['variants.*.price']   = 'required|numeric|gte:cost_price';
+            $rules['variants.*.price']   = 'required|integer|gte:cost_price|max:100000000|min:0';
             $rules['variants.*.stock']   = 'required|integer|min:0';
         }
         
@@ -277,6 +280,9 @@ class ProductController extends Controller
             'category_id.exists'   => 'Danh mục không hợp lệ.',
             'name.required'        => 'Bạn phải nhập tên sản phẩm.',
             'name.max'             => 'Tên sản phẩm không được quá 150 ký tự.',
+            'cost_price.max'       => 'Giá nhập phải nhỏ hơn 100.000.000',
+            'base_price.max'       => 'Giá bán phải nhỏ hơn 100.000.000',
+            'discount_price.max'   => 'Giá khuyến mãi phải nhỏ hơn 100.000.000',
             'cost_price.required'  => 'Bạn phải nhập giá nhập.',
             'cost_price.numeric'   => 'Giá nhập phải là số.',
             'cost_price.gt'        => 'Giá nhập phải lớn hơn 0.',
@@ -291,6 +297,7 @@ class ProductController extends Controller
             'stock.min'            => 'Tồn kho không được âm.',
             'variants.*.price.numeric' => 'Giá biến thể phải là số.',
             'variants.*.price.gte'     => 'Giá biến thể phải lớn hơn hoặc bằng giá nhập.',
+            'variants.*.price.max'     => 'Giá bán phải nhỏ hơn 100.000.000',
             'variants.*.stock.integer' => 'Tồn kho biến thể phải là số nguyên.',
             'variants.*.stock.min'     => 'Tồn kho biến thể không được âm.',
             'product_images.max'     => 'Tối đa 5 ảnh.',
@@ -331,14 +338,14 @@ class ProductController extends Controller
             'brand_id'         => 'nullable|exists:brands,id',
             'name'             => 'required|string|max:150',
             'description'      => 'nullable|string',
-            'cost_price'       => 'required|numeric|gt:0',
-            'base_price'       => 'required|numeric|gt:cost_price',
-            'discount_price'   => 'nullable|numeric|lt:base_price|gt:cost_price',
+            'cost_price'       => 'required|numeric|gt:0|max:100000000',
+            'base_price'       => 'required|numeric|gt:cost_price|max:100000000',
+            'discount_price'   => 'nullable|numeric|lt:base_price|gt:cost_price|max:100000000',
             'stock'            => 'required|integer|min:0',
             'image_main'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants'         => 'nullable|array',
             'variants.*.sku'   => 'nullable|string',
-            'variants.*.price' => 'nullable|numeric|gte:cost_price',
+            'variants.*.price' => 'nullable|numeric|gte:cost_price|max:100000000',
             'variants.*.stock' => 'nullable|integer|min:0',
             'product_images'   => 'nullable|array|max:5',
         ];
