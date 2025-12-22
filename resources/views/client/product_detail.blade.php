@@ -252,7 +252,7 @@
         <div class="custom-container container">
             <div class="row"> 
                 <div class="col-12"> 
-                    <h4 class="fw-semibold mb-4" style="color: #rgb(217 184 145);">Dánh giá sản phẩm</h4>
+                    <h4 class="fw-semibold mb-4" style="color: #rgb(217 184 145);">Đánh giá sản phẩm</h4>
                     <div class="product-content"> 
                         
                         <div id="Reviews-tab-pane" role="tabpanel"> 
@@ -372,7 +372,7 @@
                                 <h6 class="mb-0 text-info">
                                     {{ $reply->user->name ?? 'Shop' }} 
                                     @if($reply->user->role == 'admin') 
-                                        <span class="badge bg-primary ms-1">Admin</span>
+                                        <span class="badge bg-primary ms-1">Velora Shop</span>
                                     @endif
                                 </h6>
                             </div>
